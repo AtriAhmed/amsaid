@@ -74,6 +74,10 @@
 
 /* 2) Your design tokens (HSL ONLY) */
 @layer base {
+  button {
+    @apply cursor-pointer;
+  }
+
   :root {
     --background: 45 25% 98%;
     --foreground: 160 15% 15%;
@@ -241,4 +245,12 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+html body[data-scroll-locked] {
+  --removed-body-scroll-bar-size: 0 !important;
+  margin-right: 0 !important;
+}
+html {
+  scrollbar-gutter: stable;
 }

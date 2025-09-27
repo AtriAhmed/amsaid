@@ -1,3 +1,4 @@
+import UserDropdown from "@/components/admin/navbar/UserDropdown";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +34,7 @@ export default function AdminNavbar() {
             >
               المحاضرات
             </Link>
+            <UserDropdown />
           </div>
 
           <Button variant="outline" size="icon" className="md:hidden">
