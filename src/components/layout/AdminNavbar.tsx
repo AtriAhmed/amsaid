@@ -23,10 +23,22 @@ export default function AdminNavbar() {
               الرئيسية
             </Link>
             <Link
+              href="/admin/categories/books"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
+              فئات الكتب
+            </Link>
+            <Link
               href="/admin/books"
               className="text-foreground hover:text-primary transition-smooth"
             >
               الكتب
+            </Link>
+            <Link
+              href="/admin/categories/videos"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
+              فئات المحاضرات
             </Link>
             <Link
               href="/admin/videos"

@@ -27,37 +27,47 @@ model User {
 }
 
 model Person {
-  id     Int     @id @default(autoincrement())
-  name   String
-  bio    String? // optional
-  books  Book[]
-  videos Video[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  bio       String? // optional
+  books     Book[]
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BookCategory {
-  id    Int    @id @default(autoincrement())
-  name  String
-  books Book[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model VideoCategory {
-  id     Int     @id @default(autoincrement())
-  name   String
-  videos Video[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Place {
-  id      Int     @id @default(autoincrement())
-  name    String
-  address String?
-  videos  Video[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String?
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tag {
-  id     Int        @id @default(autoincrement())
-  name   String     @unique
-  books  BookTag[]
-  videos VideoTag[]
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  books     BookTag[]
+  videos    VideoTag[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Book {
@@ -90,6 +100,7 @@ model Video {
   url         String
   poster      String?
   active      Boolean       @default(true)
+  views       Int           @default(0)
   speakerId   Int
   speaker     Person        @relation(fields: [speakerId], references: [id])
   date        DateTime // actual event date
