@@ -1,6 +1,7 @@
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -8,13 +9,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  OWNER
+  ADMIN
+}
+
 model User {
   id            Int       @id @default(autoincrement())
   email         String    @unique
   name          String?
   image         String?
-  passwordHash  String    // bcrypt hash
+  passwordHash  String
   emailVerified DateTime?
+  role          Role      @default(ADMIN) // default role is ADMIN
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Person {
+  id     Int     @id @default(autoincrement())
+  name   String
+  bio    String? // optional
+  books  Book[]
+  videos Video[]
+}
+
+model BookCategory {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+}
+
+model VideoCategory {
+  id     Int     @id @default(autoincrement())
+  name   String
+  videos Video[]
+}
+
+model Place {
+  id      Int     @id @default(autoincrement())
+  name    String
+  address String?
+  videos  Video[]
+}
+
+model Tag {
+  id     Int        @id @default(autoincrement())
+  name   String     @unique
+  books  BookTag[]
+  videos VideoTag[]
+}
+
+model Book {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  authorId    Int
+  author      Person       @relation(fields: [authorId], references: [id])
+  categoryId  Int
+  category    BookCategory @relation(fields: [categoryId], references: [id])
+  active      Boolean      @default(true)
+  downloads   Int          @default(0)
+  language    String
+  coverPhoto  String?
+  fileUrl     String
+  pages       Int
+  size        Int // store file size in KB/MB
+  tags        BookTag[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Video {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  categoryId  Int
+  category    VideoCategory @relation(fields: [categoryId], references: [id])
+  duration    Int // in seconds
+  url         String
+  poster      String?
+  active      Boolean       @default(true)
+  speakerId   Int
+  speaker     Person        @relation(fields: [speakerId], references: [id])
+  date        DateTime // actual event date
+  placeId     Int?
+  place       Place?        @relation(fields: [placeId], references: [id])
+  language    String
+  tags        VideoTag[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// Pivot tables for many-to-many tag relationships
+model BookTag {
+  bookId Int
+  tagId  Int
+  book   Book @relation(fields: [bookId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([bookId, tagId])
+}
+
+model VideoTag {
+  videoId Int
+  tagId   Int
+  video   Video @relation(fields: [videoId], references: [id])
+  tag     Tag   @relation(fields: [tagId], references: [id])
+
+  @@id([videoId, tagId])
 }
