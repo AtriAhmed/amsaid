@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 // Validation schemas
-const UpdateBookCategorySchema = z.object({
+const UpdateVideoCategorySchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
@@ -16,7 +16,7 @@ function parseId(id: string): number | null {
   return isNaN(parsedId) || parsedId < 1 ? null : parsedId;
 }
 
-// GET - Fetch a single book category by ID
+// GET - Fetch a single video category by ID
 export async function GET(
   req: Request,
   ctx: RouteContext<"/api/categories/videos/[id]">
@@ -32,27 +32,27 @@ export async function GET(
       );
     }
 
-    const category = await prisma.bookCategory.findUnique({
+    const category = await prisma.videoCategory.findUnique({
       where: { id },
       include: {
         _count: {
           select: {
-            books: true,
+            videos: true,
           },
         },
-        books: {
+        videos: {
           select: {
             id: true,
             title: true,
-            author: {
+            speaker: {
               select: {
                 id: true,
                 name: true,
               },
             },
-            coverPhoto: true,
+            poster: true,
             active: true,
-            downloads: true,
+            views: true,
             createdAt: true,
           },
           where: {
@@ -61,29 +61,29 @@ export async function GET(
           orderBy: {
             createdAt: "desc",
           },
-          take: 10, // Limit to recent 10 books
+          take: 10, // Limit to recent 10 videos
         },
       },
     });
 
     if (!category) {
       return NextResponse.json(
-        { error: "Book category not found" },
+        { error: "Video category not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(category);
   } catch (error: any) {
-    console.error("Error fetching book category:", error);
+    console.error("Error fetching video category:", error);
     return NextResponse.json(
-      { error: "Failed to fetch book category" },
+      { error: "Failed to fetch video category" },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update a book category
+// PUT - Update a video category
 export async function PUT(
   req: Request,
   ctx: RouteContext<"/api/categories/videos/[id]">
@@ -100,7 +100,7 @@ export async function PUT(
     }
 
     const json = await req.json().catch(() => ({}));
-    const parsed = UpdateBookCategorySchema.safeParse(json);
+    const parsed = UpdateVideoCategorySchema.safeParse(json);
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -112,19 +112,19 @@ export async function PUT(
     const { name } = parsed.data;
 
     // Check if category exists
-    const existing = await prisma.bookCategory.findUnique({
+    const existing = await prisma.videoCategory.findUnique({
       where: { id },
     });
 
     if (!existing) {
       return NextResponse.json(
-        { error: "Book category not found" },
+        { error: "Video category not found" },
         { status: 404 }
       );
     }
 
     // Check if another category with the same name exists
-    const duplicate = await prisma.bookCategory.findFirst({
+    const duplicate = await prisma.videoCategory.findFirst({
       where: {
         id: { not: id },
         name: {
@@ -141,13 +141,13 @@ export async function PUT(
     }
 
     // Update the category
-    const category = await prisma.bookCategory.update({
+    const category = await prisma.videoCategory.update({
       where: { id },
       data: { name },
       include: {
         _count: {
           select: {
-            books: true,
+            videos: true,
           },
         },
       },
@@ -155,18 +155,18 @@ export async function PUT(
 
     return NextResponse.json(category);
   } catch (error: any) {
-    console.error("Error updating book category:", error);
+    console.error("Error updating video category:", error);
     return NextResponse.json(
-      { error: "Failed to update book category" },
+      { error: "Failed to update video category" },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Delete a book category
+// DELETE - Delete a video category
 export async function DELETE(
   req: Request,
-  ctx: RouteContext<"/api/categories/books/[id]">
+  ctx: RouteContext<"/api/categories/videos/[id]">
 ) {
   try {
     const params = await ctx.params;
@@ -180,12 +180,12 @@ export async function DELETE(
     }
 
     // Check if category exists
-    const existing = await prisma.bookCategory.findUnique({
+    const existing = await prisma.videoCategory.findUnique({
       where: { id },
       include: {
         _count: {
           select: {
-            books: true,
+            videos: true,
           },
         },
       },
@@ -193,35 +193,35 @@ export async function DELETE(
 
     if (!existing) {
       return NextResponse.json(
-        { error: "Book category not found" },
+        { error: "Video category not found" },
         { status: 404 }
       );
     }
 
-    // Check if category has associated books
-    if (existing._count.books > 0) {
+    // Check if category has associated videos
+    if (existing._count.videos > 0) {
       return NextResponse.json(
         {
-          error: "Cannot delete category with associated books",
-          booksCount: existing._count.books,
+          error: "Cannot delete category with associated videos",
+          videosCount: existing._count.videos,
         },
         { status: 409 }
       );
     }
 
     // Delete the category
-    await prisma.bookCategory.delete({
+    await prisma.videoCategory.delete({
       where: { id },
     });
 
     return NextResponse.json(
-      { message: "Book category deleted successfully" },
+      { message: "Video category deleted successfully" },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error deleting book category:", error);
+    console.error("Error deleting video category:", error);
     return NextResponse.json(
-      { error: "Failed to delete book category" },
+      { error: "Failed to delete video category" },
       { status: 500 }
     );
   }

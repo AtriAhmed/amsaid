@@ -12,9 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
-import CreateCategoryDialog from "@/components/admin/categories/CreateCategoryDialog";
-import CategoriesTable from "@/components/admin/categories/CategoriesTable";
-import CategoriesSearch from "@/components/admin/categories/CategoriesSearch";
+import CreateCategoryDialog from "@/components/admin/categories/books/CreateCategoryDialog";
+import CategoriesTable from "@/components/admin/categories/books/CategoriesTable";
+import CategoriesSearch from "@/components/admin/categories/books/CategoriesSearch";
 
 interface Category {
   id: number;
