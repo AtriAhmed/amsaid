@@ -11,7 +11,7 @@ import Link from "next/link";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen-without-nav bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

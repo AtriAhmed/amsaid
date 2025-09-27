@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import Link from "next/link";
 
-const Header = () => {
+export default function Navbar() {
   return (
-    <header className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
-      <div className="container mx-auto px-4 py-4">
+    <header className="fixed h-[60px] flex items-center top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
+      <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-8 w-8 text-primary" />
@@ -54,6 +54,4 @@ const Header = () => {
       </div>
     </header>
   );
-};
-
-export default Header;
+}
