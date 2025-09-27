@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -8,27 +9,44 @@ const Header = () => {
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-foreground">الداعية الإسلامي</span>
+            <span className="text-xl font-bold text-foreground">
+              الداعية الإسلامي
+            </span>
           </div>
-          
+
           <div className="hidden md:flex items-center space-x-6">
-            <a href="#home" className="text-foreground hover:text-primary transition-smooth">
+            <Link
+              href="#home"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
               الرئيسية
-            </a>
-            <a href="#videos" className="text-foreground hover:text-primary transition-smooth">
+            </Link>
+            <Link
+              href="#videos"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
               المحاضرات
-            </a>
-            <a href="#books" className="text-foreground hover:text-primary transition-smooth">
+            </Link>
+            <Link
+              href="#books"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
               الكتب
-            </a>
-            <a href="#about" className="text-foreground hover:text-primary transition-smooth">
+            </Link>
+            <Link
+              href="#about"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
               من نحن
-            </a>
-            <a href="#contact" className="text-foreground hover:text-primary transition-smooth">
+            </Link>
+            <Link
+              href="#contact"
+              className="text-foreground hover:text-primary transition-smooth"
+            >
               تواصل معنا
-            </a>
+            </Link>
           </div>
-          
+
           <Button variant="outline" size="icon" className="md:hidden">
             <Menu className="h-4 w-4" />
           </Button>
