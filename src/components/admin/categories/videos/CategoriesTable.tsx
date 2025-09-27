@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import {
   Table,
   TableBody,
@@ -70,22 +71,12 @@ export default function CategoriesTable({
     try {
       setIsDeleting(true);
 
-      const response = await fetch(
-        `/api/categories/videos/${deleteDialog.category.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "فشل في حذف الفئة");
-      }
+      await axios.delete(`/api/categories/videos/${deleteDialog.category.id}`);
 
       // Success
       setDeleteDialog({ open: false, category: null });
       onCategoryDeleted();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting category:", error);
       // You might want to show a toast notification here
     } finally {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -70,23 +71,12 @@ export default function EditCategoryDialog({
       // Validate with Zod
       const validatedData = editCategorySchema.parse(data);
 
-      const response = await fetch(`/api/categories/videos/${category.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validatedData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "فشل في تحديث الفئة");
-      }
+      await axios.put(`/api/categories/videos/${category.id}`, validatedData);
 
       // Success
       onOpenChange(false);
       onCategoryUpdated();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating category:", error);
       // You might want to show a toast notification here
     } finally {

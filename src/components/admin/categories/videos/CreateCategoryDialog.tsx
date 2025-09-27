@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,24 +51,13 @@ export default function CreateCategoryDialog({
       // Validate with Zod
       const validatedData = createCategorySchema.parse(data);
 
-      const response = await fetch("/api/categories/videos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validatedData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "فشل في إنشاء الفئة");
-      }
+      await axios.post("/api/categories/videos", validatedData);
 
       // Success
       reset();
       setOpen(false);
       onCategoryCreated();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating category:", error);
       // You might want to show a toast notification here
     } finally {
