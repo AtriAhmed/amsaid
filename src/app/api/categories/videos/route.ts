@@ -35,9 +35,9 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const parsed = PaginationSchema.safeParse({
-      page: searchParams.get("page"),
-      limit: searchParams.get("limit"),
-      search: searchParams.get("search"),
+      page: searchParams.get("page") || undefined,
+      limit: searchParams.get("limit") || undefined,
+      search: searchParams.get("search") || undefined,
     });
 
     if (!parsed.success) {
