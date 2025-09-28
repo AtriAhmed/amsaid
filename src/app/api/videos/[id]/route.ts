@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { uploadFile, deleteFile } from "@/lib/file-upload";
-import { getVideoDurationInSeconds } from "get-video-duration";
 
 // Validation schemas
 const UpdateVideoSchema = z.object({
@@ -342,16 +341,7 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
 
         const videoPath = await uploadFile(newVideoFile);
 
-        // Get video duration
-        const tempVideoPath = `uploads/${videoPath}`;
         let duration = 0;
-
-        try {
-          duration = await getVideoDurationInSeconds(tempVideoPath);
-        } catch (error) {
-          console.error("Error getting video duration:", error);
-          duration = 0;
-        }
 
         // Delete old video file if exists
         if (existingVideo.url) {

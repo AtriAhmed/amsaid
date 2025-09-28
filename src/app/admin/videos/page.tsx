@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import useSWR from "swr";
+import { useDebounce } from "use-debounce";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -9,61 +12,124 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit, Trash2, Play, Eye } from "lucide-react";
+import { Pagination } from "@/components/ui/pagination";
+import { Plus } from "lucide-react";
 import Link from "next/link";
+import VideosSearch from "@/components/admin/videos/VideosSearch";
+import VideosTable from "@/components/admin/videos/VideosTable";
+
+interface Speaker {
+  id: number;
+  name: string;
+  bio: string | null;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Place {
+  id: number;
+  name: string;
+  address: string | null;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+}
+
+interface Video {
+  id: number;
+  title: string;
+  description: string;
+  speaker: Speaker;
+  category: Category;
+  place: Place | null;
+  language: string;
+  poster: string | null;
+  url: string;
+  duration: number;
+  views: number;
+  active: boolean;
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+  tags: Tag[];
+}
+
+interface VideosResponse {
+  videos: Video[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// axios-based fetcher for SWR when using an array key like ["videos", queryParams]
+const fetcher = async (
+  _key: string,
+  page: number,
+  limit: number,
+  search: string
+) => {
+  const res = await axios.get<VideosResponse>("/api/videos", {
+    params: {
+      page,
+      limit,
+      search,
+    },
+  });
+  return res.data;
+};
 
 const VideosManagement = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const limit = 10;
 
-  // Mock data - replace with actual data
-  const videos = [
-    {
-      id: 1,
-      title: "خطبة الجمعة - أهمية الصلاة",
-      category: "خطب",
-      duration: "45:20",
-      status: "منشور",
-      views: 1245,
-      createdAt: "2024-01-15",
-      thumbnail: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      title: "درس في التفسير - سورة البقرة",
-      category: "دروس",
-      duration: "32:15",
-      status: "مسودة",
-      views: 0,
-      createdAt: "2024-01-10",
-      thumbnail: "/placeholder.svg",
-    },
-    {
-      id: 3,
-      title: "شرح الأربعين النووية",
-      category: "شروحات",
-      duration: "28:45",
-      status: "منشور",
-      views: 892,
-      createdAt: "2024-01-05",
-      thumbnail: "/placeholder.svg",
-    },
-  ];
+  // Debounce search to avoid excessive API calls
+  const [debouncedSearch] = useDebounce(searchTerm, 300);
 
-  const filteredVideos = videos.filter(
-    (video) =>
-      video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      video.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const {
+    data,
+    error,
+    isLoading,
+    mutate: revalidate,
+  } = useSWR<VideosResponse>(
+    ["videos", currentPage, limit, debouncedSearch],
+    () => fetcher("videos", currentPage, limit, debouncedSearch)
   );
+
+  const setPage = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const setSearch = useCallback((search: string) => {
+    setSearchTerm(search);
+    setCurrentPage(1); // Reset to first page when searching
+  }, []);
+
+  const handleVideoDeleted = () => {
+    revalidate();
+  };
+
+  const handleVideoUpdated = () => {
+    revalidate();
+  };
+
+  const videos = data?.videos || [];
+  const pagination = {
+    currentPage: data?.pagination.page || 1,
+    totalPages: data?.pagination.totalPages || 1,
+    total: data?.pagination.totalCount || 0,
+    limit: data?.pagination.limit || limit,
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -85,97 +151,54 @@ const VideosManagement = () => {
         </div>
 
         {/* Search and Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>البحث والتصفية</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="البحث في الفيديوهات..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pr-10"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <VideosSearch searchTerm={searchTerm} onSearchChange={setSearch} />
 
         {/* Videos Table */}
         <Card>
           <CardHeader>
-            <CardTitle>الفيديوهات المتاحة ({filteredVideos.length})</CardTitle>
+            <CardTitle>الفيديوهات المتاحة ({pagination.total})</CardTitle>
             <CardDescription>جميع الفيديوهات المضافة في النظام</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>الفيديو</TableHead>
-                  <TableHead>الفئة</TableHead>
-                  <TableHead>المدة</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>المشاهدات</TableHead>
-                  <TableHead>تاريخ الإضافة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredVideos.map((video) => (
-                  <TableRow key={video.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="w-16 h-12 bg-muted rounded flex items-center justify-center">
-                          <Play className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-medium">{video.title}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {video.duration}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{video.category}</Badge>
-                    </TableCell>
-                    <TableCell>{video.duration}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          video.status === "منشور" ? "default" : "outline"
-                        }
-                      >
-                        {video.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        {video.views}
-                      </div>
-                    </TableCell>
-                    <TableCell>{video.createdAt}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">جاري التحميل...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <p className="text-destructive">
+                  خطأ في تحميل الفيديوهات:{" "}
+                  {(error as any)?.message ?? "حدث خطأ غير معروف"}
+                </p>
+                {/* Optionally add a retry button */}
+                <div className="mt-4">
+                  <button
+                    onClick={() => revalidate()}
+                    className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
+                  >
+                    إعادة المحاولة
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <VideosTable
+                  videos={videos}
+                  onVideoDeleted={handleVideoDeleted}
+                  onVideoUpdated={handleVideoUpdated}
+                />
+
+                {pagination.totalPages > 1 && (
+                  <div className="mt-6">
+                    <Pagination
+                      currentPage={pagination.currentPage}
+                      totalPages={pagination.totalPages}
+                      onPageChange={setPage}
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
