@@ -4,14 +4,14 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getMediaUrl } from "@/lib/utils";
 
 interface FileDropzoneProps {
   onDrop: (files: File[]) => void;
   accept?: Record<string, string[]>;
   multiple?: boolean;
   maxSize?: number;
-  value?: File | null;
+  value?: File | string | null;
   onRemove?: () => void;
   placeholder?: string;
   className?: string;
@@ -53,20 +53,38 @@ export default function FileDropzone({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const getFileIcon = (file: File) => {
-    if (file.type === "application/pdf") {
-      return <FileText className="h-8 w-8 text-red-500" />;
+  const getFileIcon = (value: File | string) => {
+    if (typeof value === "string") {
+      // Handle string URL
+      if (value.toLowerCase().endsWith(".pdf")) {
+        return <FileText className="h-8 w-8 text-red-500" />;
+      }
+      if (value.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        return (
+          <img
+            src={getMediaUrl(value)}
+            alt="Preview"
+            className="h-8 w-8 object-cover rounded"
+          />
+        );
+      }
+      return <FileText className="h-8 w-8 text-gray-500" />;
+    } else {
+      // Handle File object
+      if (value.type === "application/pdf") {
+        return <FileText className="h-8 w-8 text-red-500" />;
+      }
+      if (value.type.startsWith("image/")) {
+        return (
+          <img
+            src={URL.createObjectURL(value)}
+            alt="Preview"
+            className="h-8 w-8 object-cover rounded"
+          />
+        );
+      }
+      return <FileText className="h-8 w-8 text-gray-500" />;
     }
-    if (file.type.startsWith("image/")) {
-      return (
-        <img
-          src={URL.createObjectURL(file)}
-          alt="Preview"
-          className="h-8 w-8 object-cover rounded"
-        />
-      );
-    }
-    return <FileText className="h-8 w-8 text-gray-500" />;
   };
 
   if (value) {
@@ -76,9 +94,13 @@ export default function FileDropzone({
           <div className="flex items-center gap-3">
             {getFileIcon(value)}
             <div>
-              <p className="text-sm font-medium">{value.name}</p>
+              <p className="text-sm font-medium">
+                {typeof value === "string"
+                  ? value.split("/").pop() || "File"
+                  : value.name}
+              </p>
               <p className="text-xs text-muted-foreground">
-                {formatFileSize(value.size)}
+                {typeof value === "string" ? null : formatFileSize(value.size)}
               </p>
             </div>
           </div>

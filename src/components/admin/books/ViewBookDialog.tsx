@@ -92,7 +92,7 @@ export default function ViewBookDialog({
               <img
                 src={getMediaUrl(book.coverPhoto)}
                 alt={book.title}
-                className="max-w-[200px] max-h-[300px] object-cover rounded-lg shadow-md"
+                className="max-w-[200px] h-[200px] object-cover rounded-lg shadow-md"
               />
             </div>
           )}

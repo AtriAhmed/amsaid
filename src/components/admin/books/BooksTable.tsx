@@ -14,6 +14,7 @@ import { Edit, Trash2, Download, Eye, BookOpen } from "lucide-react";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
 import EditBookDialog from "./EditBookDialog";
 import ViewBookDialog from "./ViewBookDialog";
+import Link from "next/link";
 
 interface Author {
   id: number;
@@ -191,12 +192,10 @@ export default function BooksTable({
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEditClick(book)}
-                  >
-                    <Edit className="w-4 h-4" />
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={`/admin/books/${book.id}`}>
+                      <Edit className="w-4 h-4" />
+                    </Link>
                   </Button>
                   <Button
                     size="sm"
@@ -229,15 +228,6 @@ export default function BooksTable({
         onConfirm={handleDeleteConfirm}
         isLoading={isDeleting}
         variant="destructive"
-      />
-
-      <EditBookDialog
-        open={editDialog.open}
-        onOpenChange={(open) =>
-          setEditDialog({ open, book: open ? editDialog.book : null })
-        }
-        book={editDialog.book}
-        onBookUpdated={handleBookUpdated}
       />
 
       <ViewBookDialog

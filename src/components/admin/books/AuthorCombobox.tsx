@@ -154,7 +154,7 @@ export default function AuthorCombobox({
               <CommandGroup>
                 <CommandItem onSelect={handleSetAuthorAsText}>
                   <Plus className="mr-2 h-4 w-4" />
-                  `استخدام "${searchValue}"`
+                  استخدم: {searchValue}
                 </CommandItem>
               </CommandGroup>
             )}
