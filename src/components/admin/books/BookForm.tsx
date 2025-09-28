@@ -166,7 +166,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
 
       // Add text fields from form data
       formData.append("title", data.title);
-      formData.append("description", data.description);
+      formData.append("description", data.description || "");
       formData.append(
         "author",
         typeof data.author === "number"
