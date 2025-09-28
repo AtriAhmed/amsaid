@@ -82,22 +82,6 @@ const AddVideo = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="duration">المدة</Label>
-                  <Input id="duration" placeholder="مثال: 45:20" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="youtube">رابط اليوتيوب *</Label>
-                <div className="flex gap-2">
-                  <LinkIcon className="w-5 h-5 text-muted-foreground mt-2.5" />
-                  <Input
-                    id="youtube"
-                    placeholder="https://www.youtube.com/watch?v=..."
-                    className="flex-1"
-                  />
-                </div>
               </div>
 
               <div className="space-y-2">

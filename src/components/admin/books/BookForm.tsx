@@ -31,15 +31,25 @@ const bookSchema = z.object({
     .string()
     .min(1, "عنوان الكتاب مطلوب")
     .max(200, "يجب أن يكون العنوان أقل من 200 حرف"),
-  description: z.string().min(1, "وصف الكتاب مطلوب"),
+  description: z.string().optional(),
   author: z
     .union([z.number(), z.string()])
     .refine((val) => val !== null && val !== "", { message: "المؤلف مطلوب" }),
   categoryId: z.number().min(1, "فئة الكتاب مطلوبة"),
   language: z.string().min(1, "اللغة مطلوبة"),
   tags: z.array(z.union([z.number(), z.string()])).optional(),
-  coverPhoto: z.union([z.string(), z.instanceof(File)]).optional(),
-  pdfFile: z.union([z.string(), z.instanceof(File)]).optional(),
+  coverPhoto: z
+    .union([z.string(), z.instanceof(File)])
+    .optional()
+    .refine((val) => val !== undefined, {
+      message: "صورة الغلاف مطلوبة",
+    }),
+  pdfFile: z
+    .union([z.string(), z.instanceof(File)])
+    .optional()
+    .refine((val) => val !== undefined, {
+      message: "ملف PDF مطلوب",
+    }),
 });
 
 type BookFormData = z.infer<typeof bookSchema>;
@@ -320,13 +330,13 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="category">الفئة *</Label>
                     <CategorySelect
-                      value={watchedCategoryId}
-                      onChange={(value) => {
+                      value={watchedCategoryId || undefined}
+                      onChange={(value) =>
                         setValue("categoryId", value, {
                           shouldValidate: true,
                           shouldDirty: true,
-                        });
-                      }}
+                        })
+                      }
                       disabled={isSubmitting}
                     />
                     {errors.categoryId && (
@@ -358,7 +368,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
 
                 <div className="space-y-2">
                   <Label>
-                    صورة الغلاف
+                    صورة الغلاف *
                     {mode === "edit" && initialBook?.coverPhoto && (
                       <span className="text-sm text-muted-foreground ml-2">
                         (اترك فارغاً للاحتفاظ بالصورة الحالية)
@@ -385,7 +395,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
 
                 <div className="space-y-2">
                   <Label>
-                    ملف PDF {mode === "create" ? "*" : ""}
+                    ملف PDF *
                     {mode === "edit" && (
                       <span className="text-sm text-muted-foreground ml-2">
                         (اترك فارغاً للاحتفاظ بالملف الحالي)
@@ -429,11 +439,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   <Button
                     type="submit"
                     className="flex-1"
-                    disabled={
-                      isSubmitting ||
-                      (mode === "create" && !watchedPdfFile) ||
-                      (mode === "edit" && !isDirty)
-                    }
+                    disabled={isSubmitting || (mode === "edit" && !isDirty)}
                   >
                     {isSubmitting
                       ? "جاري الحفظ..."
