@@ -330,7 +330,7 @@ const AddBook = () => {
                     accept={{
                       "image/*": [".jpeg", ".jpg", ".png", ".webp"],
                     }}
-                    maxSize={5 * 1024 * 1024} // 5MB
+                    maxSize={20 * 1024 * 1024} // 5MB
                     value={coverPhoto}
                     onRemove={handleRemoveCoverPhoto}
                     placeholder="اسحب وأفلت صورة الغلاف هنا أو انقر للاختيار"
@@ -345,7 +345,7 @@ const AddBook = () => {
                     accept={{
                       "application/pdf": [".pdf"],
                     }}
-                    maxSize={50 * 1024 * 1024} // 50MB
+                    maxSize={200 * 1024 * 1024} // 50MB
                     value={pdfFile}
                     onRemove={handleRemovePdf}
                     placeholder="اسحب وأفلت ملف PDF هنا أو انقر للاختيار"
