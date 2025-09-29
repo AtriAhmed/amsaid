@@ -34,11 +34,12 @@ export default function ViewVideoDialog({
   video,
   onWatchVideo,
 }: ViewVideoDialogProps) {
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("ar", {
+  const formatDate = (date?: Date) => {
+    if (!date) return "غير محدد";
+    return new Date(date).toLocaleDateString("en-UK", {
       year: "numeric",
-      month: "long",
-      day: "numeric",
+      month: "short",
+      day: "2-digit",
     });
   };
 

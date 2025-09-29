@@ -15,17 +15,17 @@ export interface User {
   passwordHash: string;
   emailVerified: Date | null;
   role: Role;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 /** Person */
 export interface Person {
   id: number;
   name: string;
-  bio: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  bio?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations (optional — present only when included) */
   books?: Book[]; // Person -> Book (author)
@@ -36,8 +36,8 @@ export interface Person {
 export interface BookCategory {
   id: number;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations */
   books?: Book[];
@@ -47,8 +47,8 @@ export interface BookCategory {
 export interface VideoCategory {
   id: number;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations */
   videos?: Video[];
@@ -59,8 +59,8 @@ export interface Place {
   id: number;
   name: string;
   address: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations */
   videos?: Video[];
@@ -70,8 +70,8 @@ export interface Place {
 export interface Tag {
   id: number;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations */
   books?: Book[];
@@ -92,8 +92,8 @@ export interface Book {
   fileUrl: string;
   pages: number;
   size: number; // file size (KB/MB per your comment)
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations (optional when included) */
   author?: Person;
@@ -115,8 +115,8 @@ export interface Video {
   date: Date; // actual event date
   placeId: number | null;
   language: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   /** Relations (optional when included) */
   category?: VideoCategory;

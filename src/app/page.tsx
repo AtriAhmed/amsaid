@@ -5,37 +5,14 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import Videos from "@/components/videos/Videos";
 import { prisma } from "@/lib/prisma";
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  poster: string | null;
-  url: string;
-  createdAt: Date;
-  speakers: Array<{
-    id: number;
-    name: string;
-  }>;
-  category: {
-    id: number;
-    name: string;
-  };
-  place: {
-    id: number;
-    name: string;
-    address: string | null;
-  } | null;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+import { Video } from "@/types";
 
 async function getVideos(): Promise<Video[]> {
   try {
     const videos = await prisma.video.findMany({
+      where: {
+        active: true,
+      },
       take: 3,
       include: {
         speakers: {
