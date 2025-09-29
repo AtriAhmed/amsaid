@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
+import { format } from "date-fns";
+import { ar } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -17,6 +20,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import SpeakersCombobox from "@/components/admin/videos/SpeakersCombobox";
 import PlaceCombobox from "@/components/admin/videos/PlaceCombobox";
 import TagsCombobox from "@/components/admin/books/TagsCombobox";
@@ -153,6 +163,31 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       .refine((val) => val !== undefined, { message: "ملف الفيديو مطلوب" }),
   });
 
+  // Helper: calculate duration (in seconds) for a File video
+  const getVideoDuration = (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const url = URL.createObjectURL(file);
+        const video = document.createElement("video");
+        // Load only metadata to get duration faster
+        video.preload = "metadata";
+        video.onloadedmetadata = () => {
+          // Safari sometimes reports Infinity for streams; handle defensively
+          const duration = isFinite(video.duration) ? video.duration : 0;
+          URL.revokeObjectURL(url);
+          resolve(duration);
+        };
+        video.onerror = (e) => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Unable to load video metadata"));
+        };
+        video.src = url;
+      } catch (err) {
+        reject(err);
+      }
+    });
+  };
+
   const onSubmit = async (data: VideoFormData) => {
     // Additional validation for create mode
     if (mode === "create") {
@@ -195,8 +230,22 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       if (data.poster && data.poster instanceof File) {
         formData.append("poster", data.poster);
       }
+
+      // If videoFile is a File, calculate its duration and append it
       if (data.videoFile && data.videoFile instanceof File) {
+        // Append the file itself
         formData.append("videoFile", data.videoFile);
+
+        try {
+          const duration = await getVideoDuration(data.videoFile);
+          // Append duration in seconds (floating string). Backend can round if needed.
+          formData.append("duration", duration.toString());
+          console.log("Video duration (s):", duration);
+        } catch (err) {
+          // If duration calculation fails, we continue but log the error.
+          console.warn("Failed to calculate video duration:", err);
+          // Optionally append 0 or skip. Here we skip appending duration.
+        }
       }
 
       if (mode === "create") {
@@ -440,7 +489,49 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="date">تاريخ التسجيل *</Label>
-                    <Input id="date" type="date" {...register("date")} />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !watch("date") && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {watch("date") ? (
+                            new Date(watch("date")).toLocaleDateString(
+                              "en-UK",
+                              {
+                                year: "numeric",
+                                month: "2-digit",
+                                day: "2-digit",
+                              }
+                            )
+                          ) : (
+                            <span>اختر التاريخ</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            watch("date") ? new Date(watch("date")) : undefined
+                          }
+                          onSelect={(date) => {
+                            if (date) {
+                              setValue("date", date.toISOString(), {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                            }
+                          }}
+                          disabled={(date) => date > new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
                     {errors.date && (
                       <p className="text-sm text-destructive">
                         {errors.date.message}

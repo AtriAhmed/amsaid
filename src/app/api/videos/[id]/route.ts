@@ -46,6 +46,11 @@ const UpdateVideoSchema = z.object({
     .refine((date) => !isNaN(Date.parse(date)), "Invalid date format")
     .optional(),
   active: z.boolean().optional(),
+  duration: z
+    .number()
+    .int()
+    .positive("Duration must be a positive integer in seconds")
+    .optional(),
   tags: z
     .array(
       z.union([
@@ -184,6 +189,7 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       updateData.language = formData.get("language") as string;
       updateData.place = formData.get("place") as string;
       updateData.date = formData.get("date") as string;
+      updateData.duration = formData.get("duration") || undefined;
       updateData.active = formData.get("active") || undefined;
       tagsInput = formData.get("tags") as string;
 
@@ -212,6 +218,8 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
 
       if (updateData.categoryId)
         updateData.categoryId = parseInt(updateData.categoryId);
+      if (updateData.duration)
+        updateData.duration = parseInt(updateData.duration);
       if (updateData.active !== null && updateData.active !== undefined) {
         updateData.active = updateData.active === "true";
       }
@@ -254,6 +262,8 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
     if (validatedData.language)
       finalUpdateData.language = validatedData.language;
     if (validatedData.date) finalUpdateData.date = new Date(validatedData.date);
+    if (validatedData.duration)
+      finalUpdateData.duration = validatedData.duration;
     if (validatedData.active !== undefined)
       finalUpdateData.active = validatedData.active;
 
@@ -362,8 +372,6 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
 
         const videoPath = await uploadFile(newVideoFile);
 
-        let duration = 0;
-
         // Delete old video file if exists
         if (existingVideo.url) {
           try {
@@ -374,7 +382,6 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
         }
 
         finalUpdateData.url = videoPath;
-        finalUpdateData.duration = Math.round(duration);
       } catch (error) {
         console.error("Error uploading new video file:", error);
         return NextResponse.json(

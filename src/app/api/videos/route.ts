@@ -39,6 +39,10 @@ const CreateVideoSchema = z.object({
   date: z
     .string()
     .refine((date) => !isNaN(Date.parse(date)), "Invalid date format"),
+  duration: z
+    .number()
+    .int()
+    .positive("Duration must be a positive integer in seconds"),
   tags: z
     .array(
       z.union([
@@ -199,6 +203,7 @@ export async function POST(req: Request) {
     const language = formData.get("language") as string;
     const placeInput = formData.get("place") as string;
     const date = formData.get("date") as string;
+    const duration = (formData.get("duration") as string) || undefined;
     const poster = formData.get("poster") as File;
     const videoFile = formData.get("videoFile") as File;
     const tagsInput = formData.get("tags") as string;
@@ -249,6 +254,7 @@ export async function POST(req: Request) {
       language,
       place,
       date,
+      duration: duration && parseInt(duration),
       tags,
     });
 
@@ -337,8 +343,6 @@ export async function POST(req: Request) {
     // Upload video file
     const videoPath = await uploadFile(videoFile);
 
-    let duration = 0;
-
     // Handle tags
     const tagConnections = [];
     for (const tagInput of validation.data.tags) {
@@ -376,7 +380,7 @@ export async function POST(req: Request) {
         date: new Date(validation.data.date),
         poster: posterPath,
         url: videoPath,
-        duration: Math.round(duration), // Round to nearest second
+        duration: validation.data.duration,
         speakers: {
           create: speakerConnections,
         },

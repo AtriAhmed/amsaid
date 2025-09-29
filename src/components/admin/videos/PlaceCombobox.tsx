@@ -100,6 +100,7 @@ export default function PlaceCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          size="sm"
           className="w-full justify-between"
           disabled={disabled}
         >
