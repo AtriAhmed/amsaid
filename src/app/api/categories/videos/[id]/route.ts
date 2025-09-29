@@ -44,10 +44,14 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            speaker: {
-              select: {
-                id: true,
-                name: true,
+            speakers: {
+              include: {
+                person: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
               },
             },
             poster: true,

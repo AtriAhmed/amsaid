@@ -44,7 +44,7 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: Speaker;
+  speakers: Speaker[];
   category: Category;
   place: Place | null;
   language: string;
@@ -95,13 +95,6 @@ export default function VideosTable({
 
   const handleDeleteClick = (video: Video) => {
     setDeleteDialog({
-      open: true,
-      video,
-    });
-  };
-
-  const handleEditClick = (video: Video) => {
-    setEditDialog({
       open: true,
       video,
     });
@@ -202,7 +195,13 @@ export default function VideosTable({
                   <div>
                     <div className="font-medium">{video.title}</div>
                     <div className="text-sm text-muted-foreground">
-                      {video.speaker.name}
+                      {video.speakers
+                        .slice(0, 1)
+                        .map((speaker) => speaker.name)
+                        .join(", ")}
+                      {video.speakers.length > 1
+                        ? ` +${video.speakers.length - 1}`
+                        : ""}
                     </div>
                   </div>
                 </div>

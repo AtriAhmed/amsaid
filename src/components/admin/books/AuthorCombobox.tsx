@@ -98,6 +98,7 @@ export default function AuthorCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          size="sm"
           className="w-full justify-between"
           disabled={disabled}
         >

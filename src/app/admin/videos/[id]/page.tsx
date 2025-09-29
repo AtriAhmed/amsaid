@@ -6,10 +6,10 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: {
+  speakers: Array<{
     id: number;
     name: string;
-  };
+  }>;
   category: {
     id: number;
     name: string;
@@ -43,10 +43,14 @@ async function getVideo(id: string): Promise<Video | null> {
     const video = await prisma.video.findUnique({
       where: { id: videoId },
       include: {
-        speaker: {
-          select: {
-            id: true,
-            name: true,
+        speakers: {
+          include: {
+            person: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
         category: {
@@ -81,6 +85,7 @@ async function getVideo(id: string): Promise<Video | null> {
     return {
       ...video,
       date: video.date.toISOString(),
+      speakers: video.speakers.map((vs) => vs.person),
       tags: video.tags.map((vt) => vt.tag),
     };
   } catch (error) {
@@ -89,7 +94,7 @@ async function getVideo(id: string): Promise<Video | null> {
   }
 }
 
-const EditVideo = async ({ params }: EditVideoProps) => {
+export default async function EditVideo({ params }: EditVideoProps) {
   const { id } = await params;
   const video = await getVideo(id);
 
@@ -98,6 +103,4 @@ const EditVideo = async ({ params }: EditVideoProps) => {
   }
 
   return <VideoForm initialVideo={video} />;
-};
-
-export default EditVideo;
+}

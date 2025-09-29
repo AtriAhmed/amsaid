@@ -25,7 +25,7 @@ const LANGUAGES = [
 const LanguageSelect = ({ value, onChange, disabled }: LanguageSelectProps) => {
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder="اختر اللغة" />
       </SelectTrigger>
       <SelectContent>

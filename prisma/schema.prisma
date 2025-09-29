@@ -27,13 +27,13 @@ model User {
 }
 
 model Person {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   name      String
   bio       String? // optional
   books     Book[]
-  videos    Video[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  videos    VideoSpeaker[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }
 
 model BookCategory {
@@ -91,25 +91,24 @@ model Book {
 }
 
 model Video {
-  id          Int           @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   title       String
   description String
   categoryId  Int
-  category    VideoCategory @relation(fields: [categoryId], references: [id])
+  category    VideoCategory  @relation(fields: [categoryId], references: [id])
   duration    Int // in seconds
   url         String
   poster      String?
-  active      Boolean       @default(true)
-  views       Int           @default(0)
-  speakerId   Int
-  speaker     Person        @relation(fields: [speakerId], references: [id])
+  active      Boolean        @default(true)
+  views       Int            @default(0)
+  speakers    VideoSpeaker[]
   date        DateTime // actual event date
   placeId     Int?
-  place       Place?        @relation(fields: [placeId], references: [id])
+  place       Place?         @relation(fields: [placeId], references: [id])
   language    String
   tags        VideoTag[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 // Pivot tables for many-to-many tag relationships
@@ -129,4 +128,14 @@ model VideoTag {
   tag     Tag   @relation(fields: [tagId], references: [id])
 
   @@id([videoId, tagId])
+}
+
+// Pivot table for many-to-many video-speaker relationships
+model VideoSpeaker {
+  videoId  Int
+  personId Int
+  video    Video  @relation(fields: [videoId], references: [id])
+  person   Person @relation(fields: [personId], references: [id])
+
+  @@id([videoId, personId])
 }

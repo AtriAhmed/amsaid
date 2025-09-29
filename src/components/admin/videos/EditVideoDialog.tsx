@@ -38,7 +38,7 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: Speaker;
+  speakers: Speaker[];
   category: Category;
   place: Place | null;
   language: string;
@@ -168,8 +168,10 @@ export default function EditVideoDialog({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">المتحدث:</span>
-                <span className="font-medium mr-2">{video.speaker.name}</span>
+                <span className="text-muted-foreground">المتحدثين:</span>
+                <span className="font-medium mr-2">
+                  {video.speakers.map((s) => s.name).join(", ")}
+                </span>
               </div>
 
               <div>

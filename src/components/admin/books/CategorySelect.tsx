@@ -46,7 +46,7 @@ const CategorySelect = ({ value, onChange, disabled }: CategorySelectProps) => {
       }}
       disabled={categoriesLoading || disabled}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue
           placeholder={
             categoriesLoading

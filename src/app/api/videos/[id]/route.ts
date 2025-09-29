@@ -11,14 +11,16 @@ const UpdateVideoSchema = z.object({
     .max(200, "Title must be less than 200 characters")
     .optional(),
   description: z.string().min(1, "Description is required").optional(),
-  speaker: z
-    .union([
-      z.number().int().positive("Speaker ID must be a positive integer"),
-      z
-        .string()
-        .min(1, "Speaker name is required")
-        .max(100, "Speaker name must be less than 100 characters"),
-    ])
+  speakers: z
+    .array(
+      z.union([
+        z.number().int().positive("Speaker ID must be a positive integer"),
+        z
+          .string()
+          .min(1, "Speaker name is required")
+          .max(100, "Speaker name must be less than 100 characters"),
+      ])
+    )
     .optional(),
   categoryId: z
     .number()
@@ -80,11 +82,15 @@ export async function GET(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
     const video = await prisma.video.findUnique({
       where: { id },
       include: {
-        speaker: {
-          select: {
-            id: true,
-            name: true,
-            bio: true,
+        speakers: {
+          include: {
+            person: {
+              select: {
+                id: true,
+                name: true,
+                bio: true,
+              },
+            },
           },
         },
         category: {
@@ -173,24 +179,27 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
 
       updateData.title = formData.get("title") as string;
       updateData.description = formData.get("description") as string;
-      updateData.speaker = formData.get("speaker") as string;
+      updateData.speakers = formData.get("speakers") as string;
       updateData.categoryId = formData.get("categoryId") as string;
       updateData.language = formData.get("language") as string;
       updateData.place = formData.get("place") as string;
       updateData.date = formData.get("date") as string;
-      updateData.active = formData.get("active");
+      updateData.active = formData.get("active") || undefined;
       tagsInput = formData.get("tags") as string;
 
       newPoster = formData.get("poster") as File;
       newVideoFile = formData.get("videoFile") as File;
 
-      // Convert string values to appropriate types
-      if (updateData.speaker) {
-        const speakerAsNumber = parseInt(updateData.speaker);
-        updateData.speaker =
-          !isNaN(speakerAsNumber) && speakerAsNumber > 0
-            ? speakerAsNumber
-            : updateData.speaker;
+      // Parse speakers if provided
+      if (updateData.speakers) {
+        try {
+          updateData.speakers = JSON.parse(updateData.speakers);
+        } catch {
+          return NextResponse.json(
+            { error: "Invalid speakers format" },
+            { status: 400 }
+          );
+        }
       }
 
       if (updateData.place) {
@@ -262,25 +271,37 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       finalUpdateData.categoryId = validatedData.categoryId;
     }
 
-    // Handle speaker
-    if (validatedData.speaker !== undefined) {
-      let speakerRecord;
-      if (typeof validatedData.speaker === "number") {
-        speakerRecord = await prisma.person.findUnique({
-          where: { id: validatedData.speaker },
-        });
-        if (!speakerRecord) {
-          return NextResponse.json(
-            { error: "Speaker not found" },
-            { status: 400 }
-          );
+    // Handle speakers
+    let speakerOperations: any = {};
+    if (validatedData.speakers !== undefined) {
+      // First, delete existing speaker connections
+      speakerOperations.deleteMany = {};
+
+      // Then create new ones
+      const speakerConnections = [];
+      for (const speakerInput of validatedData.speakers) {
+        let speakerRecord;
+        if (typeof speakerInput === "number") {
+          speakerRecord = await prisma.person.findUnique({
+            where: { id: speakerInput },
+          });
+          if (!speakerRecord) {
+            return NextResponse.json(
+              { error: `Speaker with ID ${speakerInput} not found` },
+              { status: 400 }
+            );
+          }
+        } else {
+          speakerRecord = await prisma.person.create({
+            data: { name: speakerInput },
+          });
         }
-      } else {
-        speakerRecord = await prisma.person.create({
-          data: { name: validatedData.speaker },
-        });
+        speakerConnections.push({ personId: speakerRecord.id });
       }
-      finalUpdateData.speakerId = speakerRecord.id;
+
+      if (speakerConnections.length > 0) {
+        speakerOperations.create = speakerConnections;
+      }
     }
 
     // Handle place
@@ -403,16 +424,23 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       where: { id },
       data: {
         ...finalUpdateData,
+        ...(Object.keys(speakerOperations).length > 0 && {
+          speakers: speakerOperations,
+        }),
         ...(Object.keys(tagOperations).length > 0 && {
           tags: tagOperations,
         }),
       },
       include: {
-        speaker: {
-          select: {
-            id: true,
-            name: true,
-            bio: true,
+        speakers: {
+          include: {
+            person: {
+              select: {
+                id: true,
+                name: true,
+                bio: true,
+              },
+            },
           },
         },
         category: {
@@ -443,7 +471,8 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
 
     return NextResponse.json({
       ...video,
-      tags: video.tags.map((vt) => vt.tag),
+      speakers: video.speakers.map((vs: any) => vs.person),
+      tags: video.tags.map((vt: any) => vt.tag),
     });
   } catch (error: any) {
     console.error("Error updating video:", error);

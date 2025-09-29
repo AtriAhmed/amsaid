@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import SpeakerCombobox from "@/components/admin/videos/SpeakerCombobox";
+import SpeakersCombobox from "@/components/admin/videos/SpeakersCombobox";
 import PlaceCombobox from "@/components/admin/videos/PlaceCombobox";
 import TagsCombobox from "@/components/admin/books/TagsCombobox";
 import FileDropzone from "@/components/admin/books/FileDropzone";
@@ -33,9 +33,9 @@ const videoSchema = z.object({
     .min(1, "عنوان الفيديو مطلوب")
     .max(200, "يجب أن يكون العنوان أقل من 200 حرف"),
   description: z.string().min(1, "وصف الفيديو مطلوب"),
-  speaker: z
-    .union([z.number(), z.string()])
-    .refine((val) => val !== null && val !== "", { message: "المتحدث مطلوب" }),
+  speakers: z
+    .array(z.union([z.number(), z.string()]))
+    .min(1, "متحدث واحد على الأقل مطلوب"),
   categoryId: z.number().min(1, "فئة الفيديو مطلوبة"),
   language: z.string().min(1, "اللغة مطلوبة"),
   place: z
@@ -58,10 +58,10 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: {
+  speakers: Array<{
     id: number;
     name: string;
-  };
+  }>;
   category: {
     id: number;
     name: string;
@@ -101,7 +101,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
     defaultValues: {
       title: initialVideo?.title || "",
       description: initialVideo?.description || "",
-      speaker: initialVideo?.speaker.id || "",
+      speakers: initialVideo?.speakers?.map((speaker) => speaker.id) || [],
       categoryId: initialVideo?.category.id || 0,
       language: initialVideo?.language || "",
       place: initialVideo?.place?.id || "",
@@ -115,7 +115,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
   });
 
   // Watch form values
-  const watchedSpeaker = watch("speaker");
+  const watchedSpeakers = watch("speakers");
   const watchedCategoryId = watch("categoryId");
   const watchedLanguage = watch("language");
   const watchedPlace = watch("place");
@@ -134,7 +134,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       reset({
         title: initialVideo.title,
         description: initialVideo.description,
-        speaker: initialVideo.speaker.id,
+        speakers: initialVideo.speakers?.map((speaker) => speaker.id) || [],
         categoryId: initialVideo.category.id,
         language: initialVideo.language,
         place: initialVideo.place?.id || "",
@@ -179,12 +179,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       // Add text fields from form data
       formData.append("title", data.title);
       formData.append("description", data.description || "");
-      formData.append(
-        "speaker",
-        typeof data.speaker === "number"
-          ? data.speaker.toString()
-          : data.speaker?.toString() || ""
-      );
+      formData.append("speakers", JSON.stringify(data.speakers || []));
       formData.append("categoryId", data.categoryId?.toString() || "");
       formData.append("language", data.language);
       formData.append(
@@ -313,21 +308,21 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="speaker">المتحدث *</Label>
-                    <SpeakerCombobox
-                      value={watchedSpeaker}
+                    <Label htmlFor="speakers">المتحدثين *</Label>
+                    <SpeakersCombobox
+                      value={watchedSpeakers || []}
                       onChange={(value) => {
-                        setValue("speaker", value || "", {
+                        setValue("speakers", value, {
                           shouldValidate: true,
                           shouldDirty: true,
                         });
                       }}
-                      placeholder="اختر أو أضف متحدث..."
+                      placeholder="اختر أو أضف متحدثين..."
                       disabled={isSubmitting}
                     />
-                    {errors.speaker && (
+                    {errors.speakers && (
                       <p className="text-sm text-destructive">
-                        {errors.speaker.message}
+                        {errors.speakers.message}
                       </p>
                     )}
                   </div>

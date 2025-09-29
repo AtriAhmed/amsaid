@@ -22,12 +22,13 @@ import axios from "axios";
 import { useDebounce } from "use-debounce";
 import useSWR from "swr";
 
-interface Tag {
+interface Speaker {
   id: number;
   name: string;
+  bio?: string;
 }
 
-interface TagsComboboxProps {
+interface SpeakersComboboxProps {
   value: (number | string)[];
   onChange: (value: (number | string)[]) => void;
   placeholder?: string;
@@ -36,7 +37,7 @@ interface TagsComboboxProps {
 
 // SWR fetcher function
 const fetcher = async (_key: string, search: string, limit: number) => {
-  const res = await axios.get<Tag[]>("/api/tags", {
+  const res = await axios.get<Speaker[]>("/api/authors", {
     params: {
       search,
       limit,
@@ -45,12 +46,12 @@ const fetcher = async (_key: string, search: string, limit: number) => {
   return res.data;
 };
 
-export default function TagsCombobox({
+export default function SpeakersCombobox({
   value = [],
   onChange,
-  placeholder = "اختر الكلمات المفتاحية...",
+  placeholder = "اختر المتحدثين...",
   disabled = false,
-}: TagsComboboxProps) {
+}: SpeakersComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
@@ -59,55 +60,60 @@ export default function TagsCombobox({
   const [debouncedSearch] = useDebounce(searchValue, 300);
 
   const {
-    data: tags = [],
+    data: speakers = [],
     error,
     isLoading,
     mutate: revalidate,
-  } = useSWR<Tag[]>(["tags", debouncedSearch, limit], () =>
-    fetcher("tags", debouncedSearch, limit)
+  } = useSWR<Speaker[]>(["authors", debouncedSearch, limit], () =>
+    fetcher("authors", debouncedSearch, limit)
   );
 
   const handleSearch = (search: string) => {
     setSearchValue(search);
   };
 
-  const handleAddTag = () => {
+  const handleAddSpeaker = () => {
     if (!searchValue.trim()) return;
 
-    const tagName = searchValue.trim();
-    onChange([...value, tagName]);
+    const speakerName = searchValue.trim();
+    onChange([...value, speakerName]);
     setSearchValue("");
   };
 
-  const handleToggleTag = (tagId: number) => {
-    const isSelected = value.includes(tagId);
+  const handleToggleSpeaker = (speakerId: number) => {
+    const isSelected = value.includes(speakerId);
     if (isSelected) {
-      onChange(value.filter((id) => id !== tagId));
+      onChange(value.filter((id) => id !== speakerId));
     } else {
-      onChange([...value, tagId]);
+      onChange([...value, speakerId]);
     }
   };
 
-  const handleRemoveTag = (tagToRemove: number | string) => {
-    onChange(value.filter((tag) => tag !== tagToRemove));
+  const handleRemoveSpeaker = (speakerToRemove: number | string) => {
+    onChange(value.filter((speaker) => speaker !== speakerToRemove));
   };
 
-  const selectedTags = value
+  const selectedSpeakers = value
     .map((val) => {
       if (typeof val === "string") {
         return { id: val, name: val, isNew: true };
       }
-      return { ...tags.find((tag) => tag.id === val), isNew: false };
+      return {
+        ...speakers.find((speaker) => speaker.id === val),
+        isNew: false,
+      };
     })
     .filter(Boolean);
 
-  const canCreateTag =
+  const canCreateSpeaker =
     searchValue.trim() &&
-    !tags.some((tag) => tag.name.toLowerCase() === searchValue.toLowerCase()) &&
+    !speakers.some(
+      (speaker) => speaker.name.toLowerCase() === searchValue.toLowerCase()
+    ) &&
     !value.some((val) =>
       typeof val === "string"
         ? val.toLowerCase() === searchValue.toLowerCase()
-        : tags.find((tag) => tag.id === val)?.name.toLowerCase() ===
+        : speakers.find((speaker) => speaker.id === val)?.name.toLowerCase() ===
           searchValue.toLowerCase()
     );
 
@@ -123,14 +129,14 @@ export default function TagsCombobox({
             className="w-full justify-between"
             disabled={disabled}
           >
-            {value.length > 0 ? `تم اختيار ${value.length} عنصر` : placeholder}
+            {value.length > 0 ? `تم اختيار ${value.length} متحدث` : placeholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder="ابحث عن كلمة مفتاحية..."
+              placeholder="ابحث عن متحدث..."
               value={searchValue}
               onValueChange={handleSearch}
             />
@@ -139,17 +145,17 @@ export default function TagsCombobox({
                 <CommandEmpty>جاري البحث...</CommandEmpty>
               ) : error ? (
                 <CommandEmpty>حدث خطأ في تحميل البيانات</CommandEmpty>
-              ) : tags.length === 0 ? (
+              ) : speakers.length === 0 ? (
                 <CommandEmpty>لا توجد نتائج.</CommandEmpty>
               ) : (
                 <CommandGroup>
-                  {tags.map((tag) => {
-                    const isSelected = value.includes(tag.id);
+                  {speakers.map((speaker) => {
+                    const isSelected = value.includes(speaker.id);
                     return (
                       <CommandItem
-                        key={tag.id}
-                        value={tag.name}
-                        onSelect={() => handleToggleTag(tag.id)}
+                        key={speaker.id}
+                        value={speaker.name}
+                        onSelect={() => handleToggleSpeaker(speaker.id)}
                       >
                         <Check
                           className={cn(
@@ -157,16 +163,23 @@ export default function TagsCombobox({
                             isSelected ? "opacity-100" : "opacity-0"
                           )}
                         />
-                        {tag.name}
+                        <div className="flex-1">
+                          <div className="font-medium">{speaker.name}</div>
+                          {speaker.bio && (
+                            <div className="text-sm text-muted-foreground truncate">
+                              {speaker.bio}
+                            </div>
+                          )}
+                        </div>
                       </CommandItem>
                     );
                   })}
                 </CommandGroup>
               )}
 
-              {canCreateTag && (
+              {canCreateSpeaker && (
                 <CommandGroup>
-                  <CommandItem onSelect={handleAddTag}>
+                  <CommandItem onSelect={handleAddSpeaker}>
                     <Plus className="mr-2 h-4 w-4" />
                     {`إضافة "${searchValue}"`}
                   </CommandItem>
@@ -177,19 +190,19 @@ export default function TagsCombobox({
         </PopoverContent>
       </Popover>
 
-      {/* Selected tags display */}
-      {selectedTags.length > 0 && (
+      {/* Selected speakers display */}
+      {selectedSpeakers.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {selectedTags.map((tag, index) => (
+          {selectedSpeakers.map((speaker, index) => (
             <Badge
-              key={`${tag?.id}-${index}`}
+              key={`${speaker?.id}-${index}`}
               variant="secondary"
               className="gap-1"
             >
-              {tag?.name}
+              {speaker?.name}
               <X
                 className="h-3 w-3 cursor-pointer"
-                onClick={() => tag?.id && handleRemoveTag(tag.id)}
+                onClick={() => speaker?.id && handleRemoveSpeaker(speaker.id)}
               />
             </Badge>
           ))}

@@ -45,7 +45,7 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: Speaker;
+  speakers: Speaker[];
   category: Category;
   place: Place | null;
   language: string;
@@ -123,8 +123,10 @@ export default function ViewVideoDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">المتحدث:</span>
-              <span className="font-medium">{video.speaker.name}</span>
+              <span className="text-sm text-muted-foreground">المتحدثين:</span>
+              <span className="font-medium">
+                {video.speakers.map((s) => s.name).join(", ")}
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -204,15 +206,27 @@ export default function ViewVideoDialog({
             </p>
           </div>
 
-          {/* Speaker Bio */}
-          {video.speaker.bio && (
+          {/* Speakers Bios */}
+          {video.speakers.some((s) => s.bio) && (
             <div className="space-y-2">
               <span className="text-sm text-muted-foreground">
-                نبذة عن المتحدث:
+                نبذة عن المتحدثين:
               </span>
-              <p className="text-sm leading-relaxed bg-muted/30 p-4 rounded-md">
-                {video.speaker.bio}
-              </p>
+              <div className="space-y-3">
+                {video.speakers
+                  .filter((s) => s.bio)
+                  .map((speaker) => (
+                    <div
+                      key={speaker.id}
+                      className="bg-muted/30 p-4 rounded-md"
+                    >
+                      <div className="font-medium text-sm mb-2">
+                        {speaker.name}
+                      </div>
+                      <p className="text-sm leading-relaxed">{speaker.bio}</p>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
 

@@ -1,7 +1,5 @@
 import VideoForm from "@/components/admin/videos/VideoForm";
 
-const AddVideo = () => {
+export default function AddVideo() {
   return <VideoForm />;
-};
-
-export default AddVideo;
+}

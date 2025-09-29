@@ -48,7 +48,7 @@ const VideoCategorySelect = ({
       }}
       disabled={categoriesLoading || disabled}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue
           placeholder={
             categoriesLoading ? "جاري تحميل الفئات..." : "اختر فئة الفيديو"

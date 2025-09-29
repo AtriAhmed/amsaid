@@ -10,13 +10,17 @@ const CreateVideoSchema = z.object({
     .min(1, "Title is required")
     .max(200, "Title must be less than 200 characters"),
   description: z.string().min(1, "Description is required"),
-  speaker: z.union([
-    z.number().int().positive("Speaker ID must be a positive integer"),
-    z
-      .string()
-      .min(1, "Speaker name is required")
-      .max(100, "Speaker name must be less than 100 characters"),
-  ]),
+  speakers: z
+    .array(
+      z.union([
+        z.number().int().positive("Speaker ID must be a positive integer"),
+        z
+          .string()
+          .min(1, "Speaker name is required")
+          .max(100, "Speaker name must be less than 100 characters"),
+      ])
+    )
+    .min(1, "At least one speaker is required"),
   categoryId: z
     .number()
     .int()
@@ -61,7 +65,7 @@ export async function GET(req: Request) {
     );
     const search = searchParams.get("search") || "";
     const categoryId = searchParams.get("categoryId");
-    const speakerId = searchParams.get("speakerId");
+    const speakerIds = searchParams.get("speakerIds");
     const placeId = searchParams.get("placeId");
     const language = searchParams.get("language");
     const active = searchParams.get("active");
@@ -82,8 +86,18 @@ export async function GET(req: Request) {
       where.categoryId = parseInt(categoryId);
     }
 
-    if (speakerId && !isNaN(parseInt(speakerId))) {
-      where.speakerId = parseInt(speakerId);
+    if (speakerIds) {
+      const speakerIdArray = speakerIds
+        .split(",")
+        .map((id) => parseInt(id.trim()))
+        .filter((id) => !isNaN(id));
+      if (speakerIdArray.length > 0) {
+        where.speakers = {
+          some: {
+            personId: { in: speakerIdArray },
+          },
+        };
+      }
     }
 
     if (placeId && !isNaN(parseInt(placeId))) {
@@ -102,11 +116,15 @@ export async function GET(req: Request) {
       prisma.video.findMany({
         where,
         include: {
-          speaker: {
-            select: {
-              id: true,
-              name: true,
-              bio: true,
+          speakers: {
+            include: {
+              person: {
+                select: {
+                  id: true,
+                  name: true,
+                  bio: true,
+                },
+              },
             },
           },
           category: {
@@ -147,6 +165,7 @@ export async function GET(req: Request) {
     return NextResponse.json({
       videos: videos.map((video) => ({
         ...video,
+        speakers: video.speakers.map((vs) => vs.person),
         tags: video.tags.map((vt) => vt.tag),
       })),
       pagination: {
@@ -175,7 +194,7 @@ export async function POST(req: Request) {
     // Extract form data
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
-    const speakerInput = formData.get("speaker") as string;
+    const speakersInput = formData.get("speakers") as string;
     const categoryId = formData.get("categoryId") as string;
     const language = formData.get("language") as string;
     const placeInput = formData.get("place") as string;
@@ -187,7 +206,19 @@ export async function POST(req: Request) {
     console.log("-------------------- videoFile --------------------");
     console.log(videoFile);
 
-    // Parse tags if provided
+    // Parse speakers and tags if provided
+    let speakers: (string | number)[] = [];
+    if (speakersInput) {
+      try {
+        speakers = JSON.parse(speakersInput);
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid speakers format" },
+          { status: 400 }
+        );
+      }
+    }
+
     let tags: (string | number)[] = [];
     if (tagsInput) {
       try {
@@ -198,15 +229,6 @@ export async function POST(req: Request) {
           { status: 400 }
         );
       }
-    }
-
-    // Parse speaker (could be ID or name)
-    let speaker: string | number;
-    const speakerAsNumber = parseInt(speakerInput);
-    if (!isNaN(speakerAsNumber) && speakerAsNumber > 0) {
-      speaker = speakerAsNumber;
-    } else {
-      speaker = speakerInput;
     }
 
     // Parse place (could be ID or name)
@@ -222,7 +244,7 @@ export async function POST(req: Request) {
     const validation = CreateVideoSchema.safeParse({
       title,
       description,
-      speaker,
+      speakers,
       categoryId: parseInt(categoryId),
       language,
       place,
@@ -272,22 +294,26 @@ export async function POST(req: Request) {
       );
     }
 
-    // Handle speaker (find existing or create new)
-    let speakerRecord;
-    if (typeof validation.data.speaker === "number") {
-      speakerRecord = await prisma.person.findUnique({
-        where: { id: validation.data.speaker },
-      });
-      if (!speakerRecord) {
-        return NextResponse.json(
-          { error: "Speaker not found" },
-          { status: 400 }
-        );
+    // Handle speakers (find existing or create new)
+    const speakerConnections = [];
+    for (const speakerInput of validation.data.speakers) {
+      let speakerRecord;
+      if (typeof speakerInput === "number") {
+        speakerRecord = await prisma.person.findUnique({
+          where: { id: speakerInput },
+        });
+        if (!speakerRecord) {
+          return NextResponse.json(
+            { error: `Speaker with ID ${speakerInput} not found` },
+            { status: 400 }
+          );
+        }
+      } else {
+        speakerRecord = await prisma.person.create({
+          data: { name: speakerInput },
+        });
       }
-    } else {
-      speakerRecord = await prisma.person.create({
-        data: { name: validation.data.speaker },
-      });
+      speakerConnections.push({ personId: speakerRecord.id });
     }
 
     // Handle place (find existing or create new)
@@ -344,7 +370,6 @@ export async function POST(req: Request) {
       data: {
         title: validation.data.title,
         description: validation.data.description,
-        speakerId: speakerRecord.id,
         categoryId: validation.data.categoryId,
         language: validation.data.language,
         placeId: placeRecord.id,
@@ -352,16 +377,23 @@ export async function POST(req: Request) {
         poster: posterPath,
         url: videoPath,
         duration: Math.round(duration), // Round to nearest second
+        speakers: {
+          create: speakerConnections,
+        },
         tags: {
           create: tagConnections,
         },
       },
       include: {
-        speaker: {
-          select: {
-            id: true,
-            name: true,
-            bio: true,
+        speakers: {
+          include: {
+            person: {
+              select: {
+                id: true,
+                name: true,
+                bio: true,
+              },
+            },
           },
         },
         category: {
@@ -392,6 +424,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ...video,
+      speakers: video.speakers.map((vs) => vs.person),
       tags: video.tags.map((vt) => vt.tag),
     });
   } catch (error: any) {

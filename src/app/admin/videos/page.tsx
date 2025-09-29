@@ -44,7 +44,7 @@ interface Video {
   id: number;
   title: string;
   description: string;
-  speaker: Speaker;
+  speakers: Speaker[];
   category: Category;
   place: Place | null;
   language: string;
