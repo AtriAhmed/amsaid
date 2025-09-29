@@ -164,6 +164,9 @@ export async function GET(req: Request) {
       prisma.video.count({ where }),
     ]);
 
+    console.log("-------------------- videos --------------------");
+    console.log(videos);
+
     const totalPages = Math.ceil(totalCount / limit);
 
     return NextResponse.json({

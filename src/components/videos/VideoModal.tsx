@@ -9,47 +9,15 @@ import {
 import { getMediaUrl } from "@/lib/utils";
 import { ReactNode, useRef, useEffect } from "react";
 import { X } from "lucide-react";
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  poster: string | null;
-  url: string;
-  createdAt: Date;
-  speakers: Array<{
-    id: number;
-    name: string;
-  }>;
-  category: {
-    id: number;
-    name: string;
-  };
-  place: {
-    id: number;
-    name: string;
-    address: string | null;
-  } | null;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+import { Video } from "@/types";
 
 interface VideoModalProps {
-  video: Video;
-  children: ReactNode;
+  video: Video | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const VideoModal = ({
-  video,
-  children,
-  isOpen,
-  onOpenChange,
-}: VideoModalProps) => {
+const VideoModal = ({ video, isOpen, onOpenChange }: VideoModalProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -65,7 +33,6 @@ const VideoModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTitle className="sr-only">مشاهدة الفيديو</DialogTitle>
-      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="!max-w-[90vw] !w-[90vw] h-[90vh] max-h-[90vh] p-0 bg-black overflow-hidden"
         overlayClassName="bg-black/90"
@@ -79,21 +46,23 @@ const VideoModal = ({
           >
             <X size={20} />
           </button>
-          <video
-            ref={videoRef}
-            className="w-full h-full object-contain"
-            controls
-            preload="metadata"
-            poster={getMediaUrl(video.poster) || undefined}
-            aria-label={video.title}
-            autoPlay
-          >
-            <source src={getMediaUrl(video.url)} />
-            متصفحك لا يدعم تشغيل الفيديو.
-            <a href={getMediaUrl(video.url)} download>
-              تحميل الفيديو
-            </a>
-          </video>
+          {!!video && (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              controls
+              preload="metadata"
+              poster={getMediaUrl(video.poster) || undefined}
+              aria-label={video.title}
+              autoPlay
+            >
+              <source src={getMediaUrl(video.url)} type="video/mp4" />
+              متصفحك لا يدعم تشغيل الفيديو.
+              <a href={getMediaUrl(video.url)} download>
+                تحميل الفيديو
+              </a>
+            </video>
+          )}
         </div>
       </DialogContent>
     </Dialog>

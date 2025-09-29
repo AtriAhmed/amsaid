@@ -7,33 +7,8 @@ import { getMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import VideoModal from "./VideoModal";
 import { useState } from "react";
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  poster: string | null;
-  url: string;
-  createdAt: Date;
-  speakers: Array<{
-    id: number;
-    name: string;
-  }>;
-  category: {
-    id: number;
-    name: string;
-  };
-  place: {
-    id: number;
-    name: string;
-    address: string | null;
-  } | null;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+import ViewVideoDialog from "@/components/videos/ViewVideoDialog";
+import { Video } from "@/types";
 
 interface VideosProps {
   videos: Video[];
@@ -41,25 +16,37 @@ interface VideosProps {
 
 // Helper function to format duration from seconds to MM:SS
 const formatDuration = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-const Videos = ({ videos }: VideosProps) => {
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function Videos({ videos }: VideosProps) {
+  const [watchDialog, setWatchDialog] = useState<{
+    open: boolean;
+    video: Video | null;
+  }>({
+    open: false,
+    video: null,
+  });
+  const [viewDialog, setViewDialog] = useState<{
+    open: boolean;
+    video: Video | null;
+  }>({
+    open: false,
+    video: null,
+  });
 
   const handleVideoClick = (video: Video) => {
-    setSelectedVideo(video);
-    setIsModalOpen(true);
+    setWatchDialog({ open: true, video });
   };
 
   const handleModalClose = (open: boolean) => {
-    setIsModalOpen(open);
-    if (!open) {
-      setSelectedVideo(null);
-    }
+    setWatchDialog({ open, video: null });
   };
 
   return (
@@ -83,55 +70,71 @@ const Videos = ({ videos }: VideosProps) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {videos.map((video) => (
-              <VideoModal
+              <Card
                 key={video.id}
-                video={video}
-                isOpen={isModalOpen && selectedVideo?.id === video.id}
-                onOpenChange={handleModalClose}
+                className="group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
               >
-                <Card className="group hover:shadow-elegant hover:bg-muted hover:scale-[1.02] transition-smooth overflow-hidden duration-200">
-                  <div
-                    className="relative h-48 overflow-hidden cursor-pointer"
-                    onClick={() => handleVideoClick(video)}
-                  >
-                    <Image
-                      src={getMediaUrl(video.poster)}
-                      fill
-                      alt={video.title}
-                      className="object-cover group-hover:scale-105 transition-smooth duration-100"
-                    />
-                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center">
-                      <Button variant="hero" size="lg">
-                        <Play className="mr-2 h-6 w-6" />
-                        شاهد الآن
-                      </Button>
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center">
-                      <Clock className="mr-1 h-3 w-3" />
+                <div
+                  className="relative h-48 overflow-hidden cursor-pointer"
+                  onClick={() => handleVideoClick(video)}
+                >
+                  <Image
+                    src={getMediaUrl(video.poster)}
+                    fill
+                    alt={video.title}
+                    className="object-cover group-hover:scale-105 transition-smooth duration-100"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center duration-200">
+                    <Button variant="hero" size="lg">
+                      <Play className="mr-2 h-6 w-6" />
+                      شاهد الآن
+                    </Button>
+                  </div>
+                  <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+                    فيديو
+                  </div>
+                </div>
+
+                <CardContent className="px-6 pt-2 pb-4">
+                  <h3 className="text-xl font-semibold text-foreground mb-1">
+                    {video.title}
+                  </h3>
+                  <p className="text-primary font-medium">
+                    {video.speakers?.map((s) => s.name).join(", ")}
+                  </p>
+                  <p className="text-muted-foreground mb-2 line-clamp-2">
+                    {video.description}
+                  </p>
+
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center">
+                      <Clock className="mr-1 h-4 w-4" />
                       {formatDuration(video.duration)}
                     </div>
+                    <div>{video.category?.name}</div>
                   </div>
 
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-2 line-clamp-2">
-                      {video.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 line-clamp-2">
-                      {video.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-muted-foreground text-sm">
-                        <span>
-                          {video.speakers.map((s) => s.name).join(", ")}
-                        </span>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        معلومات أكثر
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </VideoModal>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleVideoClick(video)}
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      شاهد الآن
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => setViewDialog({ open: true, video })}
+                    >
+                      معلومات أكثر
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
@@ -142,8 +145,24 @@ const Videos = ({ videos }: VideosProps) => {
           </Button>
         </div>
       </div>
+
+      <VideoModal
+        video={watchDialog.video}
+        isOpen={watchDialog.open}
+        onOpenChange={handleModalClose}
+      />
+
+      <ViewVideoDialog
+        open={viewDialog.open}
+        onOpenChange={(open: boolean) =>
+          setViewDialog({ open, video: open ? viewDialog.video : null })
+        }
+        video={viewDialog.video}
+        onWatchVideo={() => {
+          setViewDialog({ open: false, video: null });
+          setWatchDialog({ open: true, video: viewDialog.video });
+        }}
+      />
     </section>
   );
-};
-
-export default Videos;
+}
