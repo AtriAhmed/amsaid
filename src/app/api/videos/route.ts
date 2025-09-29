@@ -175,8 +175,8 @@ export async function GET(req: Request) {
       pagination: {
         page,
         limit,
-        totalCount,
-        totalPages,
+        total: totalCount,
+        pages: totalPages,
         hasNext: page < totalPages,
         hasPrev: page > 1,
       },

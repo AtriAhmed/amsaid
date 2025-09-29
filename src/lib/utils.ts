@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getMediaUrl(path: string) {
+export function getMediaUrl(path: string | null | undefined) {
   if (!path) return "";
 
   if (path.startsWith("http")) return path;
