@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import Videos from "@/components/videos/Videos";
 import { prisma } from "@/lib/prisma";
-import { Video } from "@/types";
+import { Video, Book } from "@/types";
 
 async function getVideos(): Promise<Video[]> {
   try {
@@ -46,24 +46,62 @@ async function getVideos(): Promise<Video[]> {
       },
     });
 
-    return videos.map((video) => ({
-      ...video,
-    }));
+    return videos;
   } catch (error) {
     console.error("Error fetching videos:", error);
     return [];
   }
 }
 
+async function getBooks(): Promise<Book[]> {
+  try {
+    const books = await prisma.book.findMany({
+      where: {
+        active: true,
+      },
+      take: 3,
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return books;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    return [];
+  }
+}
+
 export default async function Home() {
   const videos = await getVideos();
+  const books = await getBooks();
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <Hero />
       <Videos videos={videos} />
-      <Books />
+      <Books books={books} />
       <About />
       <Footer />
     </div>
