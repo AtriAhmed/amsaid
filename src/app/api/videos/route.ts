@@ -98,7 +98,7 @@ export async function GET(req: Request) {
       if (speakerIdArray.length > 0) {
         where.speakers = {
           some: {
-            personId: { in: speakerIdArray },
+            id: { in: speakerIdArray },
           },
         };
       }
@@ -121,14 +121,10 @@ export async function GET(req: Request) {
         where,
         include: {
           speakers: {
-            include: {
-              person: {
-                select: {
-                  id: true,
-                  name: true,
-                  bio: true,
-                },
-              },
+            select: {
+              id: true,
+              name: true,
+              bio: true,
             },
           },
           category: {
@@ -145,13 +141,9 @@ export async function GET(req: Request) {
             },
           },
           tags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
@@ -172,8 +164,6 @@ export async function GET(req: Request) {
     return NextResponse.json({
       videos: videos.map((video) => ({
         ...video,
-        speakers: video.speakers.map((vs) => vs.person),
-        tags: video.tags.map((vt) => vt.tag),
       })),
       pagination: {
         page,
@@ -304,7 +294,7 @@ export async function POST(req: Request) {
     }
 
     // Handle speakers (find existing or create new)
-    const speakerConnections = [];
+    const speakerIds = [];
     for (const speakerInput of validation.data.speakers) {
       let speakerRecord;
       if (typeof speakerInput === "number") {
@@ -322,7 +312,7 @@ export async function POST(req: Request) {
           data: { name: speakerInput },
         });
       }
-      speakerConnections.push({ personId: speakerRecord.id });
+      speakerIds.push(speakerRecord.id);
     }
 
     // Handle place (find existing or create new)
@@ -347,7 +337,7 @@ export async function POST(req: Request) {
     const videoPath = await uploadFile(videoFile);
 
     // Handle tags
-    const tagConnections = [];
+    const tagIds = [];
     for (const tagInput of validation.data.tags) {
       let tagRecord;
       if (typeof tagInput === "number") {
@@ -369,7 +359,7 @@ export async function POST(req: Request) {
           create: { name: tagInput },
         });
       }
-      tagConnections.push({ tagId: tagRecord.id });
+      tagIds.push(tagRecord.id);
     }
 
     // Create the video
@@ -385,22 +375,18 @@ export async function POST(req: Request) {
         url: videoPath,
         duration: validation.data.duration,
         speakers: {
-          create: speakerConnections,
+          connect: speakerIds.map((id) => ({ id })),
         },
         tags: {
-          create: tagConnections,
+          connect: tagIds.map((id) => ({ id })),
         },
       },
       include: {
         speakers: {
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-                bio: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            bio: true,
           },
         },
         category: {
@@ -417,13 +403,9 @@ export async function POST(req: Request) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -431,8 +413,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ...video,
-      speakers: video.speakers.map((vs) => vs.person),
-      tags: video.tags.map((vt) => vt.tag),
+      speakers: video.speakers,
+      tags: video.tags,
     });
   } catch (error: any) {
     console.error("Error creating video:", error);

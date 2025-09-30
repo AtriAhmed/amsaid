@@ -103,13 +103,9 @@ export async function GET(req: Request) {
             },
           },
           tags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
@@ -127,7 +123,6 @@ export async function GET(req: Request) {
     return NextResponse.json({
       books: books.map((book) => ({
         ...book,
-        tags: book.tags.map((bt) => bt.tag),
       })),
       pagination: {
         page,
@@ -317,9 +312,7 @@ export async function POST(req: Request) {
         pages,
         size: sizeInKB,
         tags: {
-          create: tagRecords.map((tag) => ({
-            tagId: tag.id,
-          })),
+          create: tagRecords,
         },
       },
       include: {
@@ -337,13 +330,9 @@ export async function POST(req: Request) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -352,7 +341,6 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         ...book,
-        tags: book.tags.map((bt) => bt.tag),
       },
       { status: 201 }
     );

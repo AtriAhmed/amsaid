@@ -27,13 +27,13 @@ model User {
 }
 
 model Person {
-  id        Int            @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
   bio       String? // optional
   books     Book[]
-  videos    VideoSpeaker[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model BookCategory {
@@ -62,12 +62,12 @@ model Place {
 }
 
 model Tag {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  books     BookTag[]
-  videos    VideoTag[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  books     Book[]
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Book {
@@ -85,57 +85,28 @@ model Book {
   fileUrl     String
   pages       Int
   size        Int // store file size in KB/MB
-  tags        BookTag[]
+  tags        Tag[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
 model Video {
-  id          Int            @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
   description String
   categoryId  Int
-  category    VideoCategory  @relation(fields: [categoryId], references: [id])
+  category    VideoCategory @relation(fields: [categoryId], references: [id])
   duration    Int // in seconds
   url         String
   poster      String?
-  active      Boolean        @default(true)
-  views       Int            @default(0)
-  speakers    VideoSpeaker[]
+  active      Boolean       @default(true)
+  views       Int           @default(0)
+  speakers    Person[]
   date        DateTime // actual event date
   placeId     Int?
-  place       Place?         @relation(fields: [placeId], references: [id])
+  place       Place?        @relation(fields: [placeId], references: [id])
   language    String
-  tags        VideoTag[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-}
-
-// Pivot tables for many-to-many tag relationships
-model BookTag {
-  bookId Int
-  tagId  Int
-  book   Book @relation(fields: [bookId], references: [id])
-  tag    Tag  @relation(fields: [tagId], references: [id])
-
-  @@id([bookId, tagId])
-}
-
-model VideoTag {
-  videoId Int
-  tagId   Int
-  video   Video @relation(fields: [videoId], references: [id])
-  tag     Tag   @relation(fields: [tagId], references: [id])
-
-  @@id([videoId, tagId])
-}
-
-// Pivot table for many-to-many video-speaker relationships
-model VideoSpeaker {
-  videoId  Int
-  personId Int
-  video    Video  @relation(fields: [videoId], references: [id])
-  person   Person @relation(fields: [personId], references: [id])
-
-  @@id([videoId, personId])
+  tags        Tag[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }

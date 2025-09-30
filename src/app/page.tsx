@@ -16,13 +16,9 @@ async function getVideos(): Promise<Video[]> {
       take: 3,
       include: {
         speakers: {
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
         category: {
@@ -39,13 +35,9 @@ async function getVideos(): Promise<Video[]> {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -56,8 +48,6 @@ async function getVideos(): Promise<Video[]> {
 
     return videos.map((video) => ({
       ...video,
-      speakers: video.speakers.map((vs) => vs.person),
-      tags: video.tags.map((vt) => vt.tag),
     }));
   } catch (error) {
     console.error("Error fetching videos:", error);

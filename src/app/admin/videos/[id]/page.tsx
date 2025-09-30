@@ -44,13 +44,9 @@ async function getVideo(id: string): Promise<Video | null> {
       where: { id: videoId },
       include: {
         speakers: {
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
         category: {
@@ -66,13 +62,9 @@ async function getVideo(id: string): Promise<Video | null> {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -85,8 +77,6 @@ async function getVideo(id: string): Promise<Video | null> {
     return {
       ...video,
       date: video.date.toISOString(),
-      speakers: video.speakers.map((vs) => vs.person),
-      tags: video.tags.map((vt) => vt.tag),
     };
   } catch (error) {
     console.error("Error fetching video:", error);
