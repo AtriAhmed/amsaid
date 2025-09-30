@@ -6,10 +6,76 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, BookOpen, Play, Users, BarChart3 } from "lucide-react";
+import { Plus, BookOpen, Play, Users, BarChart3, Download } from "lucide-react";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-const Dashboard = () => {
+interface Stats {
+  videoViews: number;
+  totalVideos: number;
+  bookDownloads: number;
+  totalBooks: number;
+}
+
+async function getStats(): Promise<Stats> {
+  try {
+    // Fetch all stats in parallel for better performance
+    const [totalVideoViews, totalVideos, totalBookDownloads, totalBooks] =
+      await Promise.all([
+        // Sum of all video views
+        prisma.video.aggregate({
+          _sum: {
+            views: true,
+          },
+          where: {
+            active: true,
+          },
+        }),
+
+        // Count of active videos
+        prisma.video.count({
+          where: {
+            active: true,
+          },
+        }),
+
+        // Sum of all book downloads
+        prisma.book.aggregate({
+          _sum: {
+            downloads: true,
+          },
+          where: {
+            active: true,
+          },
+        }),
+
+        // Count of active books
+        prisma.book.count({
+          where: {
+            active: true,
+          },
+        }),
+      ]);
+
+    return {
+      videoViews: totalVideoViews._sum.views || 0,
+      totalVideos,
+      bookDownloads: totalBookDownloads._sum.downloads || 0,
+      totalBooks,
+    };
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return {
+      videoViews: 0,
+      totalVideos: 0,
+      bookDownloads: 0,
+      totalBooks: 0,
+    };
+  }
+}
+
+const Dashboard = async () => {
+  const stats = await getStats();
   return (
     <div className="min-h-screen-without-nav bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
@@ -31,10 +97,10 @@ const Dashboard = () => {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">127</div>
-              <p className="text-xs text-muted-foreground">
-                +12 من الشهر الماضي
-              </p>
+              <div className="text-2xl font-bold">
+                {stats.totalBooks.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">كتاب متاح للتحميل</p>
             </CardContent>
           </Card>
 
@@ -46,36 +112,42 @@ const Dashboard = () => {
               <Play className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">89</div>
+              <div className="text-2xl font-bold">
+                {stats.totalVideos.toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
-                +5 من الشهر الماضي
+                فيديو متاح للمشاهدة
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">المشاهدات</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                مشاهدات الفيديو
+              </CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12.5K</div>
-              <p className="text-xs text-muted-foreground">
-                +18% من الشهر الماضي
-              </p>
+              <div className="text-2xl font-bold">
+                {stats.videoViews.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">إجمالي المشاهدات</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">المستخدمون</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">
+                تحميلات الكتب
+              </CardTitle>
+              <Download className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2.4K</div>
-              <p className="text-xs text-muted-foreground">
-                +8% من الشهر الماضي
-              </p>
+              <div className="text-2xl font-bold">
+                {stats.bookDownloads.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">إجمالي التحميلات</p>
             </CardContent>
           </Card>
         </div>
