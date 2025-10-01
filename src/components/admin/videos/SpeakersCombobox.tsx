@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Speaker {
   id: number;
@@ -36,7 +36,7 @@ interface SpeakersComboboxProps {
 }
 
 // SWR fetcher function
-const fetcher = async (_key: string, search: string, limit: number) => {
+const fetcher = async (search: string, limit: number) => {
   const res = await axios.get<Speaker[]>("/api/authors", {
     params: {
       search,
@@ -55,6 +55,7 @@ export default function SpeakersCombobox({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
+  const config = useSWRConfig();
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -64,8 +65,12 @@ export default function SpeakersCombobox({
     error,
     isLoading,
     mutate: revalidate,
-  } = useSWR<Speaker[]>(["authors", debouncedSearch, limit], () =>
-    fetcher("authors", debouncedSearch, limit)
+  } = useSWR<Speaker[]>(
+    ["authors", debouncedSearch, limit],
+    () => fetcher(debouncedSearch, limit),
+    {
+      fallbackData: config?.fallback?.authors,
+    }
   );
 
   const handleSearch = (search: string) => {

@@ -124,18 +124,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
     },
   });
 
-  // Watch form values
-  const watchedSpeakers = watch("speakers");
-  const watchedCategoryId = watch("categoryId");
-  const watchedLanguage = watch("language");
-  const watchedPlace = watch("place");
-  const watchedTags = watch("tags");
-  const watchedPoster = watch("poster");
-  const watchedVideoFile = watch("videoFile");
-
   const data = watch();
-  console.log("-------------------- video form data --------------------");
-  console.log(data);
 
   // Populate form with initial video data
   useEffect(() => {
@@ -348,6 +337,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                       id="title"
                       placeholder="مثال: خطبة الجمعة - أهمية الصلاة"
                       {...register("title")}
+                      defaultValue={data.title}
                     />
                     {errors.title && (
                       <p className="text-sm text-destructive">
@@ -359,7 +349,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="speakers">المتحدثين *</Label>
                     <SpeakersCombobox
-                      value={watchedSpeakers || []}
+                      value={data.speakers || []}
                       onChange={(value) => {
                         setValue("speakers", value, {
                           shouldValidate: true,
@@ -384,6 +374,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     placeholder="وصف مختصر عن محتوى الفيديو..."
                     rows={4}
                     {...register("description")}
+                    defaultValue={data.description}
                   />
                   {errors.description && (
                     <p className="text-sm text-destructive">
@@ -396,7 +387,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="category">الفئة *</Label>
                     <VideoCategorySelect
-                      value={watchedCategoryId || undefined}
+                      value={data.categoryId}
                       onChange={(value) =>
                         setValue("categoryId", value, {
                           shouldValidate: true,
@@ -415,7 +406,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="language">اللغة *</Label>
                     <LanguageSelect
-                      value={watchedLanguage}
+                      value={data.language}
                       onChange={(value) => {
                         setValue("language", value, {
                           shouldValidate: true,
@@ -433,21 +424,14 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>
-                    صورة مصغرة
-                    {mode === "edit" && initialVideo?.poster && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        (اترك فارغاً للاحتفاظ بالصورة الحالية)
-                      </span>
-                    )}
-                  </Label>
+                  <Label>صورة مصغرة</Label>
                   <FileDropzone
                     onDrop={handlePosterDrop}
                     accept={{
                       "image/*": [".jpeg", ".jpg", ".png", ".webp"],
                     }}
                     maxSize={20 * 1024 * 1024} // 20MB
-                    value={watchedPoster}
+                    value={data.poster}
                     onRemove={handleRemovePoster}
                     placeholder="اسحب وأفلت الصورة المصغرة هنا أو انقر للاختيار"
                     disabled={isSubmitting}
@@ -460,21 +444,14 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>
-                    ملف الفيديو *
-                    {mode === "edit" && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        (اترك فارغاً للاحتفاظ بالملف الحالي)
-                      </span>
-                    )}
-                  </Label>
+                  <Label>ملف الفيديو *</Label>
                   <FileDropzone
                     onDrop={handleVideoFileDrop}
                     accept={{
                       "video/*": [".mp4", ".avi", ".mov", ".mkv", ".webm"],
                     }}
                     maxSize={500 * 1024 * 1024} // 500MB
-                    value={watchedVideoFile}
+                    value={data.videoFile}
                     onRemove={handleRemoveVideoFile}
                     placeholder="اسحب وأفلت ملف الفيديو هنا أو انقر للاختيار"
                     disabled={isSubmitting}
@@ -542,7 +519,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="place">مكان التسجيل *</Label>
                     <PlaceCombobox
-                      value={watchedPlace}
+                      value={data.place}
                       onChange={(value) => {
                         setValue("place", value || "", {
                           shouldValidate: true,
@@ -563,7 +540,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 <div className="space-y-2">
                   <Label>الكلمات المفتاحية</Label>
                   <TagsCombobox
-                    value={watchedTags || []}
+                    value={data.tags || []}
                     onChange={(value) => {
                       setValue("tags", value, {
                         shouldValidate: true,

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import VideoForm from "@/components/admin/videos/VideoForm";
+import { SWRConfig } from "swr";
 
 interface Video {
   id: number;
@@ -84,13 +85,93 @@ async function getVideo(id: string): Promise<Video | null> {
   }
 }
 
+async function getAuthors() {
+  try {
+    const authors = await prisma.person.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return authors;
+  } catch (error) {
+    console.error("Error fetching authors:", error);
+    return [];
+  }
+}
+
+async function getTags() {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return tags;
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    return [];
+  }
+}
+
+async function getVideoCategories() {
+  try {
+    const categories = await prisma.videoCategory.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return { data: categories };
+  } catch (error) {
+    console.error("Error fetching book categories:", error);
+    return [];
+  }
+}
+
+async function getPlaces() {
+  try {
+    const places = await prisma.place.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return places;
+  } catch (error) {
+    console.error("Error fetching book categories:", error);
+    return [];
+  }
+}
+
 export default async function EditVideo({ params }: EditVideoProps) {
   const { id } = await params;
   const video = await getVideo(id);
+  const authors = await getAuthors();
+  const tags = await getTags();
+  const videoCategories = await getVideoCategories();
+  const places = await getPlaces();
 
   if (!video) {
     notFound();
   }
 
-  return <VideoForm initialVideo={video} />;
+  return (
+    <SWRConfig value={{ fallback: { authors, tags, videoCategories, places } }}>
+      <VideoForm initialVideo={video} />;
+    </SWRConfig>
+  );
 }

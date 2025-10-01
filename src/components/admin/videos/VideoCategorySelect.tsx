@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import {
   Select,
   SelectContent,
@@ -9,11 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface VideoCategory {
-  id: number;
-  name: string;
-}
+import { VideoCategory } from "@/types";
 
 interface VideoCategorySelectProps {
   value?: number | null;
@@ -26,19 +22,27 @@ const fetcher = async () => {
   return res.data;
 };
 
-const VideoCategorySelect = ({
+export default function VideoCategorySelect({
   value,
   onChange,
   disabled,
-}: VideoCategorySelectProps) => {
+}: VideoCategorySelectProps) {
+  const config = useSWRConfig();
+
   // Fetch categories using SWR
   const {
     data: categoriesData,
     error: categoriesError,
     isLoading: categoriesLoading,
-  } = useSWR("/api/categories/videos", fetcher);
+  } = useSWR("/api/categories/videos", fetcher, {
+    fallbackData: config?.fallback?.videoCategories,
+  });
 
   const categories = categoriesData?.data || [];
+
+  const selectedLabel = value
+    ? categories.find((cat: VideoCategory) => cat.id === value)?.name
+    : "اختر الفئة";
 
   return (
     <Select
@@ -46,15 +50,9 @@ const VideoCategorySelect = ({
       onValueChange={(value) => {
         onChange(parseInt(value));
       }}
-      disabled={categoriesLoading || disabled}
+      disabled={disabled}
     >
-      <SelectTrigger className="w-full">
-        <SelectValue
-          placeholder={
-            categoriesLoading ? "جاري تحميل الفئات..." : "اختر فئة الفيديو"
-          }
-        />
-      </SelectTrigger>
+      <SelectTrigger className="w-full">{selectedLabel}</SelectTrigger>
       <SelectContent>
         {categories.map((category: VideoCategory) => (
           <SelectItem key={category.id} value={category.id.toString()}>
@@ -64,6 +62,4 @@ const VideoCategorySelect = ({
       </SelectContent>
     </Select>
   );
-};
-
-export default VideoCategorySelect;
+}

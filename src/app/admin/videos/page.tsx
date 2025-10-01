@@ -135,7 +135,7 @@ const VideosManagement = () => {
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-2">
           <div>
             <h1 className="text-3xl font-bold mb-2">إدارة الفيديوهات</h1>
             <p className="text-muted-foreground">
@@ -143,7 +143,7 @@ const VideosManagement = () => {
             </p>
           </div>
           <Button asChild>
-            <Link href="/admin/videos/add">
+            <Link href="/admin/videos/add" className="ms-auto">
               <Plus className="w-4 h-4 ml-2" />
               إضافة فيديو جديد
             </Link>

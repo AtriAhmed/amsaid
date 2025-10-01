@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Place {
   id: number;
@@ -35,7 +35,7 @@ interface PlaceComboboxProps {
 }
 
 // SWR fetcher function
-const fetcher = async (_key: string, search: string, limit: number) => {
+const fetcher = async (search: string, limit: number) => {
   const res = await axios.get<Place[]>("/api/places", {
     params: {
       search,
@@ -54,6 +54,7 @@ export default function PlaceCombobox({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
+  const config = useSWRConfig();
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -62,8 +63,12 @@ export default function PlaceCombobox({
     data: places = [],
     error,
     isLoading,
-  } = useSWR<Place[]>(["places", debouncedSearch, limit], () =>
-    fetcher("places", debouncedSearch, limit)
+  } = useSWR<Place[]>(
+    ["places", debouncedSearch, limit],
+    () => fetcher(debouncedSearch, limit),
+    {
+      fallbackData: config?.fallback?.places,
+    }
   );
 
   const handleSearch = (search: string) => {
