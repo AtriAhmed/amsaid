@@ -32,12 +32,7 @@ interface BooksResponse {
 }
 
 // axios-based fetcher for SWR when using an array key like ["books", queryParams]
-const fetcher = async (
-  _key: string,
-  page: number,
-  limit: number,
-  search: string
-) => {
+const fetcher = async (page: number, limit: number, search: string) => {
   const res = await axios.get<BooksResponse>("/api/books", {
     params: {
       page,
@@ -63,7 +58,7 @@ const BooksManagement = () => {
     mutate: revalidate,
   } = useSWR<BooksResponse>(
     ["books", currentPage, limit, debouncedSearch],
-    () => fetcher("books", currentPage, limit, debouncedSearch)
+    () => fetcher(currentPage, limit, debouncedSearch)
   );
 
   const setPage = useCallback((page: number) => {
@@ -95,7 +90,7 @@ const BooksManagement = () => {
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-2">
           <div>
             <h1 className="text-3xl font-bold mb-2">إدارة الكتب</h1>
             <p className="text-muted-foreground">
@@ -103,7 +98,7 @@ const BooksManagement = () => {
             </p>
           </div>
           <Button asChild>
-            <Link href="/admin/books/add">
+            <Link href="/admin/books/add" className="ms-auto">
               <Plus className="w-4 h-4 ml-2" />
               إضافة كتاب جديد
             </Link>
