@@ -65,7 +65,7 @@ const Books = ({ books }: BooksProps) => {
             <p className="text-muted-foreground text-lg">لا توجد كتب متاحة</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {books.map((book) => (
               <Card
                 key={book.id}
