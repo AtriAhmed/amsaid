@@ -1,9 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Download, FileText } from "lucide-react";
 import { getMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import { Book } from "@/types";
+import { useState } from "react";
+import BookModal from "./BookModal";
 
 interface BooksProps {
   books: Book[];
@@ -19,6 +23,31 @@ const formatFileSize = (sizeInBytes: number): string => {
 };
 
 const Books = ({ books }: BooksProps) => {
+  const [readDialog, setReadDialog] = useState<{
+    open: boolean;
+    book: Book | null;
+  }>({
+    open: false,
+    book: null,
+  });
+
+  const handleBookClick = (book: Book) => {
+    setReadDialog({ open: true, book });
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setReadDialog({ open, book: null });
+  };
+
+  const handleDownload = (book: Book) => {
+    const link = document.createElement("a");
+    link.href = getMediaUrl(book.fileUrl);
+    link.download = `${book.title}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <section id="books" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -42,7 +71,10 @@ const Books = ({ books }: BooksProps) => {
                 key={book.id}
                 className="group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
               >
-                <div className="relative h-48 overflow-hidden cursor-pointer">
+                <div
+                  className="relative h-48 overflow-hidden cursor-pointer"
+                  onClick={() => handleBookClick(book)}
+                >
                   <Image
                     src={
                       book.coverPhoto
@@ -89,11 +121,21 @@ const Books = ({ books }: BooksProps) => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="default" size="sm" className="flex-1">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleBookClick(book)}
+                    >
                       <BookOpen className="mr-2 h-4 w-4" />
                       قراءة أونلاين
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => handleDownload(book)}
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       تحميل PDF
                     </Button>
@@ -110,6 +152,12 @@ const Books = ({ books }: BooksProps) => {
           </Button>
         </div>
       </div>
+
+      <BookModal
+        book={readDialog.book}
+        isOpen={readDialog.open}
+        onOpenChange={handleModalClose}
+      />
     </section>
   );
 };

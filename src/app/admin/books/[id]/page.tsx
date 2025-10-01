@@ -51,13 +51,9 @@ async function getBook(id: string): Promise<Book | null> {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -67,10 +63,7 @@ async function getBook(id: string): Promise<Book | null> {
       return null;
     }
 
-    return {
-      ...book,
-      tags: book.tags.map((bt) => bt.tag),
-    };
+    return book;
   } catch (error) {
     console.error("Error fetching book:", error);
     return null;

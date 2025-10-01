@@ -82,13 +82,9 @@ export async function GET(req: Request, ctx: RouteContext<"/api/books/[id]">) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -108,10 +104,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/books/[id]">) {
       },
     });
 
-    return NextResponse.json({
-      ...book,
-      tags: book.tags.map((bt) => bt.tag),
-    });
+    return NextResponse.json(book);
   } catch (error: any) {
     console.error("Error fetching book:", error);
     return NextResponse.json(
@@ -383,22 +376,15 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/books/[id]">) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
     });
 
-    return NextResponse.json({
-      ...book,
-      tags: book.tags.map((bt) => bt.tag),
-    });
+    return NextResponse.json(book);
   } catch (error: any) {
     console.error("Error updating book:", error);
     return NextResponse.json(

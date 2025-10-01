@@ -88,14 +88,10 @@ export async function GET(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       where: { id },
       include: {
         speakers: {
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-                bio: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            bio: true,
           },
         },
         category: {
@@ -112,13 +108,9 @@ export async function GET(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
@@ -138,10 +130,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       },
     });
 
-    return NextResponse.json({
-      ...video,
-      tags: video.tags.map((vt) => vt.tag),
-    });
+    return NextResponse.json(video);
   } catch (error: any) {
     console.error("Error fetching video:", error);
     return NextResponse.json(
@@ -440,14 +429,10 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
       },
       include: {
         speakers: {
-          include: {
-            person: {
-              select: {
-                id: true,
-                name: true,
-                bio: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            bio: true,
           },
         },
         category: {
@@ -464,13 +449,9 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
           },
         },
         tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
