@@ -15,40 +15,7 @@ import ConfirmationDialog from "@/components/ConfirmationDialog";
 import EditBookDialog from "./EditBookDialog";
 import ViewBookDialog from "./ViewBookDialog";
 import Link from "next/link";
-
-interface Author {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  author: Author;
-  category: Category;
-  language: string;
-  coverPhoto: string | null;
-  fileUrl: string;
-  pages: number;
-  size: number;
-  downloads: number;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Book } from "@/types";
 
 interface BooksTableProps {
   books: Book[];
@@ -129,8 +96,10 @@ export default function BooksTable({
     onBookUpdated?.();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-UK", {
+  const formatDate = (date?: Date) => {
+    if (!date) return "N/A";
+
+    return new Date(date).toLocaleDateString("en-UK", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -165,11 +134,11 @@ export default function BooksTable({
               <TableCell>
                 <div className="font-medium">{book.title}</div>
                 <div className="text-sm text-muted-foreground">
-                  {book.author.name}
+                  {book.author?.name}
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant="secondary">{book.category.name}</Badge>
+                <Badge variant="secondary">{book.category?.name}</Badge>
               </TableCell>
               <TableCell>
                 <Badge variant={book.active ? "default" : "outline"}>

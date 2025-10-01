@@ -17,40 +17,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import BooksSearch from "@/components/admin/books/BooksSearch";
 import BooksTable from "@/components/admin/books/BooksTable";
-
-interface Author {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  author: Author;
-  category: Category;
-  language: string;
-  coverPhoto: string | null;
-  fileUrl: string;
-  pages: number;
-  size: number;
-  downloads: number;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Book } from "@/types";
 
 interface BooksResponse {
   books: Book[];

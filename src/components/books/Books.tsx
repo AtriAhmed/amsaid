@@ -50,7 +50,7 @@ const Books = ({ books }: BooksProps) => {
 
   return (
     <section id="books" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             المكتبة الإسلامية
@@ -65,14 +65,14 @@ const Books = ({ books }: BooksProps) => {
             <p className="text-muted-foreground text-lg">لا توجد كتب متاحة</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {books.map((book) => (
               <Card
                 key={book.id}
-                className="group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
+                className="flex flex-col group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
               >
                 <div
-                  className="relative h-48 overflow-hidden cursor-pointer"
+                  className="relative h-60 overflow-hidden cursor-pointer"
                   onClick={() => handleBookClick(book)}
                 >
                   <Image
@@ -83,7 +83,17 @@ const Books = ({ books }: BooksProps) => {
                     }
                     fill
                     alt={book.title}
-                    className="object-cover group-hover:scale-105 transition-smooth duration-100"
+                    className="object-cover group-hover:scale-105 transition-smooth duration-100 blur-md"
+                  />
+                  <Image
+                    src={
+                      book.coverPhoto
+                        ? getMediaUrl(book.coverPhoto)
+                        : "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop&crop=faces"
+                    }
+                    fill
+                    alt={book.title}
+                    className="object-contain group-hover:scale-105 transition-smooth duration-100"
                   />
                   <div className="absolute inset-0 bg-primary/20 hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center duration-200">
                     <Button variant="hero" size="lg">
@@ -101,7 +111,7 @@ const Books = ({ books }: BooksProps) => {
                   )}
                 </div>
 
-                <CardContent className="px-6 pt-2 pb-4">
+                <CardContent className="grow flex flex-col px-6 pt-2 pb-4">
                   <h3 className="text-xl font-semibold text-foreground mb-1">
                     {book.title}
                   </h3>
@@ -112,7 +122,7 @@ const Books = ({ books }: BooksProps) => {
                     {book.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 mt-auto">
                     <div className="flex items-center">
                       <FileText className="mr-1 h-4 w-4" />
                       {book.pages} صفحة
@@ -120,11 +130,11 @@ const Books = ({ books }: BooksProps) => {
                     <div>{formatFileSize(book.size)}</div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <Button
                       variant="default"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 py-1.5"
                       onClick={() => handleBookClick(book)}
                     >
                       <BookOpen className="mr-2 h-4 w-4" />
@@ -133,7 +143,7 @@ const Books = ({ books }: BooksProps) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 py-1.5"
                       onClick={() => handleDownload(book)}
                     >
                       <Download className="mr-2 h-4 w-4" />

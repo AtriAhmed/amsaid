@@ -59,7 +59,7 @@ async function getBooks(): Promise<Book[]> {
       where: {
         active: true,
       },
-      take: 3,
+      take: 4,
       include: {
         author: {
           select: {

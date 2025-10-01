@@ -16,40 +16,7 @@ import {
   Globe,
 } from "lucide-react";
 import { getMediaUrl } from "@/lib/utils";
-
-interface Author {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  author: Author;
-  category: Category;
-  language: string;
-  coverPhoto: string | null;
-  fileUrl: string;
-  pages: number;
-  size: number;
-  downloads: number;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Book } from "@/types";
 
 interface ViewBookDialogProps {
   open: boolean;
@@ -62,8 +29,10 @@ export default function ViewBookDialog({
   onOpenChange,
   book,
 }: ViewBookDialogProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ar", {
+  const formatDate = (date?: Date) => {
+    if (!date) return "N/A";
+
+    return new Date(date).toLocaleDateString("ar", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -102,13 +71,13 @@ export default function ViewBookDialog({
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">المؤلف:</span>
-              <span className="font-medium">{book.author.name}</span>
+              <span className="font-medium">{book.author?.name}</span>
             </div>
 
             <div className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">الفئة:</span>
-              <Badge variant="secondary">{book.category.name}</Badge>
+              <Badge variant="secondary">{book.category?.name}</Badge>
             </div>
 
             <div className="flex items-center gap-2">
@@ -147,11 +116,11 @@ export default function ViewBookDialog({
           </div>
 
           {/* Tags */}
-          {book.tags.length > 0 && (
+          {book.tags?.length! > 0 && (
             <div className="space-y-2">
               <span className="text-sm text-muted-foreground">العلامات:</span>
               <div className="flex flex-wrap gap-2">
-                {book.tags.map((tag) => (
+                {book.tags?.map((tag) => (
                   <Badge key={tag.id} variant="outline">
                     {tag.name}
                   </Badge>
@@ -169,7 +138,7 @@ export default function ViewBookDialog({
           </div>
 
           {/* Author Bio */}
-          {book.author.bio && (
+          {book.author?.bio && (
             <div className="space-y-2">
               <span className="text-sm text-muted-foreground">
                 نبذة عن المؤلف:
