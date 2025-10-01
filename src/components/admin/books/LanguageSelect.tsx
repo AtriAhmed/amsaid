@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { LANGUAGES } from "@/lib/constants";
 
 interface LanguageSelectProps {
   value: string;
@@ -14,19 +15,13 @@ interface LanguageSelectProps {
   disabled?: boolean;
 }
 
-const LANGUAGES = [
-  { value: "ar", label: "العربية" },
-  { value: "en", label: "الإنجليزية" },
-  { value: "fr", label: "الفرنسية" },
-  { value: "es", label: "الإسبانية" },
-  { value: "de", label: "الألمانية" },
-];
-
 const LanguageSelect = ({ value, onChange, disabled }: LanguageSelectProps) => {
+  const selectedLabel = LANGUAGES.find((lang) => lang.value === value)?.label;
+
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder="اختر اللغة" />
+        {selectedLabel || "اختر اللغة"}
       </SelectTrigger>
       <SelectContent>
         {LANGUAGES.map((lang) => (

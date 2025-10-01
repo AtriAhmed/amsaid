@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import axios from "axios";
+import AuthorCombobox from "@/components/admin/books/AuthorCombobox";
+import CategorySelect from "@/components/admin/books/CategorySelect";
+import FileDropzone from "@/components/admin/books/FileDropzone";
+import LanguageSelect from "@/components/admin/books/LanguageSelect";
+import TagsCombobox from "@/components/admin/books/TagsCombobox";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,17 +13,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import AuthorCombobox from "@/components/admin/books/AuthorCombobox";
-import TagsCombobox from "@/components/admin/books/TagsCombobox";
-import FileDropzone from "@/components/admin/books/FileDropzone";
-import CategorySelect from "@/components/admin/books/CategorySelect";
-import LanguageSelect from "@/components/admin/books/LanguageSelect";
-import Link from "next/link";
+import { Book } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 // Validation schema including file fields
 const bookSchema = z.object({
@@ -54,27 +55,6 @@ const bookSchema = z.object({
 
 type BookFormData = z.infer<typeof bookSchema>;
 
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  author: {
-    id: number;
-    name: string;
-  };
-  category: {
-    id: number;
-    name: string;
-  };
-  language: string;
-  coverPhoto: string | null;
-  fileUrl: string;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
-
 interface BookFormProps {
   initialBook?: Book;
 }
@@ -96,26 +76,16 @@ const BookForm = ({ initialBook }: BookFormProps) => {
     defaultValues: {
       title: initialBook?.title || "",
       description: initialBook?.description || "",
-      author: initialBook?.author.id || "",
-      categoryId: initialBook?.category.id || 0,
+      author: initialBook?.author?.id || "",
+      categoryId: initialBook?.category?.id || 0,
       language: initialBook?.language || "",
-      tags: initialBook?.tags.map((tag) => tag.id) || [],
+      tags: initialBook?.tags?.map((tag) => tag.id) || [],
       coverPhoto: initialBook?.coverPhoto || undefined,
       pdfFile: initialBook?.fileUrl || undefined,
     },
   });
 
-  // Watch form values
-  const watchedAuthor = watch("author");
-  const watchedCategoryId = watch("categoryId");
-  const watchedLanguage = watch("language");
-  const watchedTags = watch("tags");
-  const watchedCoverPhoto = watch("coverPhoto");
-  const watchedPdfFile = watch("pdfFile");
-
   const data = watch();
-  console.log("-------------------- data --------------------");
-  console.log(data);
 
   // Populate form with initial book data
   useEffect(() => {
@@ -124,10 +94,10 @@ const BookForm = ({ initialBook }: BookFormProps) => {
       reset({
         title: initialBook.title,
         description: initialBook.description,
-        author: initialBook.author.id,
-        categoryId: initialBook.category.id,
+        author: initialBook.author?.id,
+        categoryId: initialBook.category?.id,
         language: initialBook.language,
-        tags: initialBook.tags.map((tag) => tag.id),
+        tags: initialBook.tags?.map((tag) => tag.id),
         coverPhoto: initialBook.coverPhoto || undefined,
         pdfFile: initialBook.fileUrl || undefined,
       });
@@ -282,6 +252,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                       id="title"
                       placeholder="مثال: أحكام الصلاة"
                       {...register("title")}
+                      defaultValue={data.title}
                     />
                     {errors.title && (
                       <p className="text-sm text-destructive">
@@ -293,7 +264,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="author">المؤلف *</Label>
                     <AuthorCombobox
-                      value={watchedAuthor}
+                      value={data.author}
                       onChange={(value) => {
                         setValue("author", value || "", {
                           shouldValidate: true,
@@ -318,6 +289,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     placeholder="وصف مختصر عن محتوى الكتاب..."
                     rows={4}
                     {...register("description")}
+                    defaultValue={data.description}
                   />
                   {errors.description && (
                     <p className="text-sm text-destructive">
@@ -330,7 +302,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="category">الفئة *</Label>
                     <CategorySelect
-                      value={watchedCategoryId || undefined}
+                      value={data.categoryId || undefined}
                       onChange={(value) =>
                         setValue("categoryId", value, {
                           shouldValidate: true,
@@ -349,7 +321,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   <div className="space-y-2">
                     <Label htmlFor="language">اللغة *</Label>
                     <LanguageSelect
-                      value={watchedLanguage}
+                      value={data.language}
                       onChange={(value) => {
                         setValue("language", value, {
                           shouldValidate: true,
@@ -381,7 +353,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                       "image/*": [".jpeg", ".jpg", ".png", ".webp"],
                     }}
                     maxSize={20 * 1024 * 1024} // 20MB
-                    value={watchedCoverPhoto}
+                    value={data.coverPhoto}
                     onRemove={handleRemoveCoverPhoto}
                     placeholder="اسحب وأفلت صورة الغلاف هنا أو انقر للاختيار"
                     disabled={isSubmitting}
@@ -408,7 +380,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                       "application/pdf": [".pdf"],
                     }}
                     maxSize={200 * 1024 * 1024} // 200MB
-                    value={watchedPdfFile}
+                    value={data.pdfFile}
                     onRemove={handleRemovePdf}
                     placeholder="اسحب وأفلت ملف PDF هنا أو انقر للاختيار"
                     disabled={isSubmitting}
@@ -423,7 +395,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 <div className="space-y-2">
                   <Label>الكلمات المفتاحية</Label>
                   <TagsCombobox
-                    value={watchedTags || []}
+                    value={data.tags || []}
                     onChange={(value) => {
                       setValue("tags", value, {
                         shouldValidate: true,

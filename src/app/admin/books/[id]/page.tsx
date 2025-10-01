@@ -1,27 +1,8 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BookForm from "@/components/admin/books/BookForm";
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  author: {
-    id: number;
-    name: string;
-  };
-  category: {
-    id: number;
-    name: string;
-  };
-  language: string;
-  coverPhoto: string | null;
-  fileUrl: string;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+import { Book } from "@/types";
+import { SWRConfig } from "swr";
 
 interface EditBookProps {
   params: Promise<{ id: string }>;
@@ -70,15 +51,75 @@ async function getBook(id: string): Promise<Book | null> {
   }
 }
 
+async function getAuthors() {
+  try {
+    const authors = await prisma.person.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return authors;
+  } catch (error) {
+    console.error("Error fetching authors:", error);
+    return [];
+  }
+}
+
+async function getTags() {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return tags;
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    return [];
+  }
+}
+
+async function getBookCategories() {
+  try {
+    const categories = await prisma.bookCategory.findMany({
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return { data: categories };
+  } catch (error) {
+    console.error("Error fetching book categories:", error);
+    return [];
+  }
+}
 const EditBook = async ({ params }: EditBookProps) => {
   const { id } = await params;
   const book = await getBook(id);
+  const authors = await getAuthors();
+  const tags = await getTags();
+  const bookCategories = await getBookCategories();
 
   if (!book) {
     notFound();
   }
 
-  return <BookForm initialBook={book} />;
+  return (
+    <SWRConfig value={{ fallback: { authors, tags, bookCategories } }}>
+      <BookForm initialBook={book} />;
+    </SWRConfig>
+  );
 };
 
 export default EditBook;

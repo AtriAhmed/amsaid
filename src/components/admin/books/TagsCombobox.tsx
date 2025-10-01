@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Tag {
   id: number;
@@ -54,6 +54,7 @@ export default function TagsCombobox({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
+  const config = useSWRConfig();
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -63,8 +64,12 @@ export default function TagsCombobox({
     error,
     isLoading,
     mutate: revalidate,
-  } = useSWR<Tag[]>(["tags", debouncedSearch, limit], () =>
-    fetcher("tags", debouncedSearch, limit)
+  } = useSWR<Tag[]>(
+    ["tags", debouncedSearch, limit],
+    () => fetcher("tags", debouncedSearch, limit),
+    {
+      fallbackData: config?.fallback?.tags,
+    }
   );
 
   const handleSearch = (search: string) => {

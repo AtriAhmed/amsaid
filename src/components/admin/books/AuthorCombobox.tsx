@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Author {
   id: number;
@@ -35,7 +35,7 @@ interface AuthorComboboxProps {
 }
 
 // SWR fetcher function
-const fetcher = async (_key: string, search: string, limit: number) => {
+const fetcher = async (search: string, limit: number) => {
   const res = await axios.get<Author[]>("/api/authors", {
     params: {
       search,
@@ -54,6 +54,7 @@ export default function AuthorCombobox({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
+  const config = useSWRConfig();
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -62,8 +63,10 @@ export default function AuthorCombobox({
     data: authors = [],
     error,
     isLoading,
-  } = useSWR<Author[]>(["authors", debouncedSearch, limit], () =>
-    fetcher("authors", debouncedSearch, limit)
+  } = useSWR<Author[]>(
+    ["authors", debouncedSearch, limit],
+    () => fetcher(debouncedSearch, limit),
+    { fallbackData: config?.fallback?.authors }
   );
 
   const handleSearch = (search: string) => {

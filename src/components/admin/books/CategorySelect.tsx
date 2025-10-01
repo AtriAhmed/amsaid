@@ -1,19 +1,14 @@
 "use client";
 
-import axios from "axios";
-import useSWR from "swr";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-
-interface BookCategory {
-  id: number;
-  name: string;
-}
+import { BookCategory } from "@/types";
+import axios from "axios";
+import useSWR, { useSWRConfig } from "swr";
 
 interface CategorySelectProps {
   value?: number | null;
@@ -26,17 +21,27 @@ const fetcher = async () => {
   return res.data;
 };
 
-const CategorySelect = ({ value, onChange, disabled }: CategorySelectProps) => {
-  // axios-based fetcher for SWR
+export default function CategorySelect({
+  value,
+  onChange,
+  disabled,
+}: CategorySelectProps) {
+  const config = useSWRConfig();
 
   // Fetch categories using SWR
   const {
     data: categoriesData,
     error: categoriesError,
     isLoading: categoriesLoading,
-  } = useSWR("/api/categories/books", fetcher);
+  } = useSWR("/api/categories/books", fetcher, {
+    fallbackData: config?.fallback?.bookCategories, // Default category
+  });
 
   const categories = categoriesData?.data || [];
+
+  const selectedLabel = value
+    ? categories.find((cat: BookCategory) => cat.id === value)?.name
+    : "اختر الفئة";
 
   return (
     <Select
@@ -44,19 +49,9 @@ const CategorySelect = ({ value, onChange, disabled }: CategorySelectProps) => {
       onValueChange={(value) => {
         onChange(parseInt(value));
       }}
-      disabled={categoriesLoading || disabled}
+      disabled={disabled}
     >
-      <SelectTrigger className="w-full">
-        <SelectValue
-          placeholder={
-            categoriesLoading
-              ? "جاري تحميل الفئات..."
-              : categoriesError
-              ? "خطأ في تحميل الفئات"
-              : "اختر الفئة"
-          }
-        />
-      </SelectTrigger>
+      <SelectTrigger className="w-full">{selectedLabel}</SelectTrigger>
       <SelectContent>
         {categories.map((category: BookCategory) => (
           <SelectItem key={category.id} value={category.id.toString()}>
@@ -66,6 +61,4 @@ const CategorySelect = ({ value, onChange, disabled }: CategorySelectProps) => {
       </SelectContent>
     </Select>
   );
-};
-
-export default CategorySelect;
+}
