@@ -68,21 +68,27 @@ export default function Videos({ videos }: VideosProps) {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {videos.map((video) => (
               <Card
                 key={video.id}
-                className="group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
+                className="flex flex-col group hover:shadow-elegant hover:shadow-lg hover:scale-[1.02] transition-smooth overflow-hidden duration-200"
               >
                 <div
-                  className="relative h-48 overflow-hidden cursor-pointer"
+                  className="relative h-60 overflow-hidden cursor-pointer"
                   onClick={() => handleVideoClick(video)}
                 >
                   <Image
                     src={getMediaUrl(video.poster)}
                     fill
                     alt={video.title}
-                    className="object-cover group-hover:scale-105 transition-smooth duration-100"
+                    className="object-cover group-hover:scale-105 transition-smooth duration-100 blur-md"
+                  />
+                  <Image
+                    src={getMediaUrl(video.poster)}
+                    fill
+                    alt={video.title}
+                    className="object-contain group-hover:scale-105 transition-smooth duration-100"
                   />
                   <div className="absolute inset-0 bg-primary/20 hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center duration-200">
                     <Button variant="hero" size="lg">
@@ -93,9 +99,14 @@ export default function Videos({ videos }: VideosProps) {
                   <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
                     فيديو
                   </div>
+                  {video.category && (
+                    <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                      {video.category.name}
+                    </div>
+                  )}
                 </div>
 
-                <CardContent className="px-6 pt-2 pb-4">
+                <CardContent className="grow flex flex-col px-6 pt-2 pb-4">
                   <h3 className="text-xl font-semibold text-foreground mb-1">
                     {video.title}
                   </h3>
@@ -106,19 +117,18 @@ export default function Videos({ videos }: VideosProps) {
                     {video.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 mt-auto">
                     <div className="flex items-center">
                       <Clock className="mr-1 h-4 w-4" />
                       {formatDuration(video.duration)}
                     </div>
-                    <div>{video.category?.name}</div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <Button
                       variant="default"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 py-1.5"
                       onClick={() => handleVideoClick(video)}
                     >
                       <Play className="mr-2 h-4 w-4" />
@@ -127,7 +137,7 @@ export default function Videos({ videos }: VideosProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 py-1.5"
                       onClick={() => setViewDialog({ open: true, video })}
                     >
                       معلومات أكثر

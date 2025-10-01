@@ -13,7 +13,7 @@ async function getVideos(): Promise<Video[]> {
       where: {
         active: true,
       },
-      take: 3,
+      take: 4,
       include: {
         speakers: {
           select: {
