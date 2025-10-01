@@ -270,11 +270,13 @@ export async function POST(req: Request) {
     const pdfPath = await uploadFile(pdfFile);
 
     // Handle tags
-    const tagRecords = [];
+    const tagConnectOperations = [];
+    const tagConnectOrCreateOperations = [];
+
     for (const tag of validation.data.tags) {
-      let tagRecord;
       if (typeof tag === "number") {
-        tagRecord = await prisma.tag.findUnique({
+        // Connect by ID - verify tag exists
+        const tagRecord = await prisma.tag.findUnique({
           where: { id: tag },
         });
 
@@ -284,19 +286,15 @@ export async function POST(req: Request) {
             { status: 404 }
           );
         }
-      } else {
-        // Find existing tag or create new one
-        tagRecord = await prisma.tag.findUnique({
-          where: { name: tag },
-        });
 
-        if (!tagRecord) {
-          tagRecord = await prisma.tag.create({
-            data: { name: tag },
-          });
-        }
+        tagConnectOperations.push({ id: tag });
+      } else {
+        // Connect or create by name
+        tagConnectOrCreateOperations.push({
+          where: { name: tag },
+          create: { name: tag },
+        });
       }
-      tagRecords.push(tagRecord);
     }
 
     // Create the book
@@ -312,7 +310,12 @@ export async function POST(req: Request) {
         pages,
         size: sizeInKB,
         tags: {
-          create: tagRecords,
+          ...(tagConnectOperations.length > 0 && {
+            connect: tagConnectOperations,
+          }),
+          ...(tagConnectOrCreateOperations.length > 0 && {
+            connectOrCreate: tagConnectOrCreateOperations,
+          }),
         },
       },
       include: {

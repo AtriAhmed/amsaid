@@ -12,3 +12,9 @@ export function getMediaUrl(path: string | null | undefined) {
 
   return "/api/media?path=" + encodeURIComponent(path);
 }
+
+export function getBookMediaUrl(id: number | null | undefined) {
+  if (!id) return "";
+
+  return `/api/books/${id}/media`;
+}

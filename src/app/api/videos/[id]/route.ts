@@ -273,14 +273,12 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
     // Handle speakers
     let speakerOperations: any = {};
     if (validatedData.speakers !== undefined) {
-      // First, delete existing speaker connections
-      speakerOperations.deleteMany = {};
+      const speakerIds = [];
 
-      // Then create new ones
-      const speakerConnections = [];
       for (const speakerInput of validatedData.speakers) {
         let speakerRecord;
         if (typeof speakerInput === "number") {
+          // Connect by ID - verify speaker exists
           speakerRecord = await prisma.person.findUnique({
             where: { id: speakerInput },
           });
@@ -291,16 +289,16 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
             );
           }
         } else {
+          // Create new speaker (since name is not unique, we create a new one)
           speakerRecord = await prisma.person.create({
             data: { name: speakerInput },
           });
         }
-        speakerConnections.push({ personId: speakerRecord.id });
+        speakerIds.push(speakerRecord.id);
       }
 
-      if (speakerConnections.length > 0) {
-        speakerOperations.create = speakerConnections;
-      }
+      // Use set to replace all existing speaker relationships
+      speakerOperations.set = speakerIds.map((id) => ({ id }));
     }
 
     // Handle place
@@ -383,14 +381,12 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
     // Handle tags
     let tagOperations: any = {};
     if (validatedData.tags !== undefined) {
-      // First, delete existing tag connections
-      tagOperations.deleteMany = {};
+      const tagIds = [];
 
-      // Then create new ones
-      const tagConnections = [];
       for (const tagInput of validatedData.tags) {
         let tagRecord;
         if (typeof tagInput === "number") {
+          // Connect by ID - verify tag exists
           tagRecord = await prisma.tag.findUnique({
             where: { id: tagInput },
           });
@@ -401,18 +397,18 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/videos/[id]">) {
             );
           }
         } else {
+          // Find or create by name
           tagRecord = await prisma.tag.upsert({
             where: { name: tagInput },
             update: {},
             create: { name: tagInput },
           });
         }
-        tagConnections.push({ tagId: tagRecord.id });
+        tagIds.push(tagRecord.id);
       }
 
-      if (tagConnections.length > 0) {
-        tagOperations.create = tagConnections;
-      }
+      // Use set to replace all existing tag relationships
+      tagOperations.set = tagIds.map((id) => ({ id }));
     }
 
     // Update the video

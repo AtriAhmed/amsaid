@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { getMediaUrl } from "@/lib/utils";
+import { getBookMediaUrl, getMediaUrl } from "@/lib/utils";
 import { useState } from "react";
 import { X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ const BookModal = ({ book, isOpen, onOpenChange }: BookModalProps) => {
   const downloadBook = () => {
     if (book) {
       const link = document.createElement("a");
-      link.href = getMediaUrl(book.fileUrl);
+      link.href = getBookMediaUrl(book.id);
       link.download = `${book.title}.pdf`;
       document.body.appendChild(link);
       link.click();
@@ -99,7 +99,7 @@ const BookModal = ({ book, isOpen, onOpenChange }: BookModalProps) => {
             )}
             {book && (
               <iframe
-                src={getMediaUrl(book.fileUrl)}
+                src={getBookMediaUrl(book.id)}
                 className="w-full h-full border-0"
                 title={book.title}
                 onLoad={handleIframeLoad}

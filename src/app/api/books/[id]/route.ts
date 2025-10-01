@@ -94,16 +94,6 @@ export async function GET(req: Request, ctx: RouteContext<"/api/books/[id]">) {
       return NextResponse.json({ error: "Book not found" }, { status: 404 });
     }
 
-    // Increment downloads count
-    await prisma.book.update({
-      where: { id },
-      data: {
-        downloads: {
-          increment: 1,
-        },
-      },
-    });
-
     return NextResponse.json(book);
   } catch (error: any) {
     console.error("Error fetching book:", error);
@@ -312,44 +302,35 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/books/[id]">) {
     // Handle tags
     let tagOperations: any = {};
     if (validatedData.tags !== undefined) {
-      // Delete existing tag relationships
-      tagOperations.deleteMany = {};
+      const tagIds = [];
 
-      // Create new tag relationships
-      if (validatedData.tags.length > 0) {
-        const tagRecords = [];
-        for (const tag of validatedData.tags) {
-          let tagRecord;
-          if (typeof tag === "number") {
-            tagRecord = await prisma.tag.findUnique({
-              where: { id: tag },
-            });
+      for (const tag of validatedData.tags) {
+        let tagRecord;
+        if (typeof tag === "number") {
+          // Connect by ID - verify tag exists
+          tagRecord = await prisma.tag.findUnique({
+            where: { id: tag },
+          });
 
-            if (!tagRecord) {
-              return NextResponse.json(
-                { error: `Tag with ID ${tag} not found` },
-                { status: 404 }
-              );
-            }
-          } else {
-            // Find existing tag or create new one
-            tagRecord = await prisma.tag.findUnique({
-              where: { name: tag },
-            });
-
-            if (!tagRecord) {
-              tagRecord = await prisma.tag.create({
-                data: { name: tag },
-              });
-            }
+          if (!tagRecord) {
+            return NextResponse.json(
+              { error: `Tag with ID ${tag} not found` },
+              { status: 404 }
+            );
           }
-          tagRecords.push(tagRecord);
+        } else {
+          // Find or create by name
+          tagRecord = await prisma.tag.upsert({
+            where: { name: tag },
+            update: {},
+            create: { name: tag },
+          });
         }
-
-        tagOperations.create = tagRecords.map((tag) => ({
-          tagId: tag.id,
-        }));
+        tagIds.push(tagRecord.id);
       }
+
+      // Use set to replace all existing tag relationships
+      tagOperations.set = tagIds.map((id) => ({ id }));
     }
 
     // Update the book

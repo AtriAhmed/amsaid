@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Download, FileText } from "lucide-react";
-import { getMediaUrl } from "@/lib/utils";
+import { getBookMediaUrl, getMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import { Book } from "@/types";
 import { useState } from "react";
-import BookModal from "./BookModal";
+import BookModal from "./BookDialog";
 
 interface BooksProps {
   books: Book[];
@@ -41,7 +41,7 @@ const Books = ({ books }: BooksProps) => {
 
   const handleDownload = (book: Book) => {
     const link = document.createElement("a");
-    link.href = getMediaUrl(book.fileUrl);
+    link.href = getBookMediaUrl(book.id);
     link.download = `${book.title}.pdf`;
     document.body.appendChild(link);
     link.click();
