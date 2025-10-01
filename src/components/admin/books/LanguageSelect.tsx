@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { LANGUAGES } from "@/lib/constants";
 
@@ -13,14 +12,20 @@ interface LanguageSelectProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
-const LanguageSelect = ({ value, onChange, disabled }: LanguageSelectProps) => {
+const LanguageSelect = ({
+  value,
+  onChange,
+  disabled,
+  ref,
+}: LanguageSelectProps) => {
   const selectedLabel = LANGUAGES.find((lang) => lang.value === value)?.label;
 
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full" ref={ref}>
         {selectedLabel || "اختر اللغة"}
       </SelectTrigger>
       <SelectContent>

@@ -20,23 +20,19 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
 import useSWR, { useSWRConfig } from "swr";
-
-interface Author {
-  id: number;
-  name: string;
-  bio?: string;
-}
+import { Person } from "@/types";
 
 interface AuthorComboboxProps {
   value: number | string | null;
   onChange: (value: number | string | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
 // SWR fetcher function
 const fetcher = async (search: string, limit: number) => {
-  const res = await axios.get<Author[]>("/api/authors", {
+  const res = await axios.get<Person[]>("/api/authors", {
     params: {
       search,
       limit,
@@ -50,6 +46,7 @@ export default function AuthorCombobox({
   onChange,
   placeholder = "اختر مؤلف...",
   disabled = false,
+  ref,
 }: AuthorComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -63,7 +60,7 @@ export default function AuthorCombobox({
     data: authors = [],
     error,
     isLoading,
-  } = useSWR<Author[]>(
+  } = useSWR<Person[]>(
     ["authors", debouncedSearch, limit],
     () => fetcher(debouncedSearch, limit),
     { fallbackData: config?.fallback?.authors }
@@ -104,6 +101,7 @@ export default function AuthorCombobox({
           size="sm"
           className="w-full justify-between"
           disabled={disabled}
+          ref={ref}
         >
           {displayValue || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

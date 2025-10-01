@@ -262,6 +262,11 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   </div>
 
                   <div className="space-y-2">
+                    {/* <div
+                      tabIndex={-1}
+                      ref={register("author")?.ref}
+                      className="sr-only"
+                    ></div> */}
                     <Label htmlFor="author">المؤلف *</Label>
                     <AuthorCombobox
                       value={data.author}
@@ -273,6 +278,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                       }}
                       placeholder="اختر أو أضف مؤلف..."
                       disabled={isSubmitting}
+                      ref={register("author")?.ref}
                     />
                     {errors.author && (
                       <p className="text-sm text-destructive">
@@ -283,7 +289,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">وصف الكتاب *</Label>
+                  <Label htmlFor="description">وصف الكتاب</Label>
                   <Textarea
                     id="description"
                     placeholder="وصف مختصر عن محتوى الكتاب..."
@@ -310,6 +316,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                         })
                       }
                       disabled={isSubmitting}
+                      ref={register("categoryId")?.ref}
                     />
                     {errors.categoryId && (
                       <p className="text-sm text-destructive">
@@ -329,6 +336,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                         });
                       }}
                       disabled={isSubmitting}
+                      ref={register("language")?.ref}
                     />
                     {errors.language && (
                       <p className="text-sm text-destructive">
@@ -339,14 +347,12 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>
-                    صورة الغلاف *
-                    {mode === "edit" && initialBook?.coverPhoto && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        (اترك فارغاً للاحتفاظ بالصورة الحالية)
-                      </span>
-                    )}
-                  </Label>
+                  <div
+                    tabIndex={-1}
+                    ref={register("coverPhoto")?.ref}
+                    className="sr-only translate-y-[100px]"
+                  ></div>
+                  <Label>صورة الغلاف *</Label>
                   <FileDropzone
                     onDrop={handleCoverPhotoDrop}
                     accept={{
@@ -366,14 +372,12 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>
-                    ملف PDF *
-                    {mode === "edit" && (
-                      <span className="text-sm text-muted-foreground ml-2">
-                        (اترك فارغاً للاحتفاظ بالملف الحالي)
-                      </span>
-                    )}
-                  </Label>
+                  <div
+                    tabIndex={-1}
+                    ref={register("pdfFile")?.ref}
+                    className="sr-only translate-y-[100px]"
+                  ></div>
+                  <Label>ملف PDF *</Label>
                   <FileDropzone
                     onDrop={handlePdfDrop}
                     accept={{

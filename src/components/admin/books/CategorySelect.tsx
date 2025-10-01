@@ -14,6 +14,7 @@ interface CategorySelectProps {
   value?: number | null;
   onChange: (value: number) => void;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
 const fetcher = async () => {
@@ -25,6 +26,7 @@ export default function CategorySelect({
   value,
   onChange,
   disabled,
+  ref,
 }: CategorySelectProps) {
   const config = useSWRConfig();
 
@@ -51,7 +53,9 @@ export default function CategorySelect({
       }}
       disabled={disabled}
     >
-      <SelectTrigger className="w-full">{selectedLabel}</SelectTrigger>
+      <SelectTrigger ref={ref} className="w-full">
+        {selectedLabel}
+      </SelectTrigger>
       <SelectContent>
         {categories.map((category: BookCategory) => (
           <SelectItem key={category.id} value={category.id.toString()}>
