@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,14 +14,15 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const editCategorySchema = z.object({
-  name: z
-    .string()
-    .min(1, "اسم الفئة مطلوب")
-    .max(100, "يجب أن يكون اسم الفئة أقل من 100 حرف"),
-});
+const createEditCategorySchema = (t: (key: string) => string) =>
+  z.object({
+    name: z
+      .string()
+      .min(1, t("category name required"))
+      .max(100, t("category name less than 100 chars")),
+  });
 
-type EditCategoryForm = z.infer<typeof editCategorySchema>;
+type EditCategoryForm = z.infer<ReturnType<typeof createEditCategorySchema>>;
 
 interface Category {
   id: number;
@@ -45,6 +47,7 @@ export default function EditCategoryDialog({
   category,
   onCategoryUpdated,
 }: EditCategoryDialogProps) {
+  const t = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -68,7 +71,8 @@ export default function EditCategoryDialog({
     try {
       setIsLoading(true);
 
-      // Validate with Zod
+      // Validate with Zod using translated messages
+      const editCategorySchema = createEditCategorySchema(t);
       const validatedData = editCategorySchema.parse(data);
 
       await axios.put(`/api/categories/books/${category.id}`, validatedData);
@@ -97,20 +101,20 @@ export default function EditCategoryDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>تعديل فئة الكتب</DialogTitle>
+          <DialogTitle>{t("edit book category")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">اسم الفئة *</Label>
+              <Label htmlFor="name">{t("category name")} *</Label>
               <Input
                 id="name"
-                placeholder="مثال: الفقه"
+                placeholder={t("example fiqh")}
                 {...register("name", {
-                  required: "اسم الفئة مطلوب",
+                  required: t("category name required"),
                   maxLength: {
                     value: 100,
-                    message: "يجب أن يكون اسم الفئة أقل من 100 حرف",
+                    message: t("category name less than 100 chars"),
                   },
                 })}
                 disabled={isLoading}
@@ -129,10 +133,10 @@ export default function EditCategoryDialog({
               onClick={() => handleOpenChange(false)}
               disabled={isLoading}
             >
-              إلغاء
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
+              {isLoading ? t("saving") : t("save changes")}
             </Button>
           </DialogFooter>
         </form>

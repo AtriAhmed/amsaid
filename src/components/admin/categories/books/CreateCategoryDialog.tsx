@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,11 +17,12 @@ import { z } from "zod";
 import { Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Note: We'll need to handle validation messages dynamically
 const createCategorySchema = z.object({
   name: z
     .string()
-    .min(1, "اسم الفئة مطلوب")
-    .max(100, "يجب أن يكون اسم الفئة أقل من 100 حرف"),
+    .min(1, "category name required")
+    .max(100, "category name less than 100 chars"),
 });
 
 type CreateCategoryForm = z.infer<typeof createCategorySchema>;
@@ -32,6 +34,7 @@ interface CreateCategoryDialogProps {
 export default function CreateCategoryDialog({
   onCategoryCreated,
 }: CreateCategoryDialogProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -79,26 +82,26 @@ export default function CreateCategoryDialog({
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 ml-2" />
-          إضافة فئة جديدة
+          {t("add new category")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>إضافة فئة كتب جديدة</DialogTitle>
+          <DialogTitle>{t("add new book category")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">اسم الفئة *</Label>
+              <Label htmlFor="name">{t("category name")} *</Label>
               <Input
                 id="name"
-                placeholder="مثال: الفقه"
+                placeholder={t("example fiqh")}
                 {...register("name")}
                 disabled={isLoading}
               />
               {errors.name && (
                 <p className="text-sm text-destructive">
-                  {errors.name.message}
+                  {t(errors.name.message as any)}
                 </p>
               )}
             </div>
@@ -110,10 +113,10 @@ export default function CreateCategoryDialog({
               onClick={() => handleOpenChange(false)}
               disabled={isLoading}
             >
-              إلغاء
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "جاري الحفظ..." : "حفظ"}
+              {isLoading ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </form>

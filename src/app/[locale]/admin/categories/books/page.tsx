@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -52,6 +53,7 @@ const fetcher = async (
 };
 
 export default function CategoriesPage() {
+  const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 10;
@@ -104,9 +106,11 @@ export default function CategoriesPage() {
         {/* Header */}
         <div className="flex gap-2 justify-between items-center mb-8 flex-wrap">
           <div>
-            <h1 className="text-3xl font-bold mb-2">إدارة فئات الكتب</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              {t("manage book categories")}
+            </h1>
             <p className="text-muted-foreground">
-              إضافة وتعديل وحذف فئات الكتب المتاحة
+              {t("add edit delete book categories")}
             </p>
           </div>
           <div className="ms-auto">
@@ -120,19 +124,23 @@ export default function CategoriesPage() {
         {/* Categories Table */}
         <Card>
           <CardHeader>
-            <CardTitle>فئات الكتب المتاحة ({pagination.total})</CardTitle>
-            <CardDescription>جميع فئات الكتب المضافة في النظام</CardDescription>
+            <CardTitle>
+              {t("available book categories")} ({pagination.total})
+            </CardTitle>
+            <CardDescription>
+              {t("all book categories in system")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">جاري التحميل...</p>
+                <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
                 <p className="text-destructive">
-                  خطأ في تحميل الفئات:{" "}
-                  {(error as any)?.message ?? "حدث خطأ غير معروف"}
+                  {t("error loading categories")}:{" "}
+                  {(error as any)?.message ?? t("unknown error occurred")}
                 </p>
                 {/* Optionally add a retry button */}
                 <div className="mt-4">
@@ -140,7 +148,7 @@ export default function CategoriesPage() {
                     onClick={() => revalidate()}
                     className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
                   >
-                    إعادة المحاولة
+                    {t("retry")}
                   </button>
                 </div>
               </div>
