@@ -18,47 +18,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import VideosSearch from "@/components/admin/videos/VideosSearch";
 import VideosTable from "@/components/admin/videos/VideosTable";
-
-interface Speaker {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Place {
-  id: number;
-  name: string;
-  address: string | null;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Speaker[];
-  category: Category;
-  place: Place | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  duration: number;
-  views: number;
-  active: boolean;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Video } from "@/types";
 
 interface VideosResponse {
   videos: Video[];
