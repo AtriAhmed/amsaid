@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Upload, X, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, getMediaUrl } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface FileDropzoneProps {
   onDrop: (files: File[]) => void;
@@ -25,16 +26,20 @@ export default function FileDropzone({
   maxSize,
   value,
   onRemove,
-  placeholder = "اسحب وأفلت الملف هنا أو انقر للاختيار",
+  placeholder,
   className,
   disabled = false,
 }: FileDropzoneProps) {
+  const t = useTranslations("common");
   const onDropCallback = useCallback(
     (acceptedFiles: File[]) => {
       onDrop(acceptedFiles);
     },
     [onDrop]
   );
+
+  const defaultPlaceholder =
+    placeholder || t("drag and drop file here or click to select");
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
     useDropzone({
@@ -135,17 +140,17 @@ export default function FileDropzone({
       <Upload className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
       <p className="text-sm text-muted-foreground mb-2">
         {isDragActive
-          ? "أفلت الملف هنا..."
+          ? t("drop file here")
           : isDragReject
-          ? "نوع الملف غير مدعوم"
-          : placeholder}
+          ? t("unsupported file type")
+          : defaultPlaceholder}
       </p>
       <Button type="button" variant="outline" size="sm" disabled={disabled}>
-        اختيار ملف
+        {t("choose file")}
       </Button>
       {maxSize && (
         <p className="text-xs text-muted-foreground mt-2">
-          الحد الأقصى: {formatFileSize(maxSize)}
+          {t("max size")}: {formatFileSize(maxSize)}
         </p>
       )}
     </div>

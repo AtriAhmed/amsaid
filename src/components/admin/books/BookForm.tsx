@@ -6,6 +6,7 @@ import FileDropzone from "@/components/admin/books/FileDropzone";
 import LanguageSelect from "@/components/admin/books/LanguageSelect";
 import TagsCombobox from "@/components/admin/books/TagsCombobox";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -31,41 +32,25 @@ import UploadProgressIndicator, {
   UploadFileType,
 } from "@/components/ui/UploadProgressIndicator";
 
-// Validation schema including file fields
-const bookSchema = z.object({
-  title: z
-    .string()
-    .min(1, "عنوان الكتاب مطلوب")
-    .max(200, "يجب أن يكون العنوان أقل من 200 حرف"),
-  description: z.string().optional(),
-  author: z
-    .union([z.number(), z.string()])
-    .refine((val) => val !== null && val !== "", { message: "المؤلف مطلوب" }),
-  categoryId: z.number().min(1, "فئة الكتاب مطلوبة"),
-  language: z.string().min(1, "اللغة مطلوبة"),
-  tags: z.array(z.union([z.number(), z.string()])).optional(),
-  active: z.boolean().optional(),
-  coverPhoto: z
-    .union([z.string(), z.instanceof(File)])
-    .optional()
-    .refine((val) => val !== undefined, {
-      message: "صورة الغلاف مطلوبة",
-    }),
-  pdfFile: z
-    .union([z.string(), z.instanceof(File)])
-    .optional()
-    .refine((val) => val !== undefined, {
-      message: "ملف PDF مطلوب",
-    }),
-});
-
-type BookFormData = z.infer<typeof bookSchema>;
+// Schema will be created inside the component to access translations
+type BookFormData = {
+  title: string;
+  description?: string;
+  author: number | string;
+  categoryId: number;
+  language: string;
+  tags?: (number | string)[];
+  active?: boolean;
+  coverPhoto?: File | string;
+  pdfFile?: File | string;
+};
 
 interface BookFormProps {
   initialBook?: Book;
 }
 
 const BookForm = ({ initialBook }: BookFormProps) => {
+  const t = useTranslations("common");
   const router = useRouter();
   const mode = initialBook ? "edit" : "create";
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,6 +58,36 @@ const BookForm = ({ initialBook }: BookFormProps) => {
     status: "idle" as UploadStatus,
     progress: 0,
     fileType: null as UploadFileType,
+  });
+
+  // Create dynamic schema with translations
+  const bookSchema = z.object({
+    title: z
+      .string()
+      .min(1, t("book title required"))
+      .max(200, t("book title less than 200 chars")),
+    description: z.string().optional(),
+    author: z
+      .union([z.number(), z.string()])
+      .refine((val) => val !== null && val !== "", {
+        message: t("author required"),
+      }),
+    categoryId: z.number().min(1, t("category required")),
+    language: z.string().min(1, t("language required")),
+    tags: z.array(z.union([z.number(), z.string()])).optional(),
+    active: z.boolean().optional(),
+    coverPhoto: z
+      .union([z.string(), z.instanceof(File)])
+      .optional()
+      .refine((val) => val !== undefined, {
+        message: t("cover photo required"),
+      }),
+    pdfFile: z
+      .union([z.string(), z.instanceof(File)])
+      .optional()
+      .refine((val) => val !== undefined, {
+        message: t("pdf file required"),
+      }),
   });
 
   const {
@@ -121,7 +136,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
   const createModeSchema = bookSchema.extend({
     pdfFile: z
       .union([z.string(), z.instanceof(File)])
-      .refine((val) => val !== undefined, { message: "ملف PDF مطلوب" }),
+      .refine((val) => val !== undefined, { message: t("pdf file required") }),
   });
 
   const onSubmit = async (data: BookFormData) => {
@@ -277,17 +292,17 @@ const BookForm = ({ initialBook }: BookFormProps) => {
           <Button variant="outline" size="sm" asChild>
             <Link href="/admin/books">
               <ArrowRight className="w-4 h-4 ml-2" />
-              العودة للكتب
+              {t("back to books")}
             </Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              {mode === "create" ? "إضافة كتاب جديد" : "تعديل الكتاب"}
+              {mode === "create" ? t("add new book") : t("edit book")}
             </h1>
             <p className="text-muted-foreground">
               {mode === "create"
-                ? "أضف كتاباً جديداً إلى المكتبة"
-                : "تعديل معلومات الكتاب المحدد"}
+                ? t("add new book to library")
+                : t("edit selected book info")}
             </p>
           </div>
         </div>
@@ -296,10 +311,10 @@ const BookForm = ({ initialBook }: BookFormProps) => {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>معلومات الكتاب</CardTitle>
+                <CardTitle>{t("book information")}</CardTitle>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="active" className="text-sm font-medium">
-                    منشور
+                    {t("published")}
                   </Label>
                   <Switch
                     id="active"
@@ -315,18 +330,20 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
               </div>
               <CardDescription>
-                املأ جميع الحقول المطلوبة{" "}
-                {mode === "create" ? "لإضافة" : "لتعديل"} الكتاب
+                {mode === "create"
+                  ? t("fill all required fields to add")
+                  : t("fill all required fields to edit")}{" "}
+                {t("book")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">عنوان الكتاب *</Label>
+                    <Label htmlFor="title">{t("book title")} *</Label>
                     <Input
                       id="title"
-                      placeholder="مثال: أحكام الصلاة"
+                      placeholder={t("book title example")}
                       {...register("title")}
                       defaultValue={data.title}
                     />
@@ -343,7 +360,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                       ref={register("author")?.ref}
                       className="sr-only"
                     ></div> */}
-                    <Label htmlFor="author">المؤلف *</Label>
+                    <Label htmlFor="author">{t("author")} *</Label>
                     <AuthorCombobox
                       value={data.author}
                       onChange={(value) => {
@@ -352,7 +369,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                           shouldDirty: true,
                         });
                       }}
-                      placeholder="اختر أو أضف مؤلف..."
+                      placeholder={t("choose or add author")}
                       disabled={isSubmitting}
                       ref={register("author")?.ref}
                     />
@@ -365,10 +382,10 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">وصف الكتاب</Label>
+                  <Label htmlFor="description">{t("book description")}</Label>
                   <Textarea
                     id="description"
-                    placeholder="وصف مختصر عن محتوى الكتاب..."
+                    placeholder={t("book description placeholder")}
                     rows={4}
                     {...register("description")}
                     defaultValue={data.description}
@@ -382,7 +399,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">الفئة *</Label>
+                    <Label htmlFor="category">{t("category")} *</Label>
                     <CategorySelect
                       value={data.categoryId || undefined}
                       onChange={(value) =>
@@ -402,7 +419,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="language">اللغة *</Label>
+                    <Label htmlFor="language">{t("language")} *</Label>
                     <LanguageSelect
                       value={data.language}
                       onChange={(value) => {
@@ -428,7 +445,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     ref={register("coverPhoto")?.ref}
                     className="sr-only translate-y-[100px]"
                   ></div>
-                  <Label>صورة الغلاف *</Label>
+                  <Label>{t("cover photo")} *</Label>
                   <FileDropzone
                     onDrop={handleCoverPhotoDrop}
                     accept={{
@@ -437,7 +454,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     maxSize={20 * 1024 * 1024} // 20MB
                     value={data.coverPhoto}
                     onRemove={handleRemoveCoverPhoto}
-                    placeholder="اسحب وأفلت صورة الغلاف هنا أو انقر للاختيار"
+                    placeholder={t("drag and drop cover photo")}
                     disabled={isSubmitting}
                   />
                   {errors.coverPhoto && (
@@ -453,7 +470,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     ref={register("pdfFile")?.ref}
                     className="sr-only translate-y-[100px]"
                   ></div>
-                  <Label>ملف PDF *</Label>
+                  <Label>{t("pdf file")} *</Label>
                   <FileDropzone
                     onDrop={handlePdfDrop}
                     accept={{
@@ -462,7 +479,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     maxSize={500 * 1024 * 1024}
                     value={data.pdfFile}
                     onRemove={handleRemovePdf}
-                    placeholder="اسحب وأفلت ملف PDF هنا أو انقر للاختيار"
+                    placeholder={t("drag and drop pdf file")}
                     disabled={isSubmitting}
                   />
                   {errors.pdfFile && (
@@ -473,7 +490,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>الكلمات المفتاحية</Label>
+                  <Label>{t("keywords")}</Label>
                   <TagsCombobox
                     value={data.tags || []}
                     onChange={(value) => {
@@ -482,7 +499,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                         shouldDirty: true,
                       });
                     }}
-                    placeholder="اختر أو أضف كلمات مفتاحية..."
+                    placeholder={t("choose or add keywords")}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -502,12 +519,12 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     disabled={isSubmitting || (mode === "edit" && !isDirty)}
                   >
                     {isSubmitting
-                      ? "جاري الحفظ..."
+                      ? t("saving")
                       : mode === "create"
-                      ? "حفظ ونشر الكتاب"
+                      ? t("save and publish book")
                       : isDirty
-                      ? "حفظ التعديلات"
-                      : "لا توجد تغييرات"}
+                      ? t("save changes")
+                      : t("no changes")}
                   </Button>
                   <Button
                     type="button"
@@ -516,7 +533,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     disabled={isSubmitting}
                     onClick={() => router.push("/admin/books")}
                   >
-                    إلغاء
+                    {t("cancel")}
                   </Button>
                 </div>
               </form>

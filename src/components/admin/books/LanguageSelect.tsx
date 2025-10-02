@@ -7,6 +7,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { LANGUAGES } from "@/lib/constants";
+import { useTranslations } from "next-intl";
 
 interface LanguageSelectProps {
   value: string;
@@ -21,12 +22,13 @@ const LanguageSelect = ({
   disabled,
   ref,
 }: LanguageSelectProps) => {
+  const t = useTranslations("common");
   const selectedLabel = LANGUAGES.find((lang) => lang.value === value)?.label;
 
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger className="w-full" ref={ref}>
-        {selectedLabel || "اختر اللغة"}
+        {selectedLabel || t("choose language")}
       </SelectTrigger>
       <SelectContent>
         {LANGUAGES.map((lang) => (

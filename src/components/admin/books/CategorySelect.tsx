@@ -9,6 +9,7 @@ import {
 import { BookCategory } from "@/types";
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
+import { useTranslations } from "next-intl";
 
 interface CategorySelectProps {
   value?: number | null;
@@ -28,6 +29,7 @@ export default function CategorySelect({
   disabled,
   ref,
 }: CategorySelectProps) {
+  const t = useTranslations("common");
   const config = useSWRConfig();
 
   // Fetch categories using SWR
@@ -43,7 +45,7 @@ export default function CategorySelect({
 
   const selectedLabel = value
     ? categories.find((cat: BookCategory) => cat.id === value)?.name
-    : "اختر الفئة";
+    : t("choose category");
 
   return (
     <Select

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   Command,
   CommandEmpty,
@@ -48,13 +49,16 @@ const fetcher = async (_key: string, search: string, limit: number) => {
 export default function TagsCombobox({
   value = [],
   onChange,
-  placeholder = "اختر الكلمات المفتاحية...",
+  placeholder,
   disabled = false,
 }: TagsComboboxProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
   const config = useSWRConfig();
+
+  const defaultPlaceholder = placeholder || t("choose or add keywords");
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -128,24 +132,26 @@ export default function TagsCombobox({
             className="w-full justify-between"
             disabled={disabled}
           >
-            {value.length > 0 ? `تم اختيار ${value.length} عنصر` : placeholder}
+            {value.length > 0
+              ? `${value.length} ${t("selected items")}`
+              : defaultPlaceholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder="ابحث عن كلمة مفتاحية..."
+              placeholder={t("search for keyword")}
               value={searchValue}
               onValueChange={handleSearch}
             />
             <CommandList>
               {isLoading ? (
-                <CommandEmpty>جاري البحث...</CommandEmpty>
+                <CommandEmpty>{t("searching")}</CommandEmpty>
               ) : error ? (
-                <CommandEmpty>حدث خطأ في تحميل البيانات</CommandEmpty>
+                <CommandEmpty>{t("error loading data")}</CommandEmpty>
               ) : tags.length === 0 ? (
-                <CommandEmpty>لا توجد نتائج.</CommandEmpty>
+                <CommandEmpty>{t("no results")}</CommandEmpty>
               ) : (
                 <CommandGroup>
                   {tags.map((tag) => {
@@ -173,7 +179,7 @@ export default function TagsCombobox({
                 <CommandGroup>
                   <CommandItem onSelect={handleAddTag}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {`إضافة "${searchValue}"`}
+                    {t("add")} "{searchValue}"
                   </CommandItem>
                 </CommandGroup>
               )}

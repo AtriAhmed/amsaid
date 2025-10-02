@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   Command,
   CommandEmpty,
@@ -44,14 +45,17 @@ const fetcher = async (search: string, limit: number) => {
 export default function AuthorCombobox({
   value,
   onChange,
-  placeholder = "اختر مؤلف...",
+  placeholder,
   disabled = false,
   ref,
 }: AuthorComboboxProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
   const config = useSWRConfig();
+
+  const defaultPlaceholder = placeholder || t("choose author");
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchValue, 300);
@@ -103,24 +107,24 @@ export default function AuthorCombobox({
           disabled={disabled}
           ref={ref}
         >
-          {displayValue || placeholder}
+          {displayValue || defaultPlaceholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="ابحث عن مؤلف..."
+            placeholder={t("search for author")}
             value={searchValue}
             onValueChange={handleSearch}
           />
           <CommandList>
             {isLoading ? (
-              <CommandEmpty>جاري البحث...</CommandEmpty>
+              <CommandEmpty>{t("searching")}</CommandEmpty>
             ) : error ? (
-              <CommandEmpty>حدث خطأ في تحميل البيانات</CommandEmpty>
+              <CommandEmpty>{t("error loading data")}</CommandEmpty>
             ) : authors.length === 0 ? (
-              <CommandEmpty>لا توجد نتائج.</CommandEmpty>
+              <CommandEmpty>{t("no results")}</CommandEmpty>
             ) : (
               <CommandGroup>
                 {authors.map((author) => (
@@ -156,7 +160,7 @@ export default function AuthorCombobox({
               <CommandGroup>
                 <CommandItem onSelect={handleSetAuthorAsText}>
                   <Plus className="mr-2 h-4 w-4" />
-                  استخدم: {searchValue}
+                  {t("use")}: {searchValue}
                 </CommandItem>
               </CommandGroup>
             )}
