@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -50,10 +51,11 @@ const fetcher = async (search: string, limit: number) => {
 export default function SpeakersCombobox({
   value = [],
   onChange,
-  placeholder = "اختر المتحدثين...",
+  placeholder,
   disabled = false,
   ref,
 }: SpeakersComboboxProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
@@ -137,24 +139,26 @@ export default function SpeakersCombobox({
             disabled={disabled}
             ref={ref}
           >
-            {value.length > 0 ? `تم اختيار ${value.length} متحدث` : placeholder}
+            {value.length > 0
+              ? `${t("selected items")} ${value.length}`
+              : placeholder || t("speakers placeholder")}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder="ابحث عن متحدث..."
+              placeholder={t("search for author")}
               value={searchValue}
               onValueChange={handleSearch}
             />
             <CommandList>
               {isLoading ? (
-                <CommandEmpty>جاري البحث...</CommandEmpty>
+                <CommandEmpty>{t("searching")}</CommandEmpty>
               ) : error ? (
-                <CommandEmpty>حدث خطأ في تحميل البيانات</CommandEmpty>
+                <CommandEmpty>{t("error loading data")}</CommandEmpty>
               ) : speakers.length === 0 ? (
-                <CommandEmpty>لا توجد نتائج.</CommandEmpty>
+                <CommandEmpty>{t("no results")}</CommandEmpty>
               ) : (
                 <CommandGroup>
                   {speakers.map((speaker) => {
@@ -189,7 +193,7 @@ export default function SpeakersCombobox({
                 <CommandGroup>
                   <CommandItem onSelect={handleAddSpeaker}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {`إضافة "${searchValue}"`}
+                    {`${t("add")} "${searchValue}"`}
                   </CommandItem>
                 </CommandGroup>
               )}

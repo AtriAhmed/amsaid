@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -49,10 +50,11 @@ const fetcher = async (search: string, limit: number) => {
 export default function PlaceCombobox({
   value,
   onChange,
-  placeholder = "اختر مكان...",
+  placeholder,
   disabled = false,
   ref,
 }: PlaceComboboxProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const limit = 20;
@@ -113,20 +115,22 @@ export default function PlaceCombobox({
           ref={ref}
         >
           {selectedPlace?.name ||
-            (typeof value === "string" && value ? value : placeholder)}
+            (typeof value === "string" && value
+              ? value
+              : placeholder || t("place placeholder"))}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command>
           <CommandInput
-            placeholder="البحث عن مكان..."
+            placeholder={t("search for keyword")}
             value={searchValue}
             onValueChange={handleSearch}
           />
           <CommandList>
             <CommandEmpty>
-              {isLoading ? "جاري البحث..." : "لم يتم العثور على مكان."}
+              {isLoading ? t("searching") : t("no results")}
             </CommandEmpty>
 
             {places.length > 0 && (
@@ -164,7 +168,7 @@ export default function PlaceCombobox({
               <CommandGroup>
                 <CommandItem onSelect={handleSetPlaceAsText}>
                   <Plus className="mr-2 h-4 w-4" />
-                  إضافة "{searchValue}" كمكان جديد
+                  {t("add")} "{searchValue}"
                 </CommandItem>
               </CommandGroup>
             )}

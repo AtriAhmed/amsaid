@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,7 @@ export default function VideoCategorySelect({
   disabled,
   ref,
 }: VideoCategorySelectProps) {
+  const t = useTranslations("common");
   const config = useSWRConfig();
 
   // Fetch categories using SWR
@@ -44,7 +46,7 @@ export default function VideoCategorySelect({
 
   const selectedLabel = value
     ? categories.find((cat: VideoCategory) => cat.id === value)?.name
-    : "اختر الفئة";
+    : t("choose category");
 
   return (
     <Select

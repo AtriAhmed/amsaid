@@ -9,6 +9,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -46,29 +47,29 @@ import { Video } from "@/types";
 const videoSchema = z.object({
   title: z
     .string()
-    .min(1, "عنوان الفيديو مطلوب")
-    .max(200, "يجب أن يكون العنوان أقل من 200 حرف"),
+    .min(1, "video title required")
+    .max(200, "video title max length"),
   description: z.string().optional(),
   speakers: z
     .array(z.union([z.number(), z.string()]))
-    .min(1, "متحدث واحد على الأقل مطلوب"),
-  categoryId: z.number().min(1, "فئة الفيديو مطلوبة"),
-  language: z.string().min(1, "اللغة مطلوبة"),
+    .min(1, "at least one speaker required"),
+  categoryId: z.number().min(1, "video category required"),
+  language: z.string().min(1, "language required"),
   place: z
     .union([z.number(), z.string()])
-    .refine((val) => val !== null && val !== "", { message: "المكان مطلوب" }),
-  date: z.string().refine((date) => !isNaN(Date.parse(date)), "تاريخ غير صحيح"),
+    .refine((val) => val !== null && val !== "", { message: "place required" }),
+  date: z.string().refine((date) => !isNaN(Date.parse(date)), "invalid date"),
   tags: z.array(z.union([z.number(), z.string()])).optional(),
   active: z.boolean().optional(),
   poster: z
     .union([z.string(), z.instanceof(File)])
     .optional()
-    .refine((val) => val !== undefined, { message: "الصورة المصغرة مطلوبة" }),
+    .refine((val) => val !== undefined, { message: "poster image required" }),
   videoFile: z
     .union([z.string(), z.instanceof(File)])
     .optional()
     .refine((val) => val !== undefined, {
-      message: "ملف الفيديو مطلوب",
+      message: "video file required",
     }),
 });
 
@@ -79,6 +80,7 @@ interface VideoFormProps {
 }
 
 const VideoForm = ({ initialVideo }: VideoFormProps) => {
+  const t = useTranslations("common");
   const router = useRouter();
   const mode = initialVideo ? "edit" : "create";
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,7 +142,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
   const createModeSchema = videoSchema.extend({
     videoFile: z
       .union([z.string(), z.instanceof(File)])
-      .refine((val) => val !== undefined, { message: "ملف الفيديو مطلوب" }),
+      .refine((val) => val !== undefined, { message: "video file required" }),
   });
 
   // Helper: calculate duration (in seconds) for a File video
@@ -340,17 +342,15 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
           <Button variant="outline" size="sm" asChild>
             <Link href="/admin/videos">
               <ArrowRight className="w-4 h-4 ml-2" />
-              العودة للفيديوهات
+              {t("view videos")}
             </Link>
           </Button>
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              {mode === "create" ? "إضافة فيديو جديد" : "تعديل الفيديو"}
+              {mode === "create" ? t("add video") : t("edit video")}
             </h1>
             <p className="text-muted-foreground">
-              {mode === "create"
-                ? "أضف فيديواً جديداً إلى المكتبة"
-                : "تعديل معلومات الفيديو المحدد"}
+              {mode === "create" ? t("add new video") : t("edit video")}
             </p>
           </div>
         </div>
@@ -359,10 +359,12 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>معلومات الفيديو</CardTitle>
+                <CardTitle>
+                  {t("video")} {t("information")}
+                </CardTitle>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="active" className="text-sm font-normal">
-                    منشور
+                    {t("published")}
                   </Label>
                   <Switch
                     id="active"
@@ -378,30 +380,32 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
               </div>
               <CardDescription>
-                املأ جميع الحقول المطلوبة{" "}
-                {mode === "create" ? "لإضافة" : "لتعديل"} الفيديو
+                {mode === "create"
+                  ? t("fill all required fields to add")
+                  : t("fill all required fields to edit")}{" "}
+                {t("video")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">عنوان الفيديو *</Label>
+                    <Label htmlFor="title">{t("video title")} *</Label>
                     <Input
                       id="title"
-                      placeholder="مثال: خطبة الجمعة - أهمية الصلاة"
+                      placeholder={t("video title placeholder")}
                       {...register("title")}
                       defaultValue={data.title}
                     />
                     {errors.title && (
                       <p className="text-sm text-destructive">
-                        {errors.title.message}
+                        {t(errors.title.message || "error")}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="speakers">المتحدثين *</Label>
+                    <Label htmlFor="speakers">{t("speakers")} *</Label>
                     <SpeakersCombobox
                       value={data.speakers || []}
                       onChange={(value) => {
@@ -410,37 +414,37 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                           shouldDirty: true,
                         });
                       }}
-                      placeholder="اختر أو أضف متحدثين..."
+                      placeholder={t("speakers placeholder")}
                       disabled={isSubmitting}
                       ref={register("speakers")?.ref}
                     />
                     {errors.speakers && (
                       <p className="text-sm text-destructive">
-                        {errors.speakers.message}
+                        {t(errors.speakers.message || "error")}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">وصف الفيديو</Label>
+                  <Label htmlFor="description">{t("video description")}</Label>
                   <Textarea
                     id="description"
-                    placeholder="وصف مختصر عن محتوى الفيديو..."
+                    placeholder={t("video description placeholder")}
                     rows={4}
                     {...register("description")}
                     defaultValue={data.description}
                   />
                   {errors.description && (
                     <p className="text-sm text-destructive">
-                      {errors.description.message}
+                      {t(errors.description.message || "error")}
                     </p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">الفئة *</Label>
+                    <Label htmlFor="category">{t("category")} *</Label>
                     <VideoCategorySelect
                       value={data.categoryId}
                       onChange={(value) =>
@@ -454,13 +458,13 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     />
                     {errors.categoryId && (
                       <p className="text-sm text-destructive">
-                        {errors.categoryId.message}
+                        {t(errors.categoryId.message || "error")}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="language">اللغة *</Label>
+                    <Label htmlFor="language">{t("language")} *</Label>
                     <LanguageSelect
                       value={data.language}
                       onChange={(value) => {
@@ -474,7 +478,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     />
                     {errors.language && (
                       <p className="text-sm text-destructive">
-                        {errors.language.message}
+                        {t(errors.language.message || "error")}
                       </p>
                     )}
                   </div>
@@ -486,7 +490,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     ref={register("poster")?.ref}
                     className="sr-only translate-y-[100px]"
                   ></div>
-                  <Label>صورة مصغرة *</Label>
+                  <Label>{t("poster image")} *</Label>
                   <FileDropzone
                     onDrop={handlePosterDrop}
                     accept={{
@@ -495,12 +499,12 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     maxSize={20 * 1024 * 1024} // 20MB
                     value={data.poster}
                     onRemove={handleRemovePoster}
-                    placeholder="اسحب وأفلت الصورة المصغرة هنا أو انقر للاختيار"
+                    placeholder={t("poster placeholder")}
                     disabled={isSubmitting}
                   />
                   {errors.poster && (
                     <p className="text-sm text-destructive">
-                      {errors.poster.message}
+                      {t(errors.poster.message || "error")}
                     </p>
                   )}
                 </div>
@@ -511,7 +515,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     ref={register("videoFile")?.ref}
                     className="sr-only translate-y-[100px]"
                   ></div>
-                  <Label>ملف الفيديو *</Label>
+                  <Label>{t("video file")} *</Label>
                   <FileDropzone
                     onDrop={handleVideoFileDrop}
                     accept={{
@@ -520,19 +524,19 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     maxSize={500 * 1024 * 1024} // 500MB
                     value={data.videoFile}
                     onRemove={handleRemoveVideoFile}
-                    placeholder="اسحب وأفلت ملف الفيديو هنا أو انقر للاختيار"
+                    placeholder={t("video file placeholder")}
                     disabled={isSubmitting}
                   />
                   {errors.videoFile && (
                     <p className="text-sm text-destructive">
-                      {errors.videoFile.message}
+                      {t(errors.videoFile.message || "error")}
                     </p>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="date">تاريخ التسجيل *</Label>
+                    <Label htmlFor="date">{t("video date")} *</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -555,7 +559,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                               }
                             )
                           ) : (
-                            <span>اختر التاريخ</span>
+                            <span>{t("pick date")}</span>
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -579,13 +583,13 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     </Popover>
                     {errors.date && (
                       <p className="text-sm text-destructive">
-                        {errors.date.message}
+                        {t(errors.date.message || "error")}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="place">مكان التسجيل *</Label>
+                    <Label htmlFor="place">{t("place")} *</Label>
                     <PlaceCombobox
                       value={data.place}
                       onChange={(value) => {
@@ -594,20 +598,20 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                           shouldDirty: true,
                         });
                       }}
-                      placeholder="اختر أو أضف مكان..."
+                      placeholder={t("place placeholder")}
                       disabled={isSubmitting}
                       ref={register("place")?.ref}
                     />
                     {errors.place && (
                       <p className="text-sm text-destructive">
-                        {errors.place.message}
+                        {t(errors.place.message || "error")}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>الكلمات المفتاحية</Label>
+                  <Label>{t("tags")}</Label>
                   <TagsCombobox
                     value={data.tags || []}
                     onChange={(value) => {
@@ -616,7 +620,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                         shouldDirty: true,
                       });
                     }}
-                    placeholder="اختر أو أضف كلمات مفتاحية..."
+                    placeholder={t("tags placeholder")}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -637,12 +641,12 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     disabled={isSubmitting || (mode === "edit" && !isDirty)}
                   >
                     {isSubmitting
-                      ? "جاري الحفظ..."
+                      ? t("uploading")
                       : mode === "create"
-                      ? "حفظ ونشر الفيديو"
+                      ? t("add new video")
                       : isDirty
-                      ? "حفظ التعديلات"
-                      : "لا توجد تغييرات"}
+                      ? t("update video")
+                      : t("no changes")}
                   </Button>
                   <Button
                     type="button"
@@ -651,7 +655,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     disabled={isSubmitting}
                     onClick={() => router.push("/admin/videos")}
                   >
-                    إلغاء
+                    {t("cancel")}
                   </Button>
                 </div>
               </form>
