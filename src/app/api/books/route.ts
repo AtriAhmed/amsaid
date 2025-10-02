@@ -38,6 +38,7 @@ const CreateBookSchema = z.object({
     )
     .optional()
     .default([]),
+  active: z.boolean().optional().default(true),
 });
 
 // GET - Fetch all books with pagination and filters
@@ -156,6 +157,7 @@ export async function POST(req: Request) {
     const coverPhoto = formData.get("coverPhoto") as File;
     const pdfFile = formData.get("fileUrl") as File;
     const tagsInput = formData.get("tags") as string;
+    const active = formData.get("active") as string;
 
     console.log("-------------------- pdfFile --------------------");
     console.log(pdfFile);
@@ -190,6 +192,8 @@ export async function POST(req: Request) {
       categoryId: parseInt(categoryId),
       language,
       tags,
+      active:
+        active !== null && active !== undefined ? active === "true" : true,
     });
 
     if (!validation.success) {
@@ -309,6 +313,7 @@ export async function POST(req: Request) {
         fileUrl: pdfPath,
         pages,
         size: sizeInKB,
+        active: validation.data.active,
         tags: {
           ...(tagConnectOperations.length > 0 && {
             connect: tagConnectOperations,

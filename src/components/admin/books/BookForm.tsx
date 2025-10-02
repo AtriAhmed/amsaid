@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Book } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +40,7 @@ const bookSchema = z.object({
   categoryId: z.number().min(1, "فئة الكتاب مطلوبة"),
   language: z.string().min(1, "اللغة مطلوبة"),
   tags: z.array(z.union([z.number(), z.string()])).optional(),
+  active: z.boolean().optional(),
   coverPhoto: z
     .union([z.string(), z.instanceof(File)])
     .optional()
@@ -82,6 +84,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
       tags: initialBook?.tags?.map((tag) => tag.id) || [],
       coverPhoto: initialBook?.coverPhoto || undefined,
       pdfFile: initialBook?.fileUrl || undefined,
+      active: initialBook?.active !== undefined ? initialBook.active : true,
     },
   });
 
@@ -100,6 +103,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
         tags: initialBook.tags?.map((tag) => tag.id),
         coverPhoto: initialBook.coverPhoto || undefined,
         pdfFile: initialBook.fileUrl || undefined,
+        active: initialBook.active !== undefined ? initialBook.active : true,
       });
     }
   }, [initialBook, mode, reset]);
@@ -146,6 +150,10 @@ const BookForm = ({ initialBook }: BookFormProps) => {
       formData.append("categoryId", data.categoryId?.toString() || "");
       formData.append("language", data.language);
       formData.append("tags", JSON.stringify(data.tags || []));
+      formData.append(
+        "active",
+        (data.active !== undefined ? data.active : true).toString()
+      );
 
       // Add files only if provided and they are File objects (new uploads)
       if (data.coverPhoto && data.coverPhoto instanceof File) {
@@ -237,7 +245,25 @@ const BookForm = ({ initialBook }: BookFormProps) => {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>معلومات الكتاب</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>معلومات الكتاب</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="active" className="text-sm font-medium">
+                    منشور
+                  </Label>
+                  <Switch
+                    id="active"
+                    checked={data.active !== undefined ? data.active : true}
+                    onCheckedChange={(checked: boolean) => {
+                      setValue("active", checked, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
               <CardDescription>
                 املأ جميع الحقول المطلوبة{" "}
                 {mode === "create" ? "لإضافة" : "لتعديل"} الكتاب
