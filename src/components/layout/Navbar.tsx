@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import Link from "next/link";
-import LocaleChanger from "../LocaleChanger";
+import LocaleSwitcher from "../LocaleSwitcher";
 
 export default function Navbar() {
   return (
@@ -46,7 +46,7 @@ export default function Navbar() {
             >
               تواصل معنا
             </Link>
-            <LocaleChanger />
+            <LocaleSwitcher />
           </div>
 
           <Button variant="outline" size="icon" className="md:hidden">

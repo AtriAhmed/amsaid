@@ -17,7 +17,7 @@ const languages = [
   { code: "ar", name: "العربية", countryCode: "SA" },
 ];
 
-export default function LocaleChanger() {
+export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -31,7 +31,7 @@ export default function LocaleChanger() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className="bg-white/40">
           <Languages className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
