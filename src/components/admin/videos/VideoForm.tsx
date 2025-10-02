@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
@@ -54,6 +55,7 @@ const videoSchema = z.object({
     .refine((val) => val !== null && val !== "", { message: "المكان مطلوب" }),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), "تاريخ غير صحيح"),
   tags: z.array(z.union([z.number(), z.string()])).optional(),
+  active: z.boolean().optional(),
   poster: z
     .union([z.string(), z.instanceof(File)])
     .optional()
@@ -99,6 +101,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       tags: initialVideo?.tags?.map((tag) => tag.id) || [],
       poster: initialVideo?.poster || undefined,
       videoFile: initialVideo?.url || undefined,
+      active: initialVideo?.active !== undefined ? initialVideo.active : true,
     },
   });
 
@@ -119,6 +122,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
         tags: initialVideo.tags?.map((tag) => tag.id),
         poster: initialVideo.poster || undefined,
         videoFile: initialVideo.url || undefined,
+        active: initialVideo.active !== undefined ? initialVideo.active : true,
       });
     }
   }, [initialVideo, mode, reset]);
@@ -192,6 +196,10 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       );
       formData.append("date", data.date);
       formData.append("tags", JSON.stringify(data.tags || []));
+      formData.append(
+        "active",
+        (data.active !== undefined ? data.active : true).toString()
+      );
 
       // Add files only if provided and they are File objects (new uploads)
       if (data.poster && data.poster instanceof File) {
@@ -300,7 +308,25 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>معلومات الفيديو</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>معلومات الفيديو</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="active" className="text-sm font-normal">
+                    منشور
+                  </Label>
+                  <Switch
+                    id="active"
+                    checked={data.active !== undefined ? data.active : true}
+                    onCheckedChange={(checked: boolean) => {
+                      setValue("active", checked, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
               <CardDescription>
                 املأ جميع الحقول المطلوبة{" "}
                 {mode === "create" ? "لإضافة" : "لتعديل"} الفيديو

@@ -55,6 +55,7 @@ const CreateVideoSchema = z.object({
     )
     .optional()
     .default([]),
+  active: z.boolean().optional().default(true),
 });
 
 // GET - Fetch all videos with pagination and filters
@@ -200,6 +201,7 @@ export async function POST(req: Request) {
     const poster = formData.get("poster") as File;
     const videoFile = formData.get("videoFile") as File;
     const tagsInput = formData.get("tags") as string;
+    const active = formData.get("active") as string;
 
     console.log("-------------------- videoFile --------------------");
     console.log(videoFile);
@@ -249,6 +251,8 @@ export async function POST(req: Request) {
       date,
       duration: duration && parseInt(duration),
       tags,
+      active:
+        active !== null && active !== undefined ? active === "true" : true,
     });
 
     if (!validation.success) {
@@ -374,6 +378,7 @@ export async function POST(req: Request) {
         poster: posterPath,
         url: videoPath,
         duration: validation.data.duration,
+        active: validation.data.active,
         speakers: {
           connect: speakerIds.map((id) => ({ id })),
         },
