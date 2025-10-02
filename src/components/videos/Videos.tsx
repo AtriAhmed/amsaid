@@ -9,6 +9,7 @@ import VideoModal from "./VideoModal";
 import { useState } from "react";
 import ViewVideoDialog from "@/components/videos/ViewVideoDialog";
 import { Video } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface VideosProps {
   videos: Video[];
@@ -26,6 +27,7 @@ const formatDuration = (seconds: number): string => {
 };
 
 export default function Videos({ videos }: VideosProps) {
+  const t = useTranslations("common");
   const [watchDialog, setWatchDialog] = useState<{
     open: boolean;
     video: Video | null;
@@ -54,17 +56,17 @@ export default function Videos({ videos }: VideosProps) {
       <div className="mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            المحاضرات والخطب
+            {t("lectures and sermons")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            مجموعة مختارة من المحاضرات الإسلامية التعليمية والتربوية
+            {t("selected islamic lectures description")}
           </p>
         </div>
 
         {videos.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              لا توجد محاضرات متاحة
+              {t("no lectures available")}
             </p>
           </div>
         ) : (
@@ -93,11 +95,11 @@ export default function Videos({ videos }: VideosProps) {
                   <div className="absolute inset-0 bg-primary/20 hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center duration-200">
                     <Button variant="hero" size="lg">
                       <Play className="mr-2 h-6 w-6" />
-                      شاهد الآن
+                      {t("watch now")}
                     </Button>
                   </div>
                   <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
-                    فيديو
+                    {t("video")}
                   </div>
                   {video.category && (
                     <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
@@ -132,7 +134,7 @@ export default function Videos({ videos }: VideosProps) {
                       onClick={() => handleVideoClick(video)}
                     >
                       <Play className="mr-2 h-4 w-4" />
-                      شاهد الآن
+                      {t("watch now")}
                     </Button>
                     <Button
                       variant="outline"
@@ -140,7 +142,7 @@ export default function Videos({ videos }: VideosProps) {
                       className="flex-1 py-1.5"
                       onClick={() => setViewDialog({ open: true, video })}
                     >
-                      معلومات أكثر
+                      {t("more info")}
                     </Button>
                   </div>
                 </CardContent>
@@ -151,7 +153,7 @@ export default function Videos({ videos }: VideosProps) {
 
         <div className="text-center mt-12">
           <Button variant="default" size="lg">
-            عرض جميع المحاضرات
+            {t("view all lectures")}
           </Button>
         </div>
       </div>

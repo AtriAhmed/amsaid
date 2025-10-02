@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Book } from "@/types";
 import { useState } from "react";
 import BookModal from "./BookDialog";
+import { useTranslations } from "next-intl";
 
 interface BooksProps {
   books: Book[];
@@ -23,6 +24,7 @@ const formatFileSize = (sizeInBytes: number): string => {
 };
 
 const Books = ({ books }: BooksProps) => {
+  const t = useTranslations("common");
   const [readDialog, setReadDialog] = useState<{
     open: boolean;
     book: Book | null;
@@ -53,16 +55,18 @@ const Books = ({ books }: BooksProps) => {
       <div className="mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            المكتبة الإسلامية
+            {t("islamic library")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            مجموعة قيمة من الكتب الإسلامية للقراءة والتحميل المجاني
+            {t("valuable islamic books description")}
           </p>
         </div>
 
         {books.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">لا توجد كتب متاحة</p>
+            <p className="text-muted-foreground text-lg">
+              {t("no books available")}
+            </p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -98,7 +102,7 @@ const Books = ({ books }: BooksProps) => {
                   <div className="absolute inset-0 bg-primary/20 hover:bg-primary/50 opacity-0 group-hover:opacity-100 transition-smooth flex items-center justify-center duration-200">
                     <Button variant="hero" size="lg">
                       <BookOpen className="mr-2 h-6 w-6" />
-                      قراءة الآن
+                      {t("read now")}
                     </Button>
                   </div>
                   <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
@@ -125,7 +129,7 @@ const Books = ({ books }: BooksProps) => {
                   <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 mt-auto">
                     <div className="flex items-center">
                       <FileText className="mr-1 h-4 w-4" />
-                      {book.pages} صفحة
+                      {book.pages} {t("pages")}
                     </div>
                     <div>{formatFileSize(book.size)}</div>
                   </div>
@@ -138,7 +142,7 @@ const Books = ({ books }: BooksProps) => {
                       onClick={() => handleBookClick(book)}
                     >
                       <BookOpen className="mr-2 h-4 w-4" />
-                      قراءة أونلاين
+                      {t("read online")}
                     </Button>
                     <Button
                       variant="outline"
@@ -147,7 +151,7 @@ const Books = ({ books }: BooksProps) => {
                       onClick={() => handleDownload(book)}
                     >
                       <Download className="mr-2 h-4 w-4" />
-                      تحميل PDF
+                      {t("download pdf")}
                     </Button>
                   </div>
                 </CardContent>
@@ -158,7 +162,7 @@ const Books = ({ books }: BooksProps) => {
 
         <div className="text-center mt-12">
           <Button variant="default" size="lg">
-            عرض جميع الكتب
+            {t("view all books")}
           </Button>
         </div>
       </div>
