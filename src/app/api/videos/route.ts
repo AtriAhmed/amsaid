@@ -58,22 +58,52 @@ const CreateVideoSchema = z.object({
   active: z.boolean().optional().default(true),
 });
 
+const QueryParamsSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional().default(""),
+  categoryId: z.coerce.number().int().positive().optional(),
+  speakerIds: z.string().optional(),
+  placeId: z.coerce.number().int().positive().optional(),
+  language: z.string().optional(),
+  active: z.enum(["true", "false"]).optional(),
+  sortBy: z
+    .enum(["title", "createdAt", "updatedAt", "date", "duration"])
+    .default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
 // GET - Fetch all videos with pagination and filters
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.min(
-      100,
-      Math.max(1, parseInt(searchParams.get("limit") || "20", 10))
-    );
-    const search = searchParams.get("search") || "";
-    const categoryId = searchParams.get("categoryId");
-    const speakerIds = searchParams.get("speakerIds");
-    const placeId = searchParams.get("placeId");
-    const language = searchParams.get("language");
-    const active = searchParams.get("active");
+    // Parse and validate query parameters
+    const queryParams = Object.fromEntries(searchParams.entries());
+    const validation = QueryParamsSchema.safeParse(queryParams);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: validation.error.issues,
+        },
+        { status: 400 }
+      );
+    }
+
+    const {
+      page,
+      limit,
+      search,
+      categoryId,
+      speakerIds,
+      placeId,
+      language,
+      active,
+      sortBy,
+      sortOrder,
+    } = validation.data;
 
     const skip = (page - 1) * limit;
 
@@ -87,8 +117,8 @@ export async function GET(req: Request) {
       ];
     }
 
-    if (categoryId && !isNaN(parseInt(categoryId))) {
-      where.categoryId = parseInt(categoryId);
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
 
     if (speakerIds) {
@@ -105,17 +135,22 @@ export async function GET(req: Request) {
       }
     }
 
-    if (placeId && !isNaN(parseInt(placeId))) {
-      where.placeId = parseInt(placeId);
+    if (placeId) {
+      where.placeId = placeId;
     }
 
     if (language) {
       where.language = language;
     }
 
-    if (active !== null && active !== undefined) {
+    if (active !== undefined) {
       where.active = active === "true";
     }
+
+    // Build orderBy clause
+    let orderBy: any;
+
+    orderBy = { [sortBy]: sortOrder };
 
     const [videos, totalCount] = await Promise.all([
       prisma.video.findMany({
@@ -148,17 +183,12 @@ export async function GET(req: Request) {
             },
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),
       prisma.video.count({ where }),
     ]);
-
-    console.log("-------------------- videos --------------------");
-    console.log(videos);
 
     const totalPages = Math.ceil(totalCount / limit);
 

@@ -229,5 +229,9 @@
   "sort by": "Trier par",
   "created": "Date de Création",
   "updated": "Date de Mise à Jour",
-  "size": "Taille"
+  "size": "Taille",
+  "search videos by title speaker or description": "Rechercher des vidéos par titre, orateur ou description...",
+  "no videos found": "Aucune vidéo trouvée",
+  "explore our collection of islamic lectures": "Explorez notre collection de conférences islamiques",
+  "date": "Date"
 }

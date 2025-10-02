@@ -18,3 +18,9 @@ export function getBookMediaUrl(id: number | null | undefined) {
 
   return `/api/books/${id}/media`;
 }
+
+export function getVideoMediaUrl(id: number | null | undefined) {
+  if (!id) return "";
+
+  return `/api/videos/${id}/media`;
+}

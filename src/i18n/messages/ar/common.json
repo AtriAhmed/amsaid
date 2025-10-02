@@ -229,5 +229,9 @@
   "sort by": "ترتيب حسب",
   "updated": "تاريخ الإنشاء",
   "created": "تاريخ التحديث",
-  "size": "الحجم"
+  "size": "الحجم",
+  "search videos by title speaker or description": "البحث في الفيديوهات بالعنوان أو المتحدث أو الوصف...",
+  "no videos found": "لم يتم العثور على فيديوهات",
+  "explore our collection of islamic lectures": "استكشف مجموعة المحاضرات الإسلامية لدينا",
+  "date": "التاريخ"
 }

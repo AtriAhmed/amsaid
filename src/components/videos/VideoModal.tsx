@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { getMediaUrl } from "@/lib/utils";
+import { getMediaUrl, getVideoMediaUrl } from "@/lib/utils";
 import { ReactNode, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 import { Video } from "@/types";
@@ -18,17 +18,17 @@ interface VideoModalProps {
 }
 
 const VideoModal = ({ video, isOpen, onOpenChange }: VideoModalProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (isOpen && videoRef.current) {
-      // Auto-play when modal opens
-      videoRef.current.play().catch(console.error);
-    } else if (!isOpen && videoRef.current) {
-      // Pause when modal closes
-      videoRef.current.pause();
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   if (isOpen && videoRef.current) {
+  //     // Auto-play when modal opens
+  //     videoRef.current.play().catch(console.error);
+  //   } else if (!isOpen && videoRef.current) {
+  //     // Pause when modal closes
+  //     videoRef.current.pause();
+  //   }
+  // }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -48,7 +48,7 @@ const VideoModal = ({ video, isOpen, onOpenChange }: VideoModalProps) => {
           </button>
           {!!video && (
             <video
-              ref={videoRef}
+              // ref={videoRef}
               className="w-full h-full object-contain"
               controls
               preload="metadata"
@@ -56,7 +56,7 @@ const VideoModal = ({ video, isOpen, onOpenChange }: VideoModalProps) => {
               aria-label={video.title}
               autoPlay
             >
-              <source src={getMediaUrl(video.url)} type="video/mp4" />
+              <source src={getVideoMediaUrl(video.id)} type="video/mp4" />
               متصفحك لا يدعم تشغيل الفيديو.
               <a href={getMediaUrl(video.url)} download>
                 تحميل الفيديو

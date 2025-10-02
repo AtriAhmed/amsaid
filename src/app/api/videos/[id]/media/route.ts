@@ -36,44 +36,44 @@ function parseRange(
   return { start, end };
 }
 
-// GET - Serve book PDF file
+// GET - Serve video file
 export async function GET(
   req: Request,
-  ctx: RouteContext<"/api/books/[id]/media">
+  ctx: RouteContext<"/api/videos/[id]/media">
 ) {
   try {
     const params = await ctx.params;
     const id = parseId(params.id);
 
     if (!id) {
-      return new NextResponse("Invalid book ID", { status: 400 });
+      return new NextResponse("Invalid video ID", { status: 400 });
     }
 
-    // Fetch the book
-    const book = await prisma.book.findUnique({
+    // Fetch the video
+    const video = await prisma.video.findUnique({
       where: { id },
       select: {
         id: true,
         title: true,
-        fileUrl: true,
+        url: true,
         active: true,
       },
     });
 
-    if (!book) {
-      return new NextResponse("Book not found", { status: 404 });
+    if (!video) {
+      return new NextResponse("Video not found", { status: 404 });
     }
 
-    if (!book.active) {
-      return new NextResponse("Book is not available", { status: 403 });
+    if (!video.active) {
+      return new NextResponse("Video is not available", { status: 403 });
     }
 
-    if (!book.fileUrl) {
-      return new NextResponse("Book file not found", { status: 404 });
+    if (!video.url) {
+      return new NextResponse("Video file not found", { status: 404 });
     }
 
     // Construct the file path
-    const filePath = path.join(process.cwd(), "uploads", book.fileUrl);
+    const filePath = path.join(process.cwd(), "uploads", video.url);
 
     // Ensure the resolved path is still within uploads directory
     const uploadsDir = path.join(process.cwd(), "uploads");
@@ -83,27 +83,29 @@ export async function GET(
 
     // Check if file exists and is a file
     if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-      return new NextResponse("Book file not found on server", { status: 404 });
+      return new NextResponse("Video file not found on server", {
+        status: 404,
+      });
     }
 
     // Get file stats
     const stat = fs.statSync(filePath);
     const fileSize = stat.size;
 
-    // Increment downloads count only on first request (not for range requests)
+    // Increment views count only on first request (not for range requests)
     const rangeHeader = req.headers.get("range");
-    if (!rangeHeader) {
+    if (rangeHeader === "bytes=0-") {
       // Fire and forget - don't await to avoid slowing down response
-      prisma.book
+      prisma.video
         .update({
           where: { id },
           data: {
-            downloads: {
+            views: {
               increment: 1,
             },
           },
         })
-        .catch((err) => console.error("Error incrementing downloads:", err));
+        .catch((err) => console.error("Error incrementing views:", err));
     }
 
     // Handle range requests
@@ -129,10 +131,10 @@ export async function GET(
           "Content-Range": `bytes ${start}-${end}/${fileSize}`,
           "Accept-Ranges": "bytes",
           "Content-Length": chunkSize.toString(),
-          "Content-Type": "application/pdf",
+          "Content-Type": "video/mp4",
           "Content-Disposition": `inline; filename="${encodeURIComponent(
-            book.title
-          )}.pdf"`,
+            video.title
+          )}.mp4"`,
           "Cache-Control": "private, max-age=3600",
         },
       });
@@ -144,17 +146,17 @@ export async function GET(
     return new NextResponse(fileStream as any, {
       status: 200,
       headers: {
-        "Content-Type": "application/pdf",
+        "Content-Type": "video/mp4",
         "Content-Length": fileSize.toString(),
         "Accept-Ranges": "bytes",
         "Content-Disposition": `inline; filename="${encodeURIComponent(
-          book.title
-        )}.pdf"`,
+          video.title
+        )}.mp4"`,
         "Cache-Control": "private, max-age=3600",
       },
     });
   } catch (error: any) {
-    console.error("Error serving book file:", error);
+    console.error("Error serving video file:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

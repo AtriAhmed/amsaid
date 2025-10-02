@@ -229,5 +229,9 @@
   "sort by": "Sort by",
   "created": "Created",
   "updated": "Updated",
-  "size": "Size"
+  "size": "Size",
+  "search videos by title speaker or description": "Search videos by title, speaker, or description...",
+  "no videos found": "No videos found",
+  "explore our collection of islamic lectures": "Explore our collection of Islamic lectures",
+  "date": "Date"
 }
