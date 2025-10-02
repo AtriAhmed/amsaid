@@ -64,8 +64,8 @@ export function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        <ChevronRight className="h-4 w-4" />
-        السابق
+        <ChevronLeft className="h-4 w-4 rtl:hidden" />
+        <ChevronRight className="h-4 w-4 hidden rtl:block" />
       </Button>
 
       {visiblePages.map((page, index) => (
@@ -92,8 +92,8 @@ export function Pagination({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        التالي
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronRight className="h-4 w-4 rtl:hidden" />
+        <ChevronLeft className="h-4 w-4 hidden rtl:block" />
       </Button>
     </div>
   );

@@ -33,7 +33,7 @@ const LanguageSelect = ({
       <SelectContent>
         {LANGUAGES.map((lang) => (
           <SelectItem key={lang.value} value={lang.value}>
-            {lang.label}
+            {t(lang.label)}
           </SelectItem>
         ))}
       </SelectContent>

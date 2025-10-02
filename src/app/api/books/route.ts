@@ -122,9 +122,7 @@ export async function GET(req: Request) {
     const totalPages = Math.ceil(totalCount / limit);
 
     return NextResponse.json({
-      books: books.map((book) => ({
-        ...book,
-      })),
+      books,
       pagination: {
         page,
         limit,
@@ -346,12 +344,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
-      {
-        ...book,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json(book, { status: 201 });
   } catch (error: any) {
     console.error("Error creating book:", error);
     return NextResponse.json(
