@@ -95,7 +95,11 @@ const BooksPage = () => {
 
   const setPage = function (page: number) {
     setCurrentPage(page);
-    window.scrollTo({ top: 0 });
+    const top = document.getElementById("top");
+    if (!top) return;
+
+    const offsetTop = top.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: offsetTop - 70, behavior: "instant" });
   };
 
   const setSearch = useCallback((search: string) => {
@@ -152,6 +156,8 @@ const BooksPage = () => {
           </div>
         </div>
 
+        <div id="top"></div>
+
         {/* Search and Filters */}
         <BooksSearch
           searchTerm={searchTerm}
@@ -168,7 +174,7 @@ const BooksPage = () => {
           <Card className="mb-8">
             <CardContent className="text-center py-8">
               <p className="text-destructive mb-4">
-                {t("error loading books")}:{" "}
+                {t("error loading books")}:
                 {(error as any)?.message ?? t("unknown error occurred")}
               </p>
               <Button onClick={handleRetry} variant="outline" className="gap-2">

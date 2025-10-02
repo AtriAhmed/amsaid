@@ -1,11 +1,9 @@
 import About from "@/components/about/About";
 import Books from "@/components/books/Books";
 import Hero from "@/components/home/Hero";
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
 import Videos from "@/components/videos/Videos";
 import { prisma } from "@/lib/prisma";
-import { Video, Book } from "@/types";
+import { Book, Video } from "@/types";
 
 async function getVideos(): Promise<Video[]> {
   try {
@@ -97,13 +95,11 @@ export default async function Home() {
   const books = await getBooks();
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="min-h-screen bg-background -mt-[60px]">
       <Hero />
       <Videos videos={videos} />
       <Books books={books} />
       <About />
-      <Footer />
     </div>
   );
 }
