@@ -1,11 +1,10 @@
-// lib/file-upload.ts
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
 import path from "path";
+import sharp from "sharp";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
-// Ensure the uploads directory exists
 async function ensureUploadDir() {
   try {
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
@@ -15,7 +14,54 @@ async function ensureUploadDir() {
 }
 
 /**
+ * Convert supported images to WebP using sharp.
+ * Returns an object with the resulting buffer and the chosen extension (e.g. '.webp').
+ * If conversion is not appropriate (non-image, gif, or conversion failure) returns original buffer and original extension.
+ */
+async function convertImageToWebpIfPossible(
+  buffer: Buffer,
+  originalName: string,
+  mimeType?: string
+): Promise<{ buffer: Buffer; ext: string }> {
+  const ext = path.extname(originalName).toLowerCase();
+  const type = (mimeType || "").toLowerCase();
+
+  // Quick checks: not an image -> return original
+  const knownImageExts = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".avif",
+    ".gif",
+    ".tiff",
+  ];
+  const isImage = type.startsWith("image/") || knownImageExts.includes(ext);
+  if (!isImage) {
+    return { buffer, ext: ext || "" };
+  }
+
+  // Skip GIFs because they may be animated and sharp would drop frames
+  if (type === "image/gif" || ext === ".gif") {
+    return { buffer, ext: ".gif" };
+  }
+
+  try {
+    // Use sharp to re-encode to webp. Keep `animated: false` to avoid multi-frame behavior.
+    const webpBuffer = await sharp(buffer, { animated: false })
+      .webp({ quality: 80 })
+      .toBuffer();
+    return { buffer: webpBuffer, ext: ".webp" };
+  } catch (err) {
+    console.warn("webp conversion failed, saving original. Error:", err);
+    return { buffer, ext: ext || "" };
+  }
+}
+
+/**
  * Save a single file to the uploads folder with a UUID name.
+ * Image files that can be converted to WebP will be converted and saved with a .webp extension.
+ * Non-image files or animated GIFs will be saved unchanged.
  * @param file The File object from request.formData()
  * @returns The new file name
  */
@@ -23,13 +69,17 @@ export async function uploadFile(file: File): Promise<string> {
   await ensureUploadDir();
 
   const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const originalBuffer = Buffer.from(arrayBuffer);
 
-  const ext = path.extname(file.name) || "";
-  const uuidName = `${uuidv4()}${ext}`;
+  const originalExt = path.extname(file.name) || "";
+
+  const { buffer: finalBuffer, ext: chosenExt } =
+    await convertImageToWebpIfPossible(originalBuffer, file.name, file.type);
+
+  const uuidName = `${uuidv4()}${chosenExt || originalExt}`;
   const filePath = path.join(UPLOAD_DIR, uuidName);
 
-  await fs.writeFile(filePath, buffer);
+  await fs.writeFile(filePath, finalBuffer);
 
   return uuidName;
 }
