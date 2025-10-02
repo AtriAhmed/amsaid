@@ -28,6 +28,10 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import UploadProgressIndicator, {
+  UploadStatus,
+  UploadFileType,
+} from "@/components/ui/UploadProgressIndicator";
 import SpeakersCombobox from "@/components/admin/videos/SpeakersCombobox";
 import PlaceCombobox from "@/components/admin/videos/PlaceCombobox";
 import TagsCombobox from "@/components/admin/books/TagsCombobox";
@@ -78,6 +82,11 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
   const router = useRouter();
   const mode = initialVideo ? "edit" : "create";
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadState, setUploadState] = useState({
+    status: "idle" as UploadStatus,
+    progress: 0,
+    fileType: null as UploadFileType,
+  });
 
   const {
     register,
@@ -179,6 +188,12 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
     }
 
     setIsSubmitting(true);
+
+    // Determine which files are being uploaded
+    const hasNewPoster = data.poster && data.poster instanceof File;
+    const hasNewVideo = data.videoFile && data.videoFile instanceof File;
+    const hasFilesToUpload = hasNewPoster || hasNewVideo;
+
     try {
       const formData = new FormData();
 
@@ -201,21 +216,30 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
         (data.active !== undefined ? data.active : true).toString()
       );
 
+      // Only initialize upload state if there are files to upload
+      if (hasFilesToUpload) {
+        setUploadState({
+          status: "uploading",
+          progress: 0,
+          fileType: hasNewPoster ? "poster" : "video",
+        });
+      }
+
       // Add files only if provided and they are File objects (new uploads)
-      if (data.poster && data.poster instanceof File) {
-        formData.append("poster", data.poster);
+      if (hasNewPoster) {
+        formData.append("poster", data.poster as File);
       }
 
       // If videoFile is a File, calculate its duration and append it
-      if (data.videoFile && data.videoFile instanceof File) {
+      if (hasNewVideo) {
+        const videoFile = data.videoFile as File;
         // Append the file itself
-        formData.append("videoFile", data.videoFile);
+        formData.append("videoFile", videoFile);
 
         try {
-          const duration = await getVideoDuration(data.videoFile);
+          const duration = await getVideoDuration(videoFile);
           // Append duration in seconds (floating string). Backend can round if needed.
           formData.append("duration", duration.toString());
-          console.log("Video duration (s):", duration);
         } catch (err) {
           // If duration calculation fails, we continue but log the error.
           console.warn("Failed to calculate video duration:", err);
@@ -223,28 +247,54 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
         }
       }
 
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        ...(hasFilesToUpload && {
+          onUploadProgress: (progressEvent: any) => {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadState((prev) => ({ ...prev, progress }));
+          },
+        }),
+      };
+
       if (mode === "create") {
-        await axios.post("/api/videos", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.post("/api/videos", formData, config);
       } else {
-        await axios.put(`/api/videos/${initialVideo!.id}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.put(`/api/videos/${initialVideo!.id}`, formData, config);
       }
 
-      // Success - redirect to videos list
-      router.push("/admin/videos");
+      if (hasFilesToUpload) {
+        setUploadState((prev) => ({ ...prev, status: "success" }));
+      }
+
+      // Small delay to show success state
+      setTimeout(
+        () => {
+          router.push("/admin/videos");
+        },
+        hasFilesToUpload ? 1000 : 0
+      );
     } catch (error: any) {
       console.error(
         `Error ${mode === "create" ? "creating" : "updating"} video:`,
         error
       );
-      // You might want to show a toast notification here
+
+      if (hasFilesToUpload) {
+        setUploadState((prev) => ({ ...prev, status: "error" }));
+        // Reset after showing error
+        setTimeout(() => {
+          setUploadState({
+            status: "idle",
+            progress: 0,
+            fileType: null,
+          });
+        }, 3000);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -570,6 +620,15 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     disabled={isSubmitting}
                   />
                 </div>
+
+                {/* Upload Progress Indicator - Only show if there are files being uploaded */}
+                {uploadState.status !== "idle" && (
+                  <UploadProgressIndicator
+                    status={uploadState.status}
+                    progress={uploadState.progress}
+                    fileType={uploadState.fileType}
+                  />
+                )}
 
                 <div className="flex gap-4 pt-4">
                   <Button

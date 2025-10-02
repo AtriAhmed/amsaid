@@ -51,7 +51,7 @@ export default function Videos({ videos }: VideosProps) {
 
   return (
     <section id="videos" className="py-20 bg-gradient-subtle">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             المحاضرات والخطب
