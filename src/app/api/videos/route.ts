@@ -9,7 +9,7 @@ const CreateVideoSchema = z.object({
     .string()
     .min(1, "Title is required")
     .max(200, "Title must be less than 200 characters"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional().or(z.literal("")),
   speakers: z
     .array(
       z.union([
@@ -366,7 +366,7 @@ export async function POST(req: Request) {
     const video = await prisma.video.create({
       data: {
         title: validation.data.title,
-        description: validation.data.description,
+        description: validation.data.description || "",
         categoryId: validation.data.categoryId,
         language: validation.data.language,
         placeId: placeRecord.id,
@@ -411,11 +411,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({
-      ...video,
-      speakers: video.speakers,
-      tags: video.tags,
-    });
+    return NextResponse.json(video);
   } catch (error: any) {
     console.error("Error creating video:", error);
     return NextResponse.json(

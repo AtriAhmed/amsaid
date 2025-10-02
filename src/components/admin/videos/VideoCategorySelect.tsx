@@ -15,6 +15,7 @@ interface VideoCategorySelectProps {
   value?: number | null;
   onChange: (value: number) => void;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
 const fetcher = async () => {
@@ -26,6 +27,7 @@ export default function VideoCategorySelect({
   value,
   onChange,
   disabled,
+  ref,
 }: VideoCategorySelectProps) {
   const config = useSWRConfig();
 
@@ -52,7 +54,9 @@ export default function VideoCategorySelect({
       }}
       disabled={disabled}
     >
-      <SelectTrigger className="w-full">{selectedLabel}</SelectTrigger>
+      <SelectTrigger className="w-full" ref={ref}>
+        {selectedLabel}
+      </SelectTrigger>
       <SelectContent>
         {categories.map((category: VideoCategory) => (
           <SelectItem key={category.id} value={category.id.toString()}>

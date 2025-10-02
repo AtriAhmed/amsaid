@@ -383,7 +383,7 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     accept={{
                       "application/pdf": [".pdf"],
                     }}
-                    maxSize={200 * 1024 * 1024} // 200MB
+                    maxSize={500 * 1024 * 1024}
                     value={data.pdfFile}
                     onRemove={handleRemovePdf}
                     placeholder="اسحب وأفلت ملف PDF هنا أو انقر للاختيار"

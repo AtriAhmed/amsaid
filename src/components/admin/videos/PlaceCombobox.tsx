@@ -32,6 +32,7 @@ interface PlaceComboboxProps {
   onChange: (value: number | string | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
 // SWR fetcher function
@@ -50,6 +51,7 @@ export default function PlaceCombobox({
   onChange,
   placeholder = "اختر مكان...",
   disabled = false,
+  ref,
 }: PlaceComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -108,6 +110,7 @@ export default function PlaceCombobox({
           size="sm"
           className="w-full justify-between"
           disabled={disabled}
+          ref={ref}
         >
           {selectedPlace?.name ||
             (typeof value === "string" && value ? value : placeholder)}

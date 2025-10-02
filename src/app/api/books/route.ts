@@ -10,7 +10,7 @@ const CreateBookSchema = z.object({
     .string()
     .min(1, "Title is required")
     .max(200, "Title must be less than 200 characters"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional().or(z.literal("")),
   author: z.union([
     z.number().int().positive("Author ID must be a positive integer"),
     z
@@ -301,7 +301,7 @@ export async function POST(req: Request) {
     const book = await prisma.book.create({
       data: {
         title: validation.data.title,
-        description: validation.data.description,
+        description: validation.data.description || "",
         authorId: authorRecord.id,
         categoryId: validation.data.categoryId,
         language: validation.data.language,

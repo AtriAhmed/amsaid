@@ -58,7 +58,7 @@ export interface VideoCategory {
 export interface Place {
   id: number;
   name: string;
-  address: string | null;
+  address?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 

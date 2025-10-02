@@ -1,39 +1,13 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import VideoForm from "@/components/admin/videos/VideoForm";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 import { SWRConfig } from "swr";
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Array<{
-    id: number;
-    name: string;
-  }>;
-  category: {
-    id: number;
-    name: string;
-  };
-  place: {
-    id: number;
-    name: string;
-  } | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  date: string;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
 
 interface EditVideoProps {
   params: Promise<{ id: string }>;
 }
 
-async function getVideo(id: string): Promise<Video | null> {
+async function getVideo(id: string) {
   const videoId = parseInt(id, 10);
 
   if (isNaN(videoId) || videoId < 1) {
@@ -75,10 +49,7 @@ async function getVideo(id: string): Promise<Video | null> {
       return null;
     }
 
-    return {
-      ...video,
-      date: video.date.toISOString(),
-    };
+    return video;
   } catch (error) {
     console.error("Error fetching video:", error);
     return null;

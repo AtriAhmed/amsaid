@@ -33,6 +33,7 @@ interface SpeakersComboboxProps {
   onChange: (value: (number | string)[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  ref?: React.Ref<any>;
 }
 
 // SWR fetcher function
@@ -51,6 +52,7 @@ export default function SpeakersCombobox({
   onChange,
   placeholder = "اختر المتحدثين...",
   disabled = false,
+  ref,
 }: SpeakersComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -133,6 +135,7 @@ export default function SpeakersCombobox({
             size="sm"
             className="w-full justify-between"
             disabled={disabled}
+            ref={ref}
           >
             {value.length > 0 ? `تم اختيار ${value.length} متحدث` : placeholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -35,6 +35,7 @@ import VideoCategorySelect from "@/components/admin/videos/VideoCategorySelect";
 import LanguageSelect from "@/components/admin/books/LanguageSelect";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Video } from "@/types";
 
 // Validation schema including file fields
 const videoSchema = z.object({
@@ -42,7 +43,7 @@ const videoSchema = z.object({
     .string()
     .min(1, "عنوان الفيديو مطلوب")
     .max(200, "يجب أن يكون العنوان أقل من 200 حرف"),
-  description: z.string().min(1, "وصف الفيديو مطلوب"),
+  description: z.string().optional(),
   speakers: z
     .array(z.union([z.number(), z.string()]))
     .min(1, "متحدث واحد على الأقل مطلوب"),
@@ -53,7 +54,10 @@ const videoSchema = z.object({
     .refine((val) => val !== null && val !== "", { message: "المكان مطلوب" }),
   date: z.string().refine((date) => !isNaN(Date.parse(date)), "تاريخ غير صحيح"),
   tags: z.array(z.union([z.number(), z.string()])).optional(),
-  poster: z.union([z.string(), z.instanceof(File)]).optional(),
+  poster: z
+    .union([z.string(), z.instanceof(File)])
+    .optional()
+    .refine((val) => val !== undefined, { message: "الصورة المصغرة مطلوبة" }),
   videoFile: z
     .union([z.string(), z.instanceof(File)])
     .optional()
@@ -63,32 +67,6 @@ const videoSchema = z.object({
 });
 
 type VideoFormData = z.infer<typeof videoSchema>;
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Array<{
-    id: number;
-    name: string;
-  }>;
-  category: {
-    id: number;
-    name: string;
-  };
-  place: {
-    id: number;
-    name: string;
-  } | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  date: string;
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-}
 
 interface VideoFormProps {
   initialVideo?: Video;
@@ -112,13 +90,13 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
       title: initialVideo?.title || "",
       description: initialVideo?.description || "",
       speakers: initialVideo?.speakers?.map((speaker) => speaker.id) || [],
-      categoryId: initialVideo?.category.id || 0,
+      categoryId: initialVideo?.category?.id || 0,
       language: initialVideo?.language || "",
       place: initialVideo?.place?.id || "",
       date: initialVideo?.date
         ? new Date(initialVideo.date).toISOString().split("T")[0]
         : "",
-      tags: initialVideo?.tags.map((tag) => tag.id) || [],
+      tags: initialVideo?.tags?.map((tag) => tag.id) || [],
       poster: initialVideo?.poster || undefined,
       videoFile: initialVideo?.url || undefined,
     },
@@ -134,11 +112,11 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
         title: initialVideo.title,
         description: initialVideo.description,
         speakers: initialVideo.speakers?.map((speaker) => speaker.id) || [],
-        categoryId: initialVideo.category.id,
+        categoryId: initialVideo.category?.id,
         language: initialVideo.language,
         place: initialVideo.place?.id || "",
         date: new Date(initialVideo.date).toISOString().split("T")[0],
-        tags: initialVideo.tags.map((tag) => tag.id),
+        tags: initialVideo.tags?.map((tag) => tag.id),
         poster: initialVideo.poster || undefined,
         videoFile: initialVideo.url || undefined,
       });
@@ -358,6 +336,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                       }}
                       placeholder="اختر أو أضف متحدثين..."
                       disabled={isSubmitting}
+                      ref={register("speakers")?.ref}
                     />
                     {errors.speakers && (
                       <p className="text-sm text-destructive">
@@ -368,7 +347,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">وصف الفيديو *</Label>
+                  <Label htmlFor="description">وصف الفيديو</Label>
                   <Textarea
                     id="description"
                     placeholder="وصف مختصر عن محتوى الفيديو..."
@@ -395,6 +374,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                         })
                       }
                       disabled={isSubmitting}
+                      ref={register("categoryId")?.ref}
                     />
                     {errors.categoryId && (
                       <p className="text-sm text-destructive">
@@ -414,6 +394,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                         });
                       }}
                       disabled={isSubmitting}
+                      ref={register("language")?.ref}
                     />
                     {errors.language && (
                       <p className="text-sm text-destructive">
@@ -424,7 +405,12 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>صورة مصغرة</Label>
+                  <div
+                    tabIndex={-1}
+                    ref={register("poster")?.ref}
+                    className="sr-only translate-y-[100px]"
+                  ></div>
+                  <Label>صورة مصغرة *</Label>
                   <FileDropzone
                     onDrop={handlePosterDrop}
                     accept={{
@@ -444,6 +430,11 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                 </div>
 
                 <div className="space-y-2">
+                  <div
+                    tabIndex={-1}
+                    ref={register("videoFile")?.ref}
+                    className="sr-only translate-y-[100px]"
+                  ></div>
                   <Label>ملف الفيديو *</Label>
                   <FileDropzone
                     onDrop={handleVideoFileDrop}
@@ -475,6 +466,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                             "w-full justify-start text-left font-normal",
                             !watch("date") && "text-muted-foreground"
                           )}
+                          ref={register("date")?.ref}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {watch("date") ? (
@@ -528,6 +520,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                       }}
                       placeholder="اختر أو أضف مكان..."
                       disabled={isSubmitting}
+                      ref={register("place")?.ref}
                     />
                     {errors.place && (
                       <p className="text-sm text-destructive">
