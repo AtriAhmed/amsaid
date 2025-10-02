@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
         pathname: "/src/assets/**",
       },
     ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "flagsapi.com",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

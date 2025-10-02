@@ -1,4 +1,5 @@
 import UserDropdown from "@/components/admin/navbar/UserDropdown";
+import LocaleChanger from "@/components/LocaleChanger";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import Link from "next/link";
@@ -47,6 +48,7 @@ export default function AdminNavbar() {
               المحاضرات
             </Link>
             <UserDropdown />
+            <LocaleChanger />
           </div>
 
           <Button variant="outline" size="icon" className="md:hidden">
