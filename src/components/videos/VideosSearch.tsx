@@ -41,7 +41,7 @@ const categoriesFetcher = async () => {
 // Sort options for videos (will be translated in component)
 const SORT_OPTIONS_KEYS = [
   { value: "title", labelKey: "title" },
-  { value: "createdAt", labelKey: "created" },
+  { value: "createdAt", labelKey: "date" },
   { value: "duration", labelKey: "duration" },
 ];
 

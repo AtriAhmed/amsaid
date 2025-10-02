@@ -41,8 +41,7 @@ const categoriesFetcher = async () => {
 // Sort options for books (will be translated in component)
 const SORT_OPTIONS_KEYS = [
   { value: "title", labelKey: "title" },
-  { value: "createdAt", labelKey: "created" },
-  { value: "updatedAt", labelKey: "updated" },
+  { value: "createdAt", labelKey: "date" },
   { value: "pages", labelKey: "pages" },
   { value: "size", labelKey: "size" },
 ];
