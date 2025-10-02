@@ -89,5 +89,15 @@
   "example fiqh": "مثال: الفقه",
   "saving": "جاري الحفظ...",
   "save": "حفظ",
-  "save changes": "حفظ التغييرات"
+  "save changes": "حفظ التغييرات",
+  "manage video categories": "إدارة فئات الفيديوهات",
+  "add edit delete video categories": "إضافة وتعديل وحذف فئات الفيديوهات المتاحة",
+  "search in video categories": "البحث في فئات الفيديوهات...",
+  "available video categories": "فئات الفيديوهات المتاحة",
+  "all video categories in system": "جميع فئات الفيديوهات المضافة في النظام",
+  "number of videos": "عدد الفيديوهات",
+  "delete video category": "حذف فئة الفيديوهات",
+  "cannot delete category contains videos": "لا يمكن حذف هذه الفئة لأنها تحتوي على",
+  "add new video category": "إضافة فئة فيديوهات جديدة",
+  "edit video category": "تعديل فئة الفيديوهات"
 }

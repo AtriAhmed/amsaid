@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -16,14 +17,10 @@ import { z } from "zod";
 import { Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const createCategorySchema = z.object({
-  name: z
-    .string()
-    .min(1, "اسم الفئة مطلوب")
-    .max(100, "يجب أن يكون اسم الفئة أقل من 100 حرف"),
-});
-
-type CreateCategoryForm = z.infer<typeof createCategorySchema>;
+// Schema will be created inside the component to access translations
+type CreateCategoryForm = {
+  name: string;
+};
 
 interface CreateCategoryDialogProps {
   onCategoryCreated: () => void;
@@ -32,8 +29,16 @@ interface CreateCategoryDialogProps {
 export default function CreateCategoryDialog({
   onCategoryCreated,
 }: CreateCategoryDialogProps) {
+  const t = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const createCategorySchema = z.object({
+    name: z
+      .string()
+      .min(1, t("category name required"))
+      .max(100, t("category name less than 100 chars")),
+  });
 
   const {
     register,
@@ -79,20 +84,20 @@ export default function CreateCategoryDialog({
       <DialogTrigger asChild>
         <Button>
           <Plus className="w-4 h-4 ml-2" />
-          إضافة فئة جديدة
+          {t("add new category")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>إضافة فئة فيديوهات جديدة</DialogTitle>
+          <DialogTitle>{t("add new video category")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">اسم الفئة *</Label>
+              <Label htmlFor="name">{t("category name")} *</Label>
               <Input
                 id="name"
-                placeholder="مثال: الفقه"
+                placeholder={t("example fiqh")}
                 {...register("name")}
                 disabled={isLoading}
               />
@@ -110,10 +115,10 @@ export default function CreateCategoryDialog({
               onClick={() => handleOpenChange(false)}
               disabled={isLoading}
             >
-              إلغاء
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "جاري الحفظ..." : "حفظ"}
+              {isLoading ? t("saving") : t("save")}
             </Button>
           </DialogFooter>
         </form>

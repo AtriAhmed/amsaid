@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -35,6 +36,7 @@ export default function CategoriesTable({
   onCategoryDeleted,
   onCategoryUpdated,
 }: CategoriesTableProps) {
+  const t = useTranslations("common");
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     category: Category | null;
@@ -103,7 +105,7 @@ export default function CategoriesTable({
     return (
       <div className="text-center py-8">
         <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-muted-foreground">لا توجد فئات متاحة</p>
+        <p className="text-muted-foreground">{t("no categories available")}</p>
       </div>
     );
   }
@@ -113,10 +115,10 @@ export default function CategoriesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>اسم الفئة</TableHead>
-            <TableHead>عدد الفيديوهات</TableHead>
-            <TableHead>تاريخ الإنشاء</TableHead>
-            <TableHead>الإجراءات</TableHead>
+            <TableHead>{t("category name")}</TableHead>
+            <TableHead>{t("number of videos")}</TableHead>
+            <TableHead>{t("creation date")}</TableHead>
+            <TableHead>{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,7 +133,7 @@ export default function CategoriesTable({
                   className="flex items-center gap-1 w-fit"
                 >
                   <Video className="h-3 w-3" />
-                  {category._count.videos} فيديو
+                  {category._count.videos} {t("video")}
                 </Badge>
               </TableCell>
               <TableCell>{formatDate(category.createdAt)}</TableCell>
@@ -167,16 +169,20 @@ export default function CategoriesTable({
             category: open ? deleteDialog.category : null,
           })
         }
-        title="حذف فئة الفيديوهات"
-        description={`هل أنت متأكد من حذف فئة "${deleteDialog.category?.name}"؟`}
-        warningTitle="تحذير"
+        title={t("delete video category")}
+        description={`${t("are you sure delete category")} "${
+          deleteDialog.category?.name
+        }"?`}
+        warningTitle={t("warning")}
         warningMessage={
           deleteDialog.category?._count.videos === 0
-            ? "سيتم حذف هذه الفئة نهائياً."
-            : `لا يمكن حذف هذه الفئة لأنها تحتوي على ${deleteDialog.category?._count.videos} فيديو.`
+            ? t("category will be deleted permanently")
+            : `${t("cannot delete category contains videos")} ${
+                deleteDialog.category?._count.videos
+              } ${t("video")}.`
         }
-        confirmText="حذف"
-        cancelText="إلغاء"
+        confirmText={t("delete")}
+        cancelText={t("cancel")}
         onConfirm={handleDeleteConfirm}
         isLoading={isDeleting}
         variant="destructive"

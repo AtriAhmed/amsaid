@@ -89,5 +89,15 @@
   "example fiqh": "Exemple: Fiqh",
   "saving": "Enregistrement...",
   "save": "Enregistrer",
-  "save changes": "Enregistrer les Modifications"
+  "save changes": "Enregistrer les Modifications",
+  "manage video categories": "Gérer les Catégories de Vidéos",
+  "add edit delete video categories": "Ajouter, modifier et supprimer les catégories de vidéos disponibles",
+  "search in video categories": "Rechercher dans les catégories de vidéos...",
+  "available video categories": "Catégories de Vidéos Disponibles",
+  "all video categories in system": "Toutes les catégories de vidéos ajoutées au système",
+  "number of videos": "Nombre de Vidéos",
+  "delete video category": "Supprimer la Catégorie de Vidéo",
+  "cannot delete category contains videos": "Impossible de supprimer cette catégorie car elle contient",
+  "add new video category": "Ajouter une Nouvelle Catégorie de Vidéo",
+  "edit video category": "Modifier la Catégorie de Vidéo"
 }
