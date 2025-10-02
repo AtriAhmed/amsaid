@@ -10,6 +10,7 @@ import { useState } from "react";
 import ViewVideoDialog from "@/components/videos/ViewVideoDialog";
 import { Video } from "@/types";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 interface VideosProps {
   videos: Video[];
@@ -152,8 +153,8 @@ export default function Videos({ videos }: VideosProps) {
         )}
 
         <div className="text-center mt-12">
-          <Button variant="default" size="lg">
-            {t("view all lectures")}
+          <Button asChild variant="default" size="lg">
+            <Link href="/videos">{t("view all lectures")}</Link>
           </Button>
         </div>
       </div>

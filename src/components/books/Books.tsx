@@ -9,6 +9,7 @@ import { Book } from "@/types";
 import { useState } from "react";
 import BookModal from "./BookDialog";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 interface BooksProps {
   books: Book[];
@@ -161,8 +162,8 @@ const Books = ({ books }: BooksProps) => {
         )}
 
         <div className="text-center mt-12">
-          <Button variant="default" size="lg">
-            {t("view all books")}
+          <Button asChild variant="default" size="lg">
+            <Link href="/books">{t("view all books")}</Link>
           </Button>
         </div>
       </div>
