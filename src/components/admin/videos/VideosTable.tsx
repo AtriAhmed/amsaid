@@ -19,47 +19,7 @@ import Image from "next/image";
 import { getMediaUrl } from "@/lib/utils";
 import { formatDuration } from "@/lib/date";
 import { useTranslations } from "next-intl";
-
-interface Speaker {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Place {
-  id: number;
-  name: string;
-  address: string | null;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Speaker[];
-  category: Category;
-  place: Place | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  duration: number;
-  views: number;
-  active: boolean;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Video } from "@/types";
 
 interface VideosTableProps {
   videos: Video[];
@@ -134,8 +94,9 @@ export default function VideosTable({
     onVideoUpdated?.();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-UK", {
+  const formatDate = (date?: Date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-UK", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -186,18 +147,18 @@ export default function VideosTable({
                     <div className="font-medium">{video.title}</div>
                     <div className="text-sm text-muted-foreground">
                       {video.speakers
-                        .slice(0, 1)
+                        ?.slice(0, 1)
                         .map((speaker) => speaker.name)
                         .join(", ")}
-                      {video.speakers.length > 1
-                        ? ` +${video.speakers.length - 1}`
+                      {video.speakers?.length! > 1
+                        ? ` +${video.speakers?.length! - 1}`
                         : ""}
                     </div>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant="secondary">{video.category.name}</Badge>
+                <Badge variant="secondary">{video.category?.name}</Badge>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1">

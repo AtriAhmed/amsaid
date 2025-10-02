@@ -18,47 +18,7 @@ import {
   Eye,
 } from "lucide-react";
 import { getMediaUrl } from "@/lib/utils";
-
-interface Speaker {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Place {
-  id: number;
-  name: string;
-  address: string | null;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Speaker[];
-  category: Category;
-  place: Place | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  duration: number;
-  views: number;
-  active: boolean;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Video } from "@/types";
 
 interface ViewVideoDialogProps {
   open: boolean;
@@ -71,8 +31,9 @@ export default function ViewVideoDialog({
   onOpenChange,
   video,
 }: ViewVideoDialogProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ar", {
+  const formatDate = (date?: Date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("ar", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -125,14 +86,14 @@ export default function ViewVideoDialog({
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">المتحدثين:</span>
               <span className="font-medium">
-                {video.speakers.map((s) => s.name).join(", ")}
+                {video.speakers?.map((s) => s.name).join(", ")}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">الفئة:</span>
-              <Badge variant="secondary">{video.category.name}</Badge>
+              <Badge variant="secondary">{video.category?.name}</Badge>
             </div>
 
             <div className="flex items-center gap-2">
@@ -185,11 +146,11 @@ export default function ViewVideoDialog({
           </div>
 
           {/* Tags */}
-          {video.tags.length > 0 && (
+          {video.tags?.length! > 0 && (
             <div className="space-y-2">
               <span className="text-sm text-muted-foreground">العلامات:</span>
               <div className="flex flex-wrap gap-2">
-                {video.tags.map((tag) => (
+                {video.tags?.map((tag) => (
                   <Badge key={tag.id} variant="outline">
                     {tag.name}
                   </Badge>
@@ -207,7 +168,7 @@ export default function ViewVideoDialog({
           </div>
 
           {/* Speakers Bios */}
-          {video.speakers.some((s) => s.bio) && (
+          {video.speakers?.some((s) => s.bio) && (
             <div className="space-y-2">
               <span className="text-sm text-muted-foreground">
                 نبذة عن المتحدثين:

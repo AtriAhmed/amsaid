@@ -11,47 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
-
-interface Speaker {
-  id: number;
-  name: string;
-  bio: string | null;
-}
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Place {
-  id: number;
-  name: string;
-  address: string | null;
-}
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Video {
-  id: number;
-  title: string;
-  description: string;
-  speakers: Speaker[];
-  category: Category;
-  place: Place | null;
-  language: string;
-  poster: string | null;
-  url: string;
-  duration: number;
-  views: number;
-  active: boolean;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
-}
+import { Video } from "@/types";
 
 interface EditVideoDialogProps {
   open: boolean;
@@ -170,14 +130,14 @@ export default function EditVideoDialog({
               <div>
                 <span className="text-muted-foreground">المتحدثين:</span>
                 <span className="font-medium mr-2">
-                  {video.speakers.map((s) => s.name).join(", ")}
+                  {video.speakers?.map((s) => s.name).join(", ")}
                 </span>
               </div>
 
               <div>
                 <span className="text-muted-foreground">الفئة:</span>
                 <Badge variant="secondary" className="mr-2">
-                  {video.category.name}
+                  {video.category?.name}
                 </Badge>
               </div>
 
@@ -196,11 +156,11 @@ export default function EditVideoDialog({
               </div>
             </div>
 
-            {video.tags.length > 0 && (
+            {video.tags?.length! > 0 && (
               <div>
                 <span className="text-muted-foreground text-sm">العلامات:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {video.tags.map((tag) => (
+                  {video.tags?.map((tag) => (
                     <Badge key={tag.id} variant="outline" className="text-xs">
                       {tag.name}
                     </Badge>
