@@ -26,6 +26,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import UploadProgressIndicator, {
+  UploadStatus,
+  UploadFileType,
+} from "@/components/ui/UploadProgressIndicator";
 
 // Validation schema including file fields
 const bookSchema = z.object({
@@ -65,6 +69,11 @@ const BookForm = ({ initialBook }: BookFormProps) => {
   const router = useRouter();
   const mode = initialBook ? "edit" : "create";
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadState, setUploadState] = useState({
+    status: "idle" as UploadStatus,
+    progress: 0,
+    fileType: null as UploadFileType,
+  });
 
   const {
     register,
@@ -135,6 +144,12 @@ const BookForm = ({ initialBook }: BookFormProps) => {
     }
 
     setIsSubmitting(true);
+
+    // Determine which files are being uploaded
+    const hasNewCoverPhoto = data.coverPhoto && data.coverPhoto instanceof File;
+    const hasNewPdf = data.pdfFile && data.pdfFile instanceof File;
+    const hasFilesToUpload = hasNewCoverPhoto || hasNewPdf;
+
     try {
       const formData = new FormData();
 
@@ -155,36 +170,71 @@ const BookForm = ({ initialBook }: BookFormProps) => {
         (data.active !== undefined ? data.active : true).toString()
       );
 
+      // Only initialize upload state if there are files to upload
+      if (hasFilesToUpload) {
+        setUploadState({
+          status: "uploading",
+          progress: 0,
+          fileType: hasNewCoverPhoto ? "poster" : "video",
+        });
+      }
+
       // Add files only if provided and they are File objects (new uploads)
-      if (data.coverPhoto && data.coverPhoto instanceof File) {
-        formData.append("coverPhoto", data.coverPhoto);
+      if (hasNewCoverPhoto) {
+        formData.append("coverPhoto", data.coverPhoto as File);
       }
-      if (data.pdfFile && data.pdfFile instanceof File) {
-        formData.append("fileUrl", data.pdfFile);
+      if (hasNewPdf) {
+        formData.append("fileUrl", data.pdfFile as File);
       }
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        ...(hasFilesToUpload && {
+          onUploadProgress: (progressEvent: any) => {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadState((prev) => ({ ...prev, progress }));
+          },
+        }),
+      };
 
       if (mode === "create") {
-        await axios.post("/api/books", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.post("/api/books", formData, config);
       } else {
-        await axios.put(`/api/books/${initialBook!.id}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        await axios.put(`/api/books/${initialBook!.id}`, formData, config);
       }
 
-      // Success - redirect to books list
-      router.push("/admin/books");
+      if (hasFilesToUpload) {
+        setUploadState((prev) => ({ ...prev, status: "success" }));
+      }
+
+      // Small delay to show success state
+      setTimeout(
+        () => {
+          router.push("/admin/books");
+        },
+        hasFilesToUpload ? 1000 : 0
+      );
     } catch (error: any) {
       console.error(
         `Error ${mode === "create" ? "creating" : "updating"} book:`,
         error
       );
-      // You might want to show a toast notification here
+
+      if (hasFilesToUpload) {
+        setUploadState((prev) => ({ ...prev, status: "error" }));
+        // Reset after showing error
+        setTimeout(() => {
+          setUploadState({
+            status: "idle",
+            progress: 0,
+            fileType: null,
+          });
+        }, 3000);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -436,6 +486,14 @@ const BookForm = ({ initialBook }: BookFormProps) => {
                     disabled={isSubmitting}
                   />
                 </div>
+
+                {uploadState.status !== "idle" && (
+                  <UploadProgressIndicator
+                    status={uploadState.status}
+                    progress={uploadState.progress}
+                    fileType={uploadState.fileType}
+                  />
+                )}
 
                 <div className="flex gap-4 pt-4">
                   <Button
