@@ -3,8 +3,10 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Menu } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function AdminNavbar() {
+  const t = useTranslations("common");
   return (
     <header className="fixed h-[60px] flex items-center top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
       <div className="container mx-auto px-4">
@@ -12,7 +14,7 @@ export default function AdminNavbar() {
           <Link href="/" className="flex items-center space-x-2">
             <BookOpen className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground">
-              الداعية الإسلامي
+              {t("islamic preacher")}
             </span>
           </Link>
 
@@ -21,31 +23,31 @@ export default function AdminNavbar() {
               href="/admin"
               className="text-foreground hover:text-primary transition-smooth"
             >
-              الرئيسية
+              {t("home")}
             </Link>
             <Link
               href="/admin/categories/books"
               className="text-foreground hover:text-primary transition-smooth"
             >
-              فئات الكتب
+              {t("book categories")}
             </Link>
             <Link
               href="/admin/books"
               className="text-foreground hover:text-primary transition-smooth"
             >
-              الكتب
+              {t("books")}
             </Link>
             <Link
               href="/admin/categories/videos"
               className="text-foreground hover:text-primary transition-smooth"
             >
-              فئات المحاضرات
+              {t("video categories")}
             </Link>
             <Link
               href="/admin/videos"
               className="text-foreground hover:text-primary transition-smooth"
             >
-              المحاضرات
+              {t("videos")}
             </Link>
             <UserDropdown />
             <LocaleSwitcher />
