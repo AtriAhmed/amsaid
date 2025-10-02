@@ -16,6 +16,7 @@ import EditBookDialog from "./EditBookDialog";
 import ViewBookDialog from "./ViewBookDialog";
 import Link from "next/link";
 import { Book } from "@/types";
+import { useTranslations } from "next-intl";
 
 interface BooksTableProps {
   books: Book[];
@@ -28,6 +29,7 @@ export default function BooksTable({
   onBookDeleted,
   onBookUpdated,
 }: BooksTableProps) {
+  const t = useTranslations("common");
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     book: Book | null;
@@ -110,7 +112,7 @@ export default function BooksTable({
     return (
       <div className="text-center py-8">
         <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-muted-foreground">لا توجد كتب متاحة</p>
+        <p className="text-muted-foreground">{t("no books available")}</p>
       </div>
     );
   }
@@ -120,12 +122,12 @@ export default function BooksTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>العنوان</TableHead>
-            <TableHead>الفئة</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead>التحميلات</TableHead>
-            <TableHead>تاريخ الإضافة</TableHead>
-            <TableHead className="text-end">الإجراءات</TableHead>
+            <TableHead>{t("title")}</TableHead>
+            <TableHead>{t("category")}</TableHead>
+            <TableHead>{t("status")}</TableHead>
+            <TableHead>{t("downloads")}</TableHead>
+            <TableHead>{t("date added")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -142,7 +144,7 @@ export default function BooksTable({
               </TableCell>
               <TableCell>
                 <Badge variant={book.active ? "default" : "outline"}>
-                  {book.active ? "منشور" : "مسودة"}
+                  {book.active ? t("published") : t("draft")}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -188,12 +190,14 @@ export default function BooksTable({
             book: open ? deleteDialog.book : null,
           })
         }
-        title="حذف الكتاب"
-        description={`هل أنت متأكد من حذف الكتاب "${deleteDialog.book?.title}"؟`}
-        warningTitle="تحذير"
-        warningMessage="سيتم حذف هذا الكتاب نهائياً ولا يمكن استرجاعه."
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("delete book")}
+        description={`${t("are you sure delete book")} "${
+          deleteDialog.book?.title
+        }"?`}
+        warningTitle={t("warning")}
+        warningMessage={t("book will be deleted permanently")}
+        confirmText={t("delete")}
+        cancelText={t("cancel")}
         onConfirm={handleDeleteConfirm}
         isLoading={isDeleting}
         variant="destructive"

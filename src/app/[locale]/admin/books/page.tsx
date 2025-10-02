@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -44,6 +45,7 @@ const fetcher = async (page: number, limit: number, search: string) => {
 };
 
 const BooksManagement = () => {
+  const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 10;
@@ -92,15 +94,15 @@ const BooksManagement = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8 flex-wrap gap-2">
           <div>
-            <h1 className="text-3xl font-bold mb-2">إدارة الكتب</h1>
+            <h1 className="text-3xl font-bold mb-2">{t("books management")}</h1>
             <p className="text-muted-foreground">
-              إضافة وتعديل وحذف الكتب المتاحة
+              {t("add edit delete available books")}
             </p>
           </div>
           <Button asChild>
             <Link href="/admin/books/add" className="ms-auto">
               <Plus className="w-4 h-4 ml-2" />
-              إضافة كتاب جديد
+              {t("add new book")}
             </Link>
           </Button>
         </div>
@@ -111,19 +113,21 @@ const BooksManagement = () => {
         {/* Books Table */}
         <Card>
           <CardHeader>
-            <CardTitle>الكتب المتاحة ({pagination.total})</CardTitle>
-            <CardDescription>جميع الكتب المضافة في النظام</CardDescription>
+            <CardTitle>
+              {t("available books")} ({pagination.total})
+            </CardTitle>
+            <CardDescription>{t("all books in system")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">جاري التحميل...</p>
+                <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
                 <p className="text-destructive">
-                  خطأ في تحميل الكتب:{" "}
-                  {(error as any)?.message ?? "حدث خطأ غير معروف"}
+                  {t("error loading books")}:{" "}
+                  {(error as any)?.message ?? t("unknown error occurred")}
                 </p>
                 {/* Optionally add a retry button */}
                 <div className="mt-4">
@@ -131,7 +135,7 @@ const BooksManagement = () => {
                     onClick={() => revalidate()}
                     className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
                   >
-                    إعادة المحاولة
+                    {t("retry")}
                   </button>
                 </div>
               </div>
