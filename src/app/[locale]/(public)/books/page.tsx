@@ -37,12 +37,16 @@ const fetcher = async (
   limit: number,
   search: string,
   categoryId: string,
-  language: string
+  language: string,
+  sortBy: string,
+  sortOrder: string
 ) => {
   const params: any = {
     page,
     limit,
     active: "true", // Only fetch active books for public view
+    sortBy,
+    sortOrder,
   };
 
   if (search) params.search = search;
@@ -59,12 +63,16 @@ const BooksPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [language, setLanguage] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const limit = 20; // Show more books per page for public view
 
   // Debounce search to avoid excessive API calls
   const [debouncedSearch] = useDebounce(searchTerm, 300);
   const [debouncedCategoryId] = useDebounce(categoryId, 300);
   const [debouncedLanguage] = useDebounce(language, 300);
+  const [debouncedSortBy] = useDebounce(sortBy, 300);
+  const [debouncedSortOrder] = useDebounce(sortOrder, 300);
 
   const {
     data,
@@ -79,6 +87,8 @@ const BooksPage = () => {
       debouncedSearch,
       debouncedCategoryId,
       debouncedLanguage,
+      debouncedSortBy,
+      debouncedSortOrder,
     ],
     () =>
       fetcher(
@@ -86,7 +96,9 @@ const BooksPage = () => {
         limit,
         debouncedSearch,
         debouncedCategoryId,
-        debouncedLanguage
+        debouncedLanguage,
+        debouncedSortBy,
+        debouncedSortOrder
       ),
     {
       keepPreviousData: true,
@@ -115,6 +127,16 @@ const BooksPage = () => {
   const setLanguageFilter = useCallback((lang: string) => {
     setLanguage(lang);
     setCurrentPage(1); // Reset to first page when filtering
+  }, []);
+
+  const setSortByFilter = useCallback((sort: string) => {
+    setSortBy(sort);
+    setCurrentPage(1); // Reset to first page when sorting
+  }, []);
+
+  const setSortOrderFilter = useCallback((order: "asc" | "desc") => {
+    setSortOrder(order);
+    setCurrentPage(1); // Reset to first page when sorting
   }, []);
 
   const handleRetry = () => {
@@ -166,6 +188,10 @@ const BooksPage = () => {
           onCategoryChange={setCategoryFilter}
           language={language}
           onLanguageChange={setLanguageFilter}
+          sortBy={sortBy}
+          onSortByChange={setSortByFilter}
+          sortOrder={sortOrder}
+          onSortOrderChange={setSortOrderFilter}
           className="mb-2"
         />
 

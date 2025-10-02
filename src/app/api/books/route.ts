@@ -41,21 +41,50 @@ const CreateBookSchema = z.object({
   active: z.boolean().optional().default(true),
 });
 
+const QueryParamsSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional().default(""),
+  categoryId: z.coerce.number().int().positive().optional(),
+  authorId: z.coerce.number().int().positive().optional(),
+  language: z.string().optional(),
+  active: z.enum(["true", "false"]).optional(),
+  sortBy: z
+    .enum(["title", "createdAt", "updatedAt", "pages", "size"])
+    .default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
 // GET - Fetch all books with pagination and filters
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.min(
-      100,
-      Math.max(1, parseInt(searchParams.get("limit") || "20", 10))
-    );
-    const search = searchParams.get("search") || "";
-    const categoryId = searchParams.get("categoryId");
-    const authorId = searchParams.get("authorId");
-    const language = searchParams.get("language");
-    const active = searchParams.get("active");
+    // Parse and validate query parameters
+    const queryParams = Object.fromEntries(searchParams.entries());
+    const validation = QueryParamsSchema.safeParse(queryParams);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: validation.error.issues,
+        },
+        { status: 400 }
+      );
+    }
+
+    const {
+      page,
+      limit,
+      search,
+      categoryId,
+      authorId,
+      language,
+      active,
+      sortBy,
+      sortOrder,
+    } = validation.data;
 
     const skip = (page - 1) * limit;
 
@@ -70,21 +99,26 @@ export async function GET(req: Request) {
       ];
     }
 
-    if (categoryId && !isNaN(parseInt(categoryId))) {
-      where.categoryId = parseInt(categoryId);
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
 
-    if (authorId && !isNaN(parseInt(authorId))) {
-      where.authorId = parseInt(authorId);
+    if (authorId) {
+      where.authorId = authorId;
     }
 
     if (language) {
       where.language = language;
     }
 
-    if (active !== null && active !== undefined) {
+    if (active !== undefined) {
       where.active = active === "true";
     }
+
+    // Build orderBy clause
+    let orderBy: any;
+
+    orderBy = { [sortBy]: sortOrder };
 
     const [books, totalCount] = await Promise.all([
       prisma.book.findMany({
@@ -110,9 +144,7 @@ export async function GET(req: Request) {
             },
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         skip,
         take: limit,
       }),

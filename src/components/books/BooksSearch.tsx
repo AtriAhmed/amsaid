@@ -16,6 +16,7 @@ import {
 import { Search, X } from "lucide-react";
 import { BookCategory } from "@/types";
 import { LANGUAGES } from "@/lib/constants";
+import SortSelector, { SortOption } from "@/components/ui/sort-selector";
 
 interface BooksSearchProps {
   searchTerm: string;
@@ -24,6 +25,10 @@ interface BooksSearchProps {
   onCategoryChange: (categoryId: string) => void;
   language?: string;
   onLanguageChange: (language: string) => void;
+  sortBy?: string;
+  onSortByChange: (sortBy: string) => void;
+  sortOrder?: "asc" | "desc";
+  onSortOrderChange: (sortOrder: "asc" | "desc") => void;
   className?: string;
 }
 
@@ -33,6 +38,15 @@ const categoriesFetcher = async () => {
   return response.data?.data || [];
 };
 
+// Sort options for books (will be translated in component)
+const SORT_OPTIONS_KEYS = [
+  { value: "title", labelKey: "title" },
+  { value: "createdAt", labelKey: "created" },
+  { value: "updatedAt", labelKey: "updated" },
+  { value: "pages", labelKey: "pages" },
+  { value: "size", labelKey: "size" },
+];
+
 const BooksSearch = ({
   searchTerm,
   onSearchChange,
@@ -40,6 +54,10 @@ const BooksSearch = ({
   onCategoryChange,
   language,
   onLanguageChange,
+  sortBy = "createdAt",
+  onSortByChange,
+  sortOrder = "desc",
+  onSortOrderChange,
   className,
 }: BooksSearchProps) => {
   const t = useTranslations("common");
@@ -53,9 +71,16 @@ const BooksSearch = ({
     onSearchChange("");
     onCategoryChange("");
     onLanguageChange("");
+    onSortByChange("createdAt");
+    onSortOrderChange("desc");
   };
 
-  const hasActiveFilters = searchTerm || categoryId || language;
+  const hasActiveFilters =
+    searchTerm ||
+    categoryId ||
+    language ||
+    sortBy !== "createdAt" ||
+    sortOrder !== "desc";
 
   const selectedLanguage = LANGUAGES.find((lang) => lang.value === language);
 
@@ -63,13 +88,19 @@ const BooksSearch = ({
     (cat) => cat.id.toString() === categoryId
   );
 
+  // Create translated sort options
+  const sortOptions: SortOption[] = SORT_OPTIONS_KEYS.map((option) => ({
+    value: option.value,
+    label: t(option.labelKey),
+  }));
+
   return (
     <Card className={className}>
       <CardContent className="p-6">
         {/* Search and Filters Row */}
-        <div className="flex flex-col sm:flex-row gap-1.5">
+        <div className="flex gap-1.5 flex-wrap">
           {/* Search Input */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("search books by title author or description")}
@@ -81,7 +112,7 @@ const BooksSearch = ({
 
           {/* Category Filter */}
           <Select value={categoryId || "none"} onValueChange={onCategoryChange}>
-            <SelectTrigger className="w-full sm:w-fit">
+            <SelectTrigger className="grow sm:grow-0">
               {selectedCategory?.name || t("all categories")}
             </SelectTrigger>
             <SelectContent>
@@ -96,7 +127,7 @@ const BooksSearch = ({
 
           {/* Language Filter */}
           <Select value={language || "none"} onValueChange={onLanguageChange}>
-            <SelectTrigger className="w-full sm:w-fit">
+            <SelectTrigger className="grow sm:grow-0">
               {selectedLanguage?.label || t("all languages")}
             </SelectTrigger>
             <SelectContent>
@@ -108,6 +139,16 @@ const BooksSearch = ({
               ))}
             </SelectContent>
           </Select>
+
+          {/* Sort Selector */}
+          <SortSelector
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSortByChange={onSortByChange}
+            onSortOrderChange={onSortOrderChange}
+            options={sortOptions}
+            placeholder={t("sort by")}
+          />
 
           {/* Clear Filters Button */}
           {hasActiveFilters && (
