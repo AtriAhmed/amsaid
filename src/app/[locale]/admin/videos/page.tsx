@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
+import { useTranslations } from "next-intl";
 import {
   Card,
   CardContent,
@@ -89,6 +90,7 @@ const fetcher = async (
 };
 
 const VideosManagement = () => {
+  const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 10;
@@ -137,15 +139,17 @@ const VideosManagement = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8 flex-wrap gap-2">
           <div>
-            <h1 className="text-3xl font-bold mb-2">إدارة الفيديوهات</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              {t("videos management")}
+            </h1>
             <p className="text-muted-foreground">
-              إضافة وتعديل وحذف الفيديوهات المتاحة
+              {t("add edit delete available videos")}
             </p>
           </div>
           <Button asChild>
             <Link href="/admin/videos/add" className="ms-auto">
               <Plus className="w-4 h-4 ml-2" />
-              إضافة فيديو جديد
+              {t("add new video")}
             </Link>
           </Button>
         </div>
@@ -156,19 +160,21 @@ const VideosManagement = () => {
         {/* Videos Table */}
         <Card>
           <CardHeader>
-            <CardTitle>الفيديوهات المتاحة ({pagination.total})</CardTitle>
-            <CardDescription>جميع الفيديوهات المضافة في النظام</CardDescription>
+            <CardTitle>
+              {t("available videos")} ({pagination.total})
+            </CardTitle>
+            <CardDescription>{t("all videos in system")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">جاري التحميل...</p>
+                <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
                 <p className="text-destructive">
-                  خطأ في تحميل الفيديوهات:{" "}
-                  {(error as any)?.message ?? "حدث خطأ غير معروف"}
+                  {t("error loading videos")}:{" "}
+                  {(error as any)?.message ?? t("unknown error occurred")}
                 </p>
                 {/* Optionally add a retry button */}
                 <div className="mt-4">
@@ -176,7 +182,7 @@ const VideosManagement = () => {
                     onClick={() => revalidate()}
                     className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
                   >
-                    إعادة المحاولة
+                    {t("retry")}
                   </button>
                 </div>
               </div>

@@ -18,6 +18,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getMediaUrl } from "@/lib/utils";
 import { formatDuration } from "@/lib/date";
+import { useTranslations } from "next-intl";
 
 interface Speaker {
   id: number;
@@ -71,6 +72,7 @@ export default function VideosTable({
   onVideoDeleted,
   onVideoUpdated,
 }: VideosTableProps) {
+  const t = useTranslations("common");
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     video: Video | null;
@@ -144,7 +146,7 @@ export default function VideosTable({
     return (
       <div className="text-center py-8">
         <Play className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-muted-foreground">لا توجد فيديوهات متاحة</p>
+        <p className="text-muted-foreground">{t("no videos available")}</p>
       </div>
     );
   }
@@ -154,13 +156,13 @@ export default function VideosTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>الفيديو</TableHead>
-            <TableHead>الفئة</TableHead>
-            <TableHead>المدة</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead>المشاهدات</TableHead>
-            <TableHead>تاريخ الإضافة</TableHead>
-            <TableHead className="text-end">الإجراءات</TableHead>
+            <TableHead>{t("video")}</TableHead>
+            <TableHead>{t("category")}</TableHead>
+            <TableHead>{t("duration")}</TableHead>
+            <TableHead>{t("status")}</TableHead>
+            <TableHead>{t("views")}</TableHead>
+            <TableHead>{t("date added")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -205,7 +207,7 @@ export default function VideosTable({
               </TableCell>
               <TableCell>
                 <Badge variant={video.active ? "default" : "outline"}>
-                  {video.active ? "منشور" : "مسودة"}
+                  {video.active ? t("published") : t("draft")}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -251,12 +253,14 @@ export default function VideosTable({
             video: open ? deleteDialog.video : null,
           })
         }
-        title="حذف الفيديو"
-        description={`هل أنت متأكد من حذف الفيديو "${deleteDialog.video?.title}"؟`}
-        warningTitle="تحذير"
-        warningMessage="سيتم حذف هذا الفيديو نهائياً ولا يمكن استرجاعه."
-        confirmText="حذف"
-        cancelText="إلغاء"
+        title={t("delete video")}
+        description={`${t("are you sure delete video")} "${
+          deleteDialog.video?.title
+        }"?`}
+        warningTitle={t("warning")}
+        warningMessage={t("video will be deleted permanently")}
+        confirmText={t("delete")}
+        cancelText={t("cancel")}
         onConfirm={handleDeleteConfirm}
         isLoading={isDeleting}
         variant="destructive"

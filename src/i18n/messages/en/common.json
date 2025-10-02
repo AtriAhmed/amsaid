@@ -163,5 +163,16 @@
   "unsupported file type": "Unsupported file type",
   "choose file": "Choose File",
   "max size": "Max size",
-  "drag and drop file here or click to select": "Drag and drop file here or click to select"
+  "drag and drop file here or click to select": "Drag and drop file here or click to select",
+  "videos management": "Videos Management",
+  "search in videos": "Search in videos...",
+  "available videos": "Available Videos",
+  "all videos in system": "All videos added to the system",
+  "error loading videos": "Error loading videos",
+  "no videos available": "No videos available",
+  "duration": "Duration",
+  "views": "Views",
+  "delete video": "Delete Video",
+  "are you sure delete video": "Are you sure you want to delete the video",
+  "video will be deleted permanently": "This video will be deleted permanently and cannot be recovered"
 }

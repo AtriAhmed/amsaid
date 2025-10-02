@@ -163,5 +163,16 @@
   "unsupported file type": "نوع الملف غير مدعوم",
   "choose file": "اختيار ملف",
   "max size": "الحد الأقصى",
-  "drag and drop file here or click to select": "اسحب وأفلت الملف هنا أو انقر للاختيار"
+  "drag and drop file here or click to select": "اسحب وأفلت الملف هنا أو انقر للاختيار",
+  "videos management": "إدارة الفيديوهات",
+  "search in videos": "البحث في الفيديوهات...",
+  "available videos": "الفيديوهات المتاحة",
+  "all videos in system": "جميع الفيديوهات المضافة في النظام",
+  "error loading videos": "خطأ في تحميل الفيديوهات",
+  "no videos available": "لا توجد فيديوهات متاحة",
+  "duration": "المدة",
+  "views": "المشاهدات",
+  "delete video": "حذف الفيديو",
+  "are you sure delete video": "هل أنت متأكد من حذف الفيديو",
+  "video will be deleted permanently": "سيتم حذف هذا الفيديو نهائياً ولا يمكن استرجاعه"
 }
