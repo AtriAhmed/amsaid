@@ -60,24 +60,20 @@ export async function GET(req: Request) {
 // POST - Create a new place
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const json = await req.json().catch(() => ({}));
+    const parsed = CreatePlaceSchema.safeParse(json);
 
-    // Validate input
-    const validation = CreatePlaceSchema.safeParse(body);
-    if (!validation.success) {
+    if (!parsed.success) {
       return NextResponse.json(
-        {
-          error: "Invalid input",
-          details: validation.error.issues,
-        },
+        { error: "Invalid input", details: parsed.error.issues },
         { status: 400 }
       );
     }
 
-    const { name, address } = validation.data;
+    const { name, address } = parsed.data;
 
-    // Check if place already exists
-    const existingPlace = await prisma.place.findFirst({
+    // Check if place with this name already exists
+    const existing = await prisma.place.findFirst({
       where: {
         name: {
           equals: name,
@@ -85,9 +81,9 @@ export async function POST(req: Request) {
       },
     });
 
-    if (existingPlace) {
+    if (existing) {
       return NextResponse.json(
-        { error: "Place with this name already exists" },
+        { error: "A place with this name already exists" },
         { status: 409 }
       );
     }
