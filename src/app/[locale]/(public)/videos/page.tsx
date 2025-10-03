@@ -50,8 +50,8 @@ const fetcher = async (
   };
 
   if (search) params.search = search;
-  if (categoryId) params.categoryId = categoryId;
-  if (language) params.language = language;
+  if (categoryId && categoryId !== "none") params.categoryId = categoryId;
+  if (language && language !== "none") params.language = language;
 
   const res = await axios.get<VideosResponse>("/api/videos", { params });
   return res.data;

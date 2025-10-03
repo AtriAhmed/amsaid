@@ -11,7 +11,7 @@ type ProvidersProps = {
 export default function Providers({ children, session }: ProvidersProps) {
   return (
     <AppProvider>
-      <SessionProvider session={session}>{children}</SessionProvider>;
+      <SessionProvider session={session}>{children}</SessionProvider>
     </AppProvider>
   );
 }

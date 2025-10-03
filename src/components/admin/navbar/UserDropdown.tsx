@@ -5,17 +5,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 // import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function UserDropdown() {
-  //   const t = useTranslations("navbar");
+  const t = useTranslations("common");
 
   async function handleLogout() {
     await signOut({ redirect: false });
@@ -44,7 +43,7 @@ export default function UserDropdown() {
         {/* <DropdownMenuSeparator /> */}
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Logout</span>
+          <span>{t("logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -130,6 +130,18 @@
   "poster image required": "L'image d'affiche est requise",
   "video file required": "Le fichier vidéo est requis",
   "information": "Informations",
+  "welcome back": "Bon Retour",
+  "login description": "Connectez-vous pour accéder à votre compte",
+  "email": "E-mail",
+  "enter email": "Entrez votre e-mail",
+  "password": "Mot de passe",
+  "enter password": "Entrez votre mot de passe",
+  "signing in": "Connexion...",
+  "sign in": "Se connecter",
+  "or": "ou",
+  "dont have account": "Vous n'avez pas de compte?",
+  "sign up": "S'inscrire",
+  "forgot password": "Mot de passe oublié?",
   "books management": "Gestion des Livres",
   "search in books": "Rechercher dans les livres...",
   "available books": "Livres Disponibles",
@@ -233,5 +245,6 @@
   "search videos by title speaker or description": "Rechercher des vidéos par titre, orateur ou description...",
   "no videos found": "Aucune vidéo trouvée",
   "explore our collection of islamic lectures": "Explorez notre collection de conférences islamiques",
-  "date": "Date"
+  "date": "Date",
+  "logout": "Se Déconnecter"
 }

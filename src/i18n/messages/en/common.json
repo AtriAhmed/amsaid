@@ -233,5 +233,18 @@
   "search videos by title speaker or description": "Search videos by title, speaker, or description...",
   "no videos found": "No videos found",
   "explore our collection of islamic lectures": "Explore our collection of Islamic lectures",
-  "date": "Date"
+  "date": "Date",
+  "welcome back": "Welcome Back",
+  "login description": "Log in to access your account",
+  "email": "Email",
+  "enter email": "Enter your email",
+  "password": "Password",
+  "enter password": "Enter your password",
+  "signing in": "Signing in...",
+  "sign in": "Sign In",
+  "or": "or",
+  "dont have account": "Don't have an account?",
+  "sign up": "Sign Up",
+  "forgot password": "Forgot Password?",
+  "logout": "Logout"
 }

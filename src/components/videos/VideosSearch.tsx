@@ -111,7 +111,9 @@ const VideosSearch = ({
           {/* Category Filter */}
           <Select value={categoryId || "none"} onValueChange={onCategoryChange}>
             <SelectTrigger className="grow sm:grow-0">
-              {selectedCategory?.name || t("all categories")}
+              {selectedCategory?.name
+                ? t(selectedCategory?.name)
+                : t("all categories")}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">{t("all categories")}</SelectItem>
@@ -126,7 +128,9 @@ const VideosSearch = ({
           {/* Language Filter */}
           <Select value={language || "none"} onValueChange={onLanguageChange}>
             <SelectTrigger className="grow sm:grow-0">
-              {selectedLanguage?.label || t("all languages")}
+              {selectedLanguage?.label
+                ? t(selectedLanguage?.label)
+                : t("all languages")}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">{t("all languages")}</SelectItem>

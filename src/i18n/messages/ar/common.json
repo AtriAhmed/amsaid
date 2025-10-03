@@ -233,5 +233,18 @@
   "search videos by title speaker or description": "البحث في الفيديوهات بالعنوان أو المتحدث أو الوصف...",
   "no videos found": "لم يتم العثور على فيديوهات",
   "explore our collection of islamic lectures": "استكشف مجموعة المحاضرات الإسلامية لدينا",
-  "date": "التاريخ"
+  "date": "التاريخ",
+  "welcome back": "مرحباً بعودتك",
+  "login description": "سجل الدخول للوصول إلى حسابك",
+  "email": "البريد الإلكتروني",
+  "enter email": "أدخل بريدك الإلكتروني",
+  "password": "كلمة المرور",
+  "enter password": "أدخل كلمة المرور",
+  "signing in": "جاري تسجيل الدخول...",
+  "sign in": "تسجيل الدخول",
+  "or": "أو",
+  "dont have account": "ليس لديك حساب؟",
+  "sign up": "إنشاء حساب",
+  "forgot password": "نسيت كلمة المرور؟",
+  "logout": "تسجيل الخروج"
 }
