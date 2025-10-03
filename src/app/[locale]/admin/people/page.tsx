@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
-import CreatePersonDialog from "@/components/admin/people/CreatePersonDialog";
+import PersonDialog from "@/components/admin/people/PersonDialog";
 import PeopleTable from "@/components/admin/people/PeopleTable";
 import PeopleSearch from "@/components/admin/people/PeopleSearch";
 
@@ -114,7 +114,7 @@ export default function PeoplePage() {
             </p>
           </div>
           <div className="ms-auto">
-            <CreatePersonDialog onPersonCreated={handlePersonCreated} />
+            <PersonDialog onPersonCreated={handlePersonCreated} />
           </div>
         </div>
 

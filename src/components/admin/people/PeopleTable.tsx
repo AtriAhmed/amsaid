@@ -1,6 +1,6 @@
-import { useState } from "react";
-import axios from "axios";
-import { useTranslations } from "next-intl";
+import ConfirmationDialog from "@/components/ConfirmationDialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,11 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, User, BookOpen, Video } from "lucide-react";
-import ConfirmationDialog from "@/components/ConfirmationDialog";
-import EditPersonDialog from "./EditPersonDialog";
+import axios from "axios";
+import { BookOpen, Edit, Trash2, User, Video } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 interface Person {
   id: number;
@@ -209,15 +208,6 @@ export default function PeopleTable({
         isLoading={isDeleting}
         variant="destructive"
         disabled={deleteDialog.person ? !canDelete(deleteDialog.person) : false}
-      />
-
-      <EditPersonDialog
-        open={editDialog.open}
-        onOpenChange={(open) =>
-          setEditDialog({ open, person: open ? editDialog.person : null })
-        }
-        person={editDialog.person}
-        onPersonUpdated={handlePersonUpdated}
       />
     </>
   );
