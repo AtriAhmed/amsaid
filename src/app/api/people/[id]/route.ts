@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Route context type for dynamic routes
+type RouteContext<T extends string> = {
+  params: Promise<{
+    [K in T extends `${string}[${infer P}]${string}`
+      ? P extends `...${infer Rest}`
+        ? Rest
+        : P
+      : never]: string;
+  }>;
+};
+
 // Validation schemas
 const UpdatePersonSchema = z.object({
   name: z
@@ -114,7 +125,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/people/[id]">) {
 }
 
 // PUT - Update a person
-export async function PUT(req: Request, ctx: RouteContext<"/api/books/[id]">) {
+export async function PUT(req: Request, ctx: RouteContext<"/api/people/[id]">) {
   const params = await ctx.params;
 
   try {
@@ -200,7 +211,7 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/books/[id]">) {
 // DELETE - Delete a person
 export async function DELETE(
   req: Request,
-  ctx: RouteContext<"/api/books/[id]">
+  ctx: RouteContext<"/api/people/[id]">
 ) {
   const params = await ctx.params;
 

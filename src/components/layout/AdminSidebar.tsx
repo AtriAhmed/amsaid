@@ -25,11 +25,12 @@ interface NavLink {
 
 const LINKS: NavLink[] = [
   { href: "/admin", labelKey: "home" },
-  { href: "/admin/users", labelKey: "manage users" },
   { href: "/admin/categories/books", labelKey: "book categories" },
   { href: "/admin/books", labelKey: "books" },
   { href: "/admin/categories/videos", labelKey: "video categories" },
   { href: "/admin/videos", labelKey: "videos" },
+  { href: "/admin/users", labelKey: "users" },
+  { href: "/admin/people", labelKey: "people" },
 ];
 
 function NavItem({
