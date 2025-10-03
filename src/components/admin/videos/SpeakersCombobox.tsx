@@ -39,7 +39,7 @@ interface SpeakersComboboxProps {
 
 // SWR fetcher function
 const fetcher = async (search: string, limit: number) => {
-  const res = await axios.get<Speaker[]>("/api/authors", {
+  const res = await axios.get<Speaker[]>("/api/people", {
     params: {
       search,
       limit,

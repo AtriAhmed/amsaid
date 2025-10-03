@@ -2,6 +2,7 @@
 import AppProvider from "@/contexts/AppProvider";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { SWRConfig } from "swr";
 
 type ProvidersProps = {
   children: React.ReactNode;
@@ -11,7 +12,9 @@ type ProvidersProps = {
 export default function Providers({ children, session }: ProvidersProps) {
   return (
     <AppProvider>
-      <SessionProvider session={session}>{children}</SessionProvider>
+      <SWRConfig value={{ keepPreviousData: true }}>
+        <SessionProvider session={session}>{children}</SessionProvider>
+      </SWRConfig>
     </AppProvider>
   );
 }

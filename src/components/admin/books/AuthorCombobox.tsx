@@ -33,7 +33,7 @@ interface AuthorComboboxProps {
 
 // SWR fetcher function
 const fetcher = async (search: string, limit: number) => {
-  const res = await axios.get<Person[]>("/api/authors", {
+  const res = await axios.get<Person[]>("/api/people", {
     params: {
       search,
       limit,
