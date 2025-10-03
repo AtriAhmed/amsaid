@@ -21,7 +21,6 @@ model User {
   name             String?
   image            String?
   passwordHash     String
-  emailVerified    DateTime?
   resetToken       String?   @unique
   resetTokenExpiry DateTime?
   role             Role      @default(ADMIN) // default role is ADMIN

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { Play, BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -29,13 +30,22 @@ const Hero = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button variant="hero" size="lg" className="min-w-[200px]">
-            <Play className="mr-2 h-5 w-5" />
-            {t("watch lectures")}
+          <Button variant="hero" size="lg" className="min-w-[200px]" asChild>
+            <Link href="/videos">
+              <Play className="mr-2 h-5 w-5" />
+              {t("watch lectures")}
+            </Link>
           </Button>
-          <Button variant="heroSecondary" size="lg" className="min-w-[200px]">
-            <BookOpen className="mr-2 h-5 w-5" />
-            {t("browse books")}
+          <Button
+            variant="heroSecondary"
+            size="lg"
+            className="min-w-[200px]"
+            asChild
+          >
+            <Link href="/books">
+              <BookOpen className="mr-2 h-5 w-5" />
+              {t("browse books")}
+            </Link>
           </Button>
         </div>
       </div>

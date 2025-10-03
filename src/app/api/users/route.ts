@@ -14,6 +14,7 @@ const CreateUserSchema = z.object({
     .min(1, "Name is required")
     .max(100, "Name must be less than 100 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum([Role.OWNER, Role.MANAGER, Role.ADMIN]),
 });
 
 // Helper function to get current user with role
@@ -39,11 +40,6 @@ function canManageUsers(userRole: Role): boolean {
 // GET - Fetch all users (only OWNER and MANAGER can access)
 export async function GET(req: Request) {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser || !canManageUsers(currentUser.role)) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1");
@@ -52,10 +48,7 @@ export async function GET(req: Request) {
 
     const where = search
       ? {
-          OR: [
-            { name: { contains: search, mode: "insensitive" as const } },
-            { email: { contains: search, mode: "insensitive" as const } },
-          ],
+          OR: [{ name: { contains: search } }, { email: { contains: search } }],
         }
       : {};
 
@@ -111,7 +104,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, name, password } = validation.data;
+    const { email, name, password, role } = validation.data;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -134,7 +127,7 @@ export async function POST(req: Request) {
         email,
         name,
         passwordHash,
-        role: Role.ADMIN, // Only ADMIN users can be created by OWNER/MANAGER
+        role: Role.MANAGER,
       },
       select: {
         id: true,

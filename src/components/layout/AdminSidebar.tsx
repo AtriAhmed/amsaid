@@ -25,6 +25,7 @@ interface NavLink {
 
 const LINKS: NavLink[] = [
   { href: "/admin", labelKey: "home" },
+  { href: "/admin/users", labelKey: "manage users" },
   { href: "/admin/categories/books", labelKey: "book categories" },
   { href: "/admin/books", labelKey: "books" },
   { href: "/admin/categories/videos", labelKey: "video categories" },
@@ -68,7 +69,7 @@ export default function AdminSidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden sm:flex flex-col fixed start-0 top-[60px] h-[calc(100%-60px)] w-[200px] p-4 border-e border-border bg-background z-40"
+        className="hidden sm:flex flex-col fixed start-0 top-[60px] h-[calc(100%-60px)] w-full max-w-[200px] p-4 border-e border-border bg-background z-40"
         aria-label="Main sidebar"
       >
         <nav className="flex-1 space-y-1">
@@ -107,7 +108,7 @@ function MobileSheet({ links }: { links: NavLink[] }) {
   return (
     <div className="md:hidden">
       <Sheet open={showMobileSidebar} onOpenChange={setShowMobileSidebar}>
-        <SheetContent side="left" className="w-80 p-0">
+        <SheetContent side="left" className="w-full max-w-[300px] p-0">
           <SheetHeader className="p-4 border-b border-border">
             <div className="flex items-center gap-2">
               <BookOpen className="h-6 w-6 text-primary" />
