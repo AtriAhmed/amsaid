@@ -69,7 +69,7 @@ export default function AdminSidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden sm:flex flex-col fixed start-0 top-[60px] h-[calc(100%-60px)] w-full max-w-[200px] p-4 border-e border-border bg-background z-40"
+        className="hidden sm:flex flex-col fixed start-0 top-[60px] h-[calc(100%-60px)] w-full max-w-[200px] py-4 px-2 border-e border-border bg-background z-40"
         aria-label="Main sidebar"
       >
         <nav className="flex-1 space-y-1">

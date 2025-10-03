@@ -15,7 +15,7 @@ export default function CategoriesSearch({
   const t = useTranslations("common");
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-2">
       <CardHeader>
         <CardTitle>{t("search and filter")}</CardTitle>
       </CardHeader>

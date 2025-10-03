@@ -30,7 +30,7 @@ export default function VideosSearch({
   const t = useTranslations("common");
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Filter className="h-5 w-5" />
@@ -38,8 +38,8 @@ export default function VideosSearch({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="relative">
+        <div className="flex gap-1.5 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("search in videos")}
