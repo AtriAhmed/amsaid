@@ -2,14 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+type RouteContext<T extends string> = {
+  params: Promise<Record<string, string>>;
+};
+
 // Validation schemas
-const UpdatePersonSchema = z.object({
+const UpdateTagSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
-    .max(100, "Name must be less than 100 characters")
+    .max(50, "Name must be less than 50 characters")
     .optional(),
-  bio: z.string().optional(),
 });
 
 const IdParamSchema = z.object({
@@ -22,25 +25,24 @@ const IdParamSchema = z.object({
   }),
 });
 
-// GET - Fetch a single person by ID
-export async function GET(req: Request, ctx: RouteContext<"/api/people/[id]">) {
+// GET - Fetch a single tag by ID
+export async function GET(req: Request, ctx: RouteContext<"/api/tags/[id]">) {
   const params = await ctx.params;
 
   try {
     const parsed = IdParamSchema.safeParse({ id: params.id });
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid person ID" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid tag ID" }, { status: 400 });
     }
 
     const { id } = parsed.data;
 
-    const person = await prisma.person.findUnique({
+    const tag = await prisma.tag.findUnique({
       where: { id },
       select: {
         id: true,
         name: true,
-        bio: true,
         createdAt: true,
         updatedAt: true,
         books: {
@@ -51,6 +53,12 @@ export async function GET(req: Request, ctx: RouteContext<"/api/people/[id]">) {
             language: true,
             active: true,
             downloads: true,
+            author: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
             category: {
               select: {
                 id: true,
@@ -99,35 +107,32 @@ export async function GET(req: Request, ctx: RouteContext<"/api/people/[id]">) {
       },
     });
 
-    if (!person) {
-      return NextResponse.json({ error: "Person not found" }, { status: 404 });
+    if (!tag) {
+      return NextResponse.json({ error: "Tag not found" }, { status: 404 });
     }
 
-    return NextResponse.json(person);
+    return NextResponse.json(tag);
   } catch (error: any) {
-    console.error("Error fetching person:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch person" },
-      { status: 500 }
-    );
+    console.error("Error fetching tag:", error);
+    return NextResponse.json({ error: "Failed to fetch tag" }, { status: 500 });
   }
 }
 
-// PUT - Update a person
-export async function PUT(req: Request, ctx: RouteContext<"/api/people/[id]">) {
+// PUT - Update a tag
+export async function PUT(req: Request, ctx: RouteContext<"/api/tags/[id]">) {
   const params = await ctx.params;
 
   try {
     const parsed = IdParamSchema.safeParse({ id: params.id });
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid person ID" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid tag ID" }, { status: 400 });
     }
 
     const { id } = parsed.data;
 
     const json = await req.json().catch(() => ({}));
-    const bodyParsed = UpdatePersonSchema.safeParse(json);
+    const bodyParsed = UpdateTagSchema.safeParse(json);
 
     if (!bodyParsed.success) {
       return NextResponse.json(
@@ -138,18 +143,18 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/people/[id]">) {
 
     const updateData = bodyParsed.data;
 
-    // Check if person exists
-    const existingPerson = await prisma.person.findUnique({
+    // Check if tag exists
+    const existingTag = await prisma.tag.findUnique({
       where: { id },
     });
 
-    if (!existingPerson) {
-      return NextResponse.json({ error: "Person not found" }, { status: 404 });
+    if (!existingTag) {
+      return NextResponse.json({ error: "Tag not found" }, { status: 404 });
     }
 
     // If name is being updated, check for duplicates
-    if (updateData.name && updateData.name !== existingPerson.name) {
-      const duplicateName = await prisma.person.findFirst({
+    if (updateData.name && updateData.name !== existingTag.name) {
+      const duplicateName = await prisma.tag.findFirst({
         where: {
           name: {
             equals: updateData.name,
@@ -162,20 +167,19 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/people/[id]">) {
 
       if (duplicateName) {
         return NextResponse.json(
-          { error: "A person with this name already exists" },
+          { error: "A tag with this name already exists" },
           { status: 409 }
         );
       }
     }
 
-    // Update the person
-    const updatedPerson = await prisma.person.update({
+    // Update the tag
+    const updatedTag = await prisma.tag.update({
       where: { id },
       data: updateData,
       select: {
         id: true,
         name: true,
-        bio: true,
         createdAt: true,
         updatedAt: true,
         _count: {
@@ -187,20 +191,20 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/people/[id]">) {
       },
     });
 
-    return NextResponse.json(updatedPerson);
+    return NextResponse.json(updatedTag);
   } catch (error: any) {
-    console.error("Error updating person:", error);
+    console.error("Error updating tag:", error);
     return NextResponse.json(
-      { error: "Failed to update person" },
+      { error: "Failed to update tag" },
       { status: 500 }
     );
   }
 }
 
-// DELETE - Delete a person
+// DELETE - Delete a tag
 export async function DELETE(
   req: Request,
-  ctx: RouteContext<"/api/people/[id]">
+  ctx: RouteContext<"/api/tags/[id]">
 ) {
   const params = await ctx.params;
 
@@ -208,13 +212,13 @@ export async function DELETE(
     const parsed = IdParamSchema.safeParse({ id: params.id });
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid person ID" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid tag ID" }, { status: 400 });
     }
 
     const { id } = parsed.data;
 
-    // Check if person exists
-    const existingPerson = await prisma.person.findUnique({
+    // Check if tag exists
+    const existingTag = await prisma.tag.findUnique({
       where: { id },
       include: {
         _count: {
@@ -226,37 +230,37 @@ export async function DELETE(
       },
     });
 
-    if (!existingPerson) {
-      return NextResponse.json({ error: "Person not found" }, { status: 404 });
+    if (!existingTag) {
+      return NextResponse.json({ error: "Tag not found" }, { status: 404 });
     }
 
-    // Check if person has associated books or videos
-    if (existingPerson._count.books > 0 || existingPerson._count.videos > 0) {
+    // Check if tag has associated books or videos
+    if (existingTag._count.books > 0 || existingTag._count.videos > 0) {
       return NextResponse.json(
         {
-          error: "Cannot delete person with associated books or videos",
+          error: "Cannot delete tag that is associated with books or videos",
           details: {
-            books: existingPerson._count.books,
-            videos: existingPerson._count.videos,
+            books: existingTag._count.books,
+            videos: existingTag._count.videos,
           },
         },
         { status: 409 }
       );
     }
 
-    // Delete the person
-    await prisma.person.delete({
+    // Delete the tag
+    await prisma.tag.delete({
       where: { id },
     });
 
     return NextResponse.json(
-      { message: "Person deleted successfully" },
+      { message: "Tag deleted successfully" },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error deleting person:", error);
+    console.error("Error deleting tag:", error);
     return NextResponse.json(
-      { error: "Failed to delete person" },
+      { error: "Failed to delete tag" },
       { status: 500 }
     );
   }
