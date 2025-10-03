@@ -13,7 +13,7 @@ export default function AdminNavbar() {
   const { setShowMobileSidebar } = useAppProvider();
 
   return (
-    <header className="fixed h-[60px] flex items-center top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50">
+    <header className="fixed h-[60px] flex items-center top-0 w-full bg-background/60 backdrop-blur-md border-b border-border z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">

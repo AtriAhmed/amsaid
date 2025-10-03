@@ -49,10 +49,7 @@ export default function LoginPage() {
 
   return (
     <main className="grid min-h-screen -mt-[60px] pt-[60px]">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(/assets/hero-image.jpg)` }}
-      >
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-[url(/assets/hero-image.jpg)]">
         <div className="absolute inset-0 bg-gradient-hero opacity-85"></div>
       </div>
       <div className="flex items-center justify-center relative overflow-hidden">

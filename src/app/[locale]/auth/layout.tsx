@@ -1,8 +1,8 @@
-import AdminNavbar from "@/components/layout/AdminNavbar";
+import Navbar from "@/components/layout/Navbar";
 import Private from "@/components/Private";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
@@ -17,7 +17,7 @@ export default async function Layout({
 
   return (
     <Private guestOnly redirectTo="/admin">
-      <AdminNavbar />
+      <Navbar />
       <div className="pt-[60px]">{children}</div>
     </Private>
   );
