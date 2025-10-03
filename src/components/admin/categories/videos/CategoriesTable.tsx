@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Video } from "lucide-react";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
-import EditCategoryDialog from "./EditCategoryDialog";
+import CategoryDialog from "./CategoryDialog";
 
 interface Category {
   id: number;
@@ -195,9 +195,9 @@ export default function CategoriesTable({
         }
       />
 
-      <EditCategoryDialog
+      <CategoryDialog
         open={editDialog.open}
-        onOpenChange={(open) =>
+        onOpenChange={(open: boolean) =>
           setEditDialog({ open, category: open ? editDialog.category : null })
         }
         category={editDialog.category}

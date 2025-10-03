@@ -11,105 +11,98 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-interface Person {
+interface Category {
   id: number;
   name: string;
-  bio: string | null;
   createdAt: string;
   updatedAt: string;
   _count: {
-    books: number;
     videos: number;
   };
 }
 
-const createPersonSchema = (t: (key: string) => string) =>
+const createCategorySchema = (t: (key: string) => string) =>
   z.object({
     name: z
       .string()
-      .min(1, t("person name required"))
-      .max(100, t("person name less than 100 chars")),
-    bio: z.string().optional(),
+      .min(1, t("category name required"))
+      .max(100, t("category name less than 100 chars")),
   });
 
-type PersonForm = z.infer<ReturnType<typeof createPersonSchema>>;
+type CategoryForm = z.infer<ReturnType<typeof createCategorySchema>>;
 
-interface PersonDialogProps {
+interface CategoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  person?: Person | null;
-  onPersonCreated?: () => void;
-  onPersonUpdated?: () => void;
+  category?: Category | null;
+  onCategoryCreated?: () => void;
+  onCategoryUpdated?: () => void;
 }
-
-export default function PersonDialog({
+export default function CategoryDialog({
   open,
   onOpenChange,
-  person,
-  onPersonCreated,
-  onPersonUpdated,
-}: PersonDialogProps) {
+  category,
+  onCategoryCreated,
+  onCategoryUpdated,
+}: CategoryDialogProps) {
   const t = useTranslations("common");
   const [isLoading, setIsLoading] = useState(false);
 
   // Determine if this is create or edit mode
-  const isEditMode = !!person;
+  const isEditMode = !!category;
   const isCreateMode = !isEditMode;
 
-  const personSchema = createPersonSchema(t);
+  const categorySchema = createCategorySchema(t);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<PersonForm>({
-    resolver: zodResolver(personSchema),
+  } = useForm<CategoryForm>({
+    resolver: zodResolver(categorySchema),
   });
 
-  // Reset form when dialog opens and person data is available (edit mode)
+  // Reset form when dialog opens and category data is available (edit mode)
   useEffect(() => {
-    if (person && open) {
+    if (category && open) {
       reset({
-        name: person.name,
-        bio: person.bio || "",
+        name: category.name,
       });
-    } else if (!person && open) {
+    } else if (!category && open) {
       // Create mode - reset to empty values
       reset({
         name: "",
-        bio: "",
       });
     }
-  }, [person, open, reset]);
+  }, [category, open, reset]);
 
-  const onSubmit = async (data: PersonForm) => {
+  const onSubmit = async (data: CategoryForm) => {
     try {
       setIsLoading(true);
 
       // Validate with Zod
-      const validatedData = personSchema.parse(data);
+      const validatedData = categorySchema.parse(data);
 
-      if (isEditMode && person) {
-        // Update existing person
-        await axios.put(`/api/people/${person.id}`, validatedData);
+      if (isEditMode && category) {
+        // Update existing category
+        await axios.put(`/api/categories/videos/${category.id}`, validatedData);
         onOpenChange(false);
-        onPersonUpdated?.();
+        onCategoryUpdated?.();
       } else {
-        // Create new person
-        await axios.post("/api/people", validatedData);
+        // Create new category
+        await axios.post("/api/categories/videos", validatedData);
         reset();
         onOpenChange(false);
-        onPersonCreated?.();
+        onCategoryCreated?.();
       }
     } catch (error: any) {
       console.error(
-        `Error ${isEditMode ? "updating" : "creating"} person:`,
+        `Error ${isEditMode ? "updating" : "creating"} category:`,
         error
       );
       // You might want to show a toast notification here
@@ -131,36 +124,21 @@ export default function PersonDialog({
     <DialogContent>
       <DialogHeader>
         <DialogTitle>
-          {isEditMode ? t("edit person") : t("add new person")}
+          {isEditMode ? t("edit video category") : t("add new video category")}
         </DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t("person name")} *</Label>
+            <Label htmlFor="name">{t("category name")} *</Label>
             <Input
               id="name"
-              placeholder={t("example dr ahmed")}
+              placeholder={t("example fiqh")}
               {...register("name")}
               disabled={isLoading}
             />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bio">
-              {t("biography")} ({t("optional")})
-            </Label>
-            <Textarea
-              id="bio"
-              placeholder={t("person biography")}
-              {...register("bio")}
-              disabled={isLoading}
-              rows={4}
-            />
-            {errors.bio && (
-              <p className="text-sm text-destructive">{errors.bio.message}</p>
             )}
           </div>
         </div>

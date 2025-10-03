@@ -5,6 +5,8 @@ import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -58,6 +60,7 @@ export default function PeoplePage() {
   const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const limit = 10;
 
   // Debounce search to avoid excessive API calls
@@ -114,7 +117,10 @@ export default function PeoplePage() {
             </p>
           </div>
           <div className="ms-auto">
-            <PersonDialog onPersonCreated={handlePersonCreated} />
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              {t("add new person")}
+            </Button>
           </div>
         </div>
 
@@ -171,6 +177,13 @@ export default function PeoplePage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Create Person Dialog */}
+        <PersonDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onPersonCreated={handlePersonCreated}
+        />
       </div>
     </div>
   );

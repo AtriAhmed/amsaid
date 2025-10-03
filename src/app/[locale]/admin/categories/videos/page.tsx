@@ -5,6 +5,8 @@ import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -13,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
-import CreateCategoryDialog from "@/components/admin/categories/videos/CreateCategoryDialog";
+import CategoryDialog from "@/components/admin/categories/videos/CategoryDialog";
 import CategoriesTable from "@/components/admin/categories/videos/CategoriesTable";
 import CategoriesSearch from "@/components/admin/categories/videos/CategoriesSearch";
 
@@ -56,6 +58,7 @@ export default function CategoriesPage() {
   const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const limit = 10;
 
   // Debounce search to avoid excessive API calls
@@ -114,7 +117,10 @@ export default function CategoriesPage() {
             </p>
           </div>
           <div className="ms-auto">
-            <CreateCategoryDialog onCategoryCreated={handleCategoryCreated} />
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              {t("add new category")}
+            </Button>
           </div>
         </div>
 
@@ -173,6 +179,13 @@ export default function CategoriesPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Create Category Dialog */}
+        <CategoryDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onCategoryCreated={handleCategoryCreated}
+        />
       </div>
     </div>
   );
