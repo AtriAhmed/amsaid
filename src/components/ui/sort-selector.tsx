@@ -49,7 +49,7 @@ const SortSelector = ({
   };
 
   return (
-    <div className={cn("flex", className)}>
+    <div className={cn("flex rtl:flex-row-reverse", className)}>
       {/* Sort Order Button */}
       <Button
         variant="outline"

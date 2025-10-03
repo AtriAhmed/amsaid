@@ -34,7 +34,7 @@ const VideoModal = ({ video, isOpen, onOpenChange }: VideoModalProps) => {
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTitle className="sr-only">مشاهدة الفيديو</DialogTitle>
       <DialogContent
-        className="!max-w-[90vw] !w-[90vw] h-[90vh] max-h-[90vh] p-0 bg-black overflow-hidden"
+        className="!max-w-[90vw] !w-[90dvw] h-[90dvh] max-h-[90vh] p-0 bg-black overflow-hidden"
         overlayClassName="bg-black/90"
         showCloseButton={false}
       >

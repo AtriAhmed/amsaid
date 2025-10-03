@@ -24,36 +24,6 @@ export default function AdminNavbar() {
           </Link>
 
           <div className="flex items-center space-x-2">
-            {/* <Link
-              href="/admin"
-              className="text-foreground hover:text-primary transition-smooth"
-            >
-              {t("home")}
-            </Link>
-            <Link
-              href="/admin/categories/books"
-              className="text-foreground hover:text-primary transition-smooth"
-            >
-              {t("book categories")}
-            </Link>
-            <Link
-              href="/admin/books"
-              className="text-foreground hover:text-primary transition-smooth"
-            >
-              {t("books")}
-            </Link>
-            <Link
-              href="/admin/categories/videos"
-              className="text-foreground hover:text-primary transition-smooth"
-            >
-              {t("video categories")}
-            </Link>
-            <Link
-              href="/admin/videos"
-              className="text-foreground hover:text-primary transition-smooth"
-            >
-              {t("videos")}
-            </Link> */}
             <UserDropdown />
             <LocaleSwitcher />
             <Button

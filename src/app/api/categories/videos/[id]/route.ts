@@ -45,13 +45,9 @@ export async function GET(
             id: true,
             title: true,
             speakers: {
-              include: {
-                person: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
-                },
+              select: {
+                id: true,
+                name: true,
               },
             },
             poster: true,

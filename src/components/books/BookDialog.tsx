@@ -44,7 +44,7 @@ const BookModal = ({ book, isOpen, onOpenChange }: BookModalProps) => {
         قراءة الكتاب - {book?.title}
       </DialogTitle>
       <DialogContent
-        className="!max-w-[95vw] !w-[95vw] h-[95vh] max-h-[95vh] p-0 bg-white overflow-hidden"
+        className="!max-w-[90dvw] !w-[90dvw] h-[90dvh] max-h-[90dvh] p-0 bg-white overflow-hidden"
         overlayClassName="bg-black/90"
         showCloseButton={false}
       >
