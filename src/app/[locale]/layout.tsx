@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/[locale]/globals.css";
-import Providers from "@/components/providers";
+import Providers from "@/contexts/providers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { hasLocale, NextIntlClientProvider } from "next-intl";

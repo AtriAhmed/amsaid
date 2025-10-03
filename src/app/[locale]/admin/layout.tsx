@@ -1,4 +1,5 @@
 import AdminNavbar from "@/components/layout/AdminNavbar";
+import AdminSidebar from "@/components/layout/AdminSidebar";
 import Private from "@/components/Private";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
@@ -18,7 +19,10 @@ export default async function Layout({
   return (
     <Private>
       <AdminNavbar />
-      <div className="pt-[60px]">{children}</div>
+      <AdminSidebar />
+      <div className="pt-[60px] sm:pl-[200px] rtl:sm:pr-[200px] rtl:sm:pl-0">
+        {children}
+      </div>
     </Private>
   );
 }

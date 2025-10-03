@@ -112,13 +112,15 @@ export default function CategoriesTable({
 
   return (
     <>
-      <Table>
+      <Table className="min-w-[500px]">
         <TableHeader>
           <TableRow>
-            <TableHead>{t("category name")}</TableHead>
-            <TableHead>{t("number of videos")}</TableHead>
-            <TableHead>{t("creation date")}</TableHead>
-            <TableHead>{t("actions")}</TableHead>
+            <TableHead className="text-start">{t("category name")}</TableHead>
+            <TableHead className="text-start">
+              {t("number of videos")}
+            </TableHead>
+            <TableHead className="text-start">{t("creation date")}</TableHead>
+            <TableHead className="text-start">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -130,7 +132,7 @@ export default function CategoriesTable({
               <TableCell>
                 <Badge
                   variant="secondary"
-                  className="flex items-center gap-1 w-fit"
+                  className="flex items-center gap-1 w-fit whitespace-nowrap"
                 >
                   <Video className="h-3 w-3" />
                   {category._count.videos} {t("video")}

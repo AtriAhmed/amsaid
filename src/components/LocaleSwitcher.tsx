@@ -31,7 +31,7 @@ export default function LocaleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="bg-white/40">
+        <Button variant="outline" size="sm" className="bg-white/40">
           <Languages className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
