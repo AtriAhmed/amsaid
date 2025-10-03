@@ -298,5 +298,22 @@
   "cannot delete person has content": "Impossible de supprimer cette personne car elle a",
   "content items": "éléments de contenu",
   "people": "Personnes",
-  "users": "Utilisateurs"
+  "users": "Utilisateurs",
+  "manage tags": "Gérer les Tags",
+  "add edit delete tags": "Ajouter, modifier et supprimer des tags",
+  "add new tag": "Ajouter un Nouveau Tag",
+  "edit tag": "Modifier le Tag",
+  "delete tag": "Supprimer le Tag",
+  "tag name": "Nom du Tag",
+  "tag name required": "Le nom du tag est requis",
+  "tag name less than 50 chars": "Le nom du tag doit faire moins de 50 caractères",
+  "example science": "Exemple: Science",
+  "available tags": "Tags Disponibles",
+  "all tags in system": "Tous les tags du système",
+  "error loading tags": "Erreur lors du chargement des tags",
+  "no tags available": "Aucun tag disponible",
+  "search in tags": "Rechercher dans les tags...",
+  "are you sure delete tag": "Êtes-vous sûr de vouloir supprimer le tag",
+  "tag will be deleted permanently": "Ce tag sera supprimé définitivement",
+  "cannot delete tag has content": "Impossible de supprimer ce tag car il a"
 }

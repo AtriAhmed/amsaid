@@ -298,5 +298,22 @@
   "cannot delete person has content": "Cannot delete this person because they have",
   "content items": "content items",
   "people": "People",
-  "users": "Users"
+  "users": "Users",
+  "manage tags": "Manage Tags",
+  "add edit delete tags": "Add, edit, and delete tags",
+  "add new tag": "Add New Tag",
+  "edit tag": "Edit Tag",
+  "delete tag": "Delete Tag",
+  "tag name": "Tag Name",
+  "tag name required": "Tag name is required",
+  "tag name less than 50 chars": "Tag name must be less than 50 characters",
+  "example science": "Example: Science",
+  "available tags": "Available Tags",
+  "all tags in system": "All tags in the system",
+  "error loading tags": "Error loading tags",
+  "no tags available": "No tags available",
+  "search in tags": "Search in tags...",
+  "are you sure delete tag": "Are you sure you want to delete tag",
+  "tag will be deleted permanently": "This tag will be deleted permanently",
+  "cannot delete tag has content": "Cannot delete this tag because it has"
 }

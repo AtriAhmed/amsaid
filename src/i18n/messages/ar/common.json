@@ -298,5 +298,22 @@
   "cannot delete person has content": "لا يمكن حذف هذا الشخص لأنه يحتوي على",
   "content items": "عنصر محتوى",
   "people": "الأشخاص",
-  "users": "المستخدمون"
+  "users": "المستخدمون",
+  "manage tags": "إدارة الكلمات المفتاحية",
+  "add edit delete tags": "إضافة وتعديل وحذف الكلمات المفتاحية",
+  "add new tag": "إضافة كلمة مفتاحية جديدة",
+  "edit tag": "تعديل الكلمة المفتاحية",
+  "delete tag": "حذف الكلمة المفتاحية",
+  "tag name": "اسم الكلمة المفتاحية",
+  "tag name required": "اسم الكلمة المفتاحية مطلوب",
+  "tag name less than 50 chars": "يجب أن يكون اسم الكلمة المفتاحية أقل من 50 حرف",
+  "example science": "مثال: العلوم",
+  "available tags": "الكلمات المفتاحية المتاحة",
+  "all tags in system": "جميع الكلمات المفتاحية في النظام",
+  "error loading tags": "خطأ في تحميل الكلمات المفتاحية",
+  "no tags available": "لا توجد كلمات مفتاحية متاحة",
+  "search in tags": "البحث في الكلمات المفتاحية...",
+  "are you sure delete tag": "هل أنت متأكد من حذف الكلمة المفتاحية",
+  "tag will be deleted permanently": "سيتم حذف هذه الكلمة المفتاحية نهائياً",
+  "cannot delete tag has content": "لا يمكن حذف هذه الكلمة المفتاحية لأنها تحتوي على"
 }

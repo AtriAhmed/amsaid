@@ -31,6 +31,7 @@ const LINKS: NavLink[] = [
   { href: "/admin/videos", labelKey: "videos" },
   { href: "/admin/users", labelKey: "users" },
   { href: "/admin/people", labelKey: "people" },
+  { href: "/admin/tags", labelKey: "tags" },
 ];
 
 function NavItem({
