@@ -6,7 +6,7 @@ import { compare } from "bcryptjs";
 import { z } from "zod";
 
 const CredentialsSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(6),
 });
 
@@ -33,7 +33,11 @@ export const authOptions: NextAuthOptions = {
         if (!ok) return null;
 
         // Minimal user object for JWT
-        return { id: String(user.id), email: user.email, name: user.name ?? null };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name ?? null,
+        };
       },
     }),
   ],
@@ -48,12 +52,17 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token?.id) {
-        (session.user as any) = {
-          id: token.id,
-          email: token.email as string,
-          name: (token.name as string) ?? null,
-        };
+      if (token?.id && session.user) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: parseInt(token.id as string) },
+        });
+
+        if (dbUser) {
+          session.user.id = dbUser.id;
+          session.user.name = dbUser.name;
+          session.user.email = dbUser.email;
+          session.user.role = dbUser.role;
+        }
       }
       return session;
     },

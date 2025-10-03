@@ -3,6 +3,7 @@
 /** Enum from schema */
 export enum Role {
   OWNER = "OWNER",
+  MANAGER = "MANAGER",
   ADMIN = "ADMIN",
 }
 
