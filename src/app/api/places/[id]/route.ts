@@ -2,10 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
-type RouteContext<T extends string> = {
-  params: Promise<Record<string, string>>;
-};
-
 // Validation schemas
 const UpdatePlaceSchema = z.object({
   name: z
