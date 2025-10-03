@@ -336,5 +336,6 @@
   "no address": "No address",
   "are you sure delete place": "Are you sure you want to delete place",
   "place will be deleted permanently": "This place will be deleted permanently",
-  "cannot delete place has videos": "Cannot delete this place because it has"
+  "cannot delete place has videos": "Cannot delete this place because it has",
+  "places": "Places"
 }

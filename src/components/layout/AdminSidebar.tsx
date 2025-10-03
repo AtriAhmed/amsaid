@@ -32,6 +32,7 @@ const LINKS: NavLink[] = [
   { href: "/admin/users", labelKey: "users" },
   { href: "/admin/people", labelKey: "people" },
   { href: "/admin/tags", labelKey: "tags" },
+  { href: "/admin/places", labelKey: "places" },
 ];
 
 function NavItem({

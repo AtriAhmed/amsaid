@@ -120,11 +120,11 @@ export default function PeopleTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("person name")}</TableHead>
-            <TableHead>{t("biography")}</TableHead>
-            <TableHead>{t("content count")}</TableHead>
-            <TableHead>{t("creation date")}</TableHead>
-            <TableHead>{t("actions")}</TableHead>
+            <TableHead className="text-start">{t("person name")}</TableHead>
+            <TableHead className="text-start">{t("biography")}</TableHead>
+            <TableHead className="text-start">{t("content count")}</TableHead>
+            <TableHead className="text-start">{t("creation date")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -158,7 +158,7 @@ export default function PeopleTable({
               </TableCell>
               <TableCell>{formatDate(person.createdAt)}</TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button
                     size="sm"
                     variant="outline"

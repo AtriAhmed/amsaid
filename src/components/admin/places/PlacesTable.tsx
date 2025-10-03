@@ -111,7 +111,7 @@ export default function PlacesTable({
             <TableHead className="text-start">{t("place name")}</TableHead>
             <TableHead className="text-start">{t("address")}</TableHead>
             <TableHead className="text-start">{t("videos count")}</TableHead>
-            <TableHead className="text-start">{t("actions")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -135,7 +135,7 @@ export default function PlacesTable({
                 </Badge>
               </TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button
                     size="sm"
                     variant="outline"

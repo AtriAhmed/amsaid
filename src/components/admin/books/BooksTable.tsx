@@ -122,11 +122,11 @@ export default function BooksTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("title")}</TableHead>
-            <TableHead>{t("category")}</TableHead>
-            <TableHead>{t("status")}</TableHead>
-            <TableHead>{t("downloads")}</TableHead>
-            <TableHead>{t("date added")}</TableHead>
+            <TableHead className="text-start">{t("title")}</TableHead>
+            <TableHead className="text-start">{t("category")}</TableHead>
+            <TableHead className="text-start">{t("status")}</TableHead>
+            <TableHead className="text-start">{t("downloads")}</TableHead>
+            <TableHead className="text-start">{t("date added")}</TableHead>
             <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>

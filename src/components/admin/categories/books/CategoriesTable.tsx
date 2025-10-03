@@ -115,10 +115,10 @@ export default function CategoriesTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>{t("category name")}</TableHead>
-            <TableHead>{t("number of books")}</TableHead>
-            <TableHead>{t("creation date")}</TableHead>
-            <TableHead>{t("actions")}</TableHead>
+            <TableHead className="text-start">{t("category name")}</TableHead>
+            <TableHead className="text-start">{t("number of books")}</TableHead>
+            <TableHead className="text-start">{t("creation date")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -138,7 +138,7 @@ export default function CategoriesTable({
               </TableCell>
               <TableCell>{formatDate(category.createdAt)}</TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button
                     size="sm"
                     variant="outline"

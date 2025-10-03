@@ -336,5 +336,6 @@
   "no address": "لا يوجد عنوان",
   "are you sure delete place": "هل أنت متأكد من حذف المكان",
   "place will be deleted permanently": "سيتم حذف هذا المكان نهائياً",
-  "cannot delete place has videos": "لا يمكن حذف هذا المكان لأنه يحتوي على"
+  "cannot delete place has videos": "لا يمكن حذف هذا المكان لأنه يحتوي على",
+  "places": "الأماكن"
 }

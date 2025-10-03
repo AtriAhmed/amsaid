@@ -108,9 +108,9 @@ export default function TagsTable({
       <Table className="min-w-[400px]">
         <TableHeader>
           <TableRow>
-            <TableHead>{t("tag name")}</TableHead>
-            <TableHead>{t("content count")}</TableHead>
-            <TableHead>{t("actions")}</TableHead>
+            <TableHead className="text-start">{t("tag name")}</TableHead>
+            <TableHead className="text-start">{t("content count")}</TableHead>
+            <TableHead className="text-end">{t("actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -138,7 +138,7 @@ export default function TagsTable({
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-end">
                   <Button
                     size="sm"
                     variant="outline"
