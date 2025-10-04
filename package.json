@@ -11,7 +11,8 @@
     "prisma:studio": "prisma studio",
     "postinstall": "prisma generate || echo \"skip prisma generate\"",
     "seed:video": "npx tsx prisma/seed-video.ts",
-    "seed:book": "npx tsx prisma/seed-book.ts"
+    "seed:book": "npx tsx prisma/seed-book.ts",
+    "seed:user": "npx tsx prisma/seed-user.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
