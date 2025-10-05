@@ -127,7 +127,7 @@ export default function AuthorCombobox({
               <CommandEmpty>{t("no results")}</CommandEmpty>
             ) : (
               <CommandGroup>
-                {authors.map((author) => (
+                {authors?.map((author) => (
                   <CommandItem
                     key={author.id}
                     value={author.name}

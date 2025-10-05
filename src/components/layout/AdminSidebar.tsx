@@ -13,10 +13,12 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { BookOpen, Menu } from "lucide-react";
+import { BookOpen, LogOut, Menu } from "lucide-react";
 import UserDropdown from "@/components/admin/navbar/UserDropdown";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { useAppProvider } from "@/contexts/AppProvider";
+import { CommandSeparator } from "@/components/ui/command";
+import { signOut } from "next-auth/react";
 
 interface NavLink {
   href: string;
@@ -51,7 +53,7 @@ function NavItem({
         `block px-3 py-2 rounded-md text-sm font-medium transition-smooth ` +
         (active
           ? "bg-slate-200 text-foreground"
-          : "text-foreground hover:bg-primary/25")
+          : "text-foreground hover:bg-primary/25 duration-200")
       }
     >
       {children}
@@ -67,6 +69,10 @@ function NavItem({
 export default function AdminSidebar() {
   const t = useTranslations("common");
   const pathname = usePathname() || "/";
+
+  async function handleLogout() {
+    await signOut({ redirect: false });
+  }
 
   return (
     <>
@@ -85,12 +91,22 @@ export default function AdminSidebar() {
               {t(link.labelKey)}
             </NavItem>
           ))}
-        </nav>
 
-        <div className="flex gap-2 mt-4">
-          <UserDropdown />
-          <LocaleSwitcher />
-        </div>
+          {/* Separator */}
+          <div className="my-2 border-t border-border"></div>
+
+          <button
+            onClick={handleLogout}
+            className={`w-full text-start px-3 py-2 rounded-md text-sm font-medium transition-smooth text-foreground hover:bg-primary/25 flex items-center gap-2 border duration-200`}
+          >
+            <LogOut className="h-4 w-4" />
+            {t("logout")}
+          </button>
+          <LocaleSwitcher
+            compact={false}
+            buttonClassName="justify-start w-full hover:bg-primary/25 hover:text-foreground"
+          />
+        </nav>
       </aside>
 
       {/* Mobile Sheet (small screens) */}
@@ -140,7 +156,11 @@ function MobileSheet({ links }: { links: NavLink[] }) {
             </nav>
 
             <div className="mt-4">
-              <UserDropdown />
+              <Button
+                className={`block px-3 py-2 rounded-md text-sm font-medium transition-smooth text-foreground hover:bg-primary/25`}
+              >
+                {t("logout")}
+              </Button>
               <div className="mt-2">
                 <LocaleSwitcher />
               </div>

@@ -8,7 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 import { Languages } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 const languages = [
@@ -17,9 +19,18 @@ const languages = [
   { code: "ar", name: "العربية", countryCode: "SA" },
 ];
 
-export default function LocaleSwitcher() {
+type LocaleSwitcherProps = {
+  compact?: boolean;
+  buttonClassName?: string;
+};
+
+export default function LocaleSwitcher({
+  compact = true,
+  buttonClassName = "",
+}: LocaleSwitcherProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("common");
 
   const handleLanguageChange = (locale: string) => {
     router.replace(pathname, {
@@ -31,8 +42,14 @@ export default function LocaleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="bg-white/40">
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn("bg-white/40", buttonClassName)}
+        >
           <Languages className="h-4 w-4" />
+
+          {!compact && t("language")}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

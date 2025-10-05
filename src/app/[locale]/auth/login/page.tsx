@@ -110,12 +110,12 @@ export default function LoginPage() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder={t("enter password") || "Enter your password"}
-                    className="h-12 bg-primary-foreground/10 border-primary-foreground/20 focus:border-primary-foreground/50 focus:bg-primary-foreground/20 transition-all duration-300 pr-12 text-primary-foreground placeholder:text-primary-foreground/60 backdrop-blur-sm"
+                    className="h-12 bg-primary-foreground/10 border-primary-foreground/20 focus:border-primary-foreground/50 focus:bg-primary-foreground/20 transition-all duration-300 pe-12 text-primary-foreground placeholder:text-primary-foreground/60 backdrop-blur-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-primary-foreground/60 hover:text-primary-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
