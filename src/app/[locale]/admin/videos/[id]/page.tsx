@@ -67,7 +67,7 @@ async function getAuthors() {
         name: true,
       },
     });
-    return authors;
+    return { data: authors };
   } catch (error) {
     console.error("Error fetching authors:", error);
     return [];

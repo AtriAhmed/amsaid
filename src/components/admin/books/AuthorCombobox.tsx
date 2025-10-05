@@ -33,7 +33,7 @@ interface AuthorComboboxProps {
 
 // SWR fetcher function
 const fetcher = async (search: string, limit: number) => {
-  const res = await axios.get<Person[]>("/api/people", {
+  const res = await axios.get("/api/people", {
     params: {
       search,
       limit,
@@ -61,14 +61,16 @@ export default function AuthorCombobox({
   const [debouncedSearch] = useDebounce(searchValue, 300);
 
   const {
-    data: authors = [],
+    data: authorsData,
     error,
     isLoading,
-  } = useSWR<Person[]>(
+  } = useSWR(
     ["authors", debouncedSearch, limit],
     () => fetcher(debouncedSearch, limit),
     { fallbackData: config?.fallback?.authors }
   );
+
+  const authors = (authorsData?.data as Person[]) || [];
 
   const handleSearch = (search: string) => {
     setSearchValue(search);

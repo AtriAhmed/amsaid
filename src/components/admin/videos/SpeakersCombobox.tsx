@@ -22,12 +22,7 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { useDebounce } from "use-debounce";
 import useSWR, { useSWRConfig } from "swr";
-
-interface Speaker {
-  id: number;
-  name: string;
-  bio?: string;
-}
+import { Person } from "@/types";
 
 interface SpeakersComboboxProps {
   value: (number | string)[];
@@ -39,7 +34,7 @@ interface SpeakersComboboxProps {
 
 // SWR fetcher function
 const fetcher = async (search: string, limit: number) => {
-  const res = await axios.get<Speaker[]>("/api/people", {
+  const res = await axios.get("/api/people", {
     params: {
       search,
       limit,
@@ -65,17 +60,19 @@ export default function SpeakersCombobox({
   const [debouncedSearch] = useDebounce(searchValue, 300);
 
   const {
-    data: speakers = [],
+    data: speakersData,
     error,
     isLoading,
     mutate: revalidate,
-  } = useSWR<Speaker[]>(
+  } = useSWR(
     ["authors", debouncedSearch, limit],
     () => fetcher(debouncedSearch, limit),
     {
       fallbackData: config?.fallback?.authors,
     }
   );
+
+  const speakers = (speakersData?.data as Person[]) || [];
 
   const handleSearch = (search: string) => {
     setSearchValue(search);
