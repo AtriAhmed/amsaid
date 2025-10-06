@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
-import { BookOpen, RefreshCw } from "lucide-react";
+import { BookOpen, RefreshCw, AlertTriangle } from "lucide-react";
 import BooksSearch from "@/components/books/BooksSearch";
 import BooksGrid from "@/components/books/BooksGrid";
 import { Book } from "@/types";
@@ -180,7 +180,6 @@ const BooksPage = () => {
 
         <div id="top"></div>
 
-        {/* Search and Filters */}
         <BooksSearch
           searchTerm={searchTerm}
           onSearchChange={setSearch}
@@ -195,29 +194,13 @@ const BooksPage = () => {
           className="mb-2"
         />
 
-        {/* Error State */}
-        {error && (
-          <Card className="mb-8">
-            <CardContent className="text-center py-8">
-              <p className="text-destructive mb-4">
-                {t("error loading books")}:
-                {(error as any)?.message ?? t("unknown error occurred")}
-              </p>
-              <Button onClick={handleRetry} variant="outline" className="gap-2">
-                <RefreshCw className="h-4 w-4" />
-                {t("retry")}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Books Grid */}
+        {/* Books Card - Always show title */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-primary" />
               {t("available books")}
-              {pagination.total > 0 && (
+              {!isLoading && !error && pagination.total > 0 && (
                 <span className="text-muted-foreground text-base font-normal">
                   ({pagination.total})
                 </span>
@@ -228,17 +211,48 @@ const BooksPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <BooksGrid books={books} isLoading={isLoading} />
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  currentPage={pagination.currentPage}
-                  totalPages={pagination.totalPages}
-                  onPageChange={setPage}
-                />
+            {/* Error State */}
+            {error && (
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-6">
+                  <div className="p-4 bg-muted/20 rounded-full">
+                    <AlertTriangle className="h-12 w-12 text-destructive" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-semibold text-foreground mb-3">
+                  {t("oops something went wrong")}
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  {t("error loading books")}
+                </p>
+                <Button
+                  onClick={handleRetry}
+                  variant="default"
+                  size="lg"
+                  className="gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  {t("retry")}
+                </Button>
               </div>
+            )}
+
+            {/* Books Grid - Show when not in error state */}
+            {!error && (
+              <>
+                <BooksGrid books={books} isLoading={isLoading} />
+
+                {/* Pagination - Only show when there are multiple pages and not loading */}
+                {!isLoading && pagination.totalPages > 1 && (
+                  <div className="mt-8 flex justify-center">
+                    <Pagination
+                      currentPage={pagination.currentPage}
+                      totalPages={pagination.totalPages}
+                      onPageChange={setPage}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>

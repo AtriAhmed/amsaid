@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Play, Clock } from "lucide-react";
+import { Play, Clock, Video as VideoIcon } from "lucide-react";
 import { getMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import VideoModal from "./VideoModal";
@@ -84,8 +84,18 @@ export default function VideosGrid({ videos, isLoading }: VideosGridProps) {
 
   if (videos.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground text-lg">{t("no videos found")}</p>
+      <div className="text-center py-16">
+        <div className="flex justify-center mb-4">
+          <div className="p-4 bg-muted/20 rounded-full">
+            <VideoIcon className="h-12 w-12 text-muted-foreground" />
+          </div>
+        </div>
+        <h3 className="text-xl font-semibold text-foreground mb-2">
+          {t("no videos found")}
+        </h3>
+        <p className="text-muted-foreground">
+          {t("try adjusting your search or filters")}
+        </p>
       </div>
     );
   }
