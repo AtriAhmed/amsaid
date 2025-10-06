@@ -124,6 +124,10 @@ function MobileSheet({ links }: { links: NavLink[] }) {
     setShowMobileSidebar(false);
   }, [pathname]);
 
+  async function handleLogout() {
+    await signOut({ redirect: false });
+  }
+
   return (
     <div className="md:hidden">
       <Sheet open={showMobileSidebar} onOpenChange={setShowMobileSidebar}>
@@ -153,18 +157,18 @@ function MobileSheet({ links }: { links: NavLink[] }) {
                   {t(link.labelKey)}
                 </Link>
               ))}
-            </nav>
-
-            <div className="mt-4">
-              <Button
-                className={`block px-3 py-2 rounded-md text-sm font-medium transition-smooth text-foreground hover:bg-primary/25`}
+              <button
+                onClick={handleLogout}
+                className={`w-full text-start px-3 py-2 rounded-md text-sm font-medium transition-smooth text-foreground hover:bg-primary/25 flex items-center gap-2 border duration-200`}
               >
+                <LogOut className="h-4 w-4" />
                 {t("logout")}
-              </Button>
-              <div className="mt-2">
-                <LocaleSwitcher />
-              </div>
-            </div>
+              </button>
+              <LocaleSwitcher
+                compact={false}
+                buttonClassName="justify-start w-full hover:bg-primary/25 hover:text-foreground"
+              />
+            </nav>
           </div>
         </SheetContent>
       </Sheet>
