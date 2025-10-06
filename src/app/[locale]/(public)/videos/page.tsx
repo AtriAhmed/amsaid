@@ -54,7 +54,6 @@ const fetcher = async (
   if (language && language !== "none") params.language = language;
 
   const res = await axios.get<VideosResponse>("/api/videos", { params });
-  throw "error";
   return res.data;
 };
 
