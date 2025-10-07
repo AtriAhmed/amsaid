@@ -8,6 +8,10 @@ export const LANGUAGES = [
   { value: "de", label: "german" },
 ];
 
+export const LANGUAGES_OBJ = Object.fromEntries(
+  LANGUAGES.map(({ value, label }) => [value, { value, label }])
+);
+
 export const USER_ROLES: Record<Role, { label: string; access: number }> = {
   // change "priority" for a more meaningful name like "level" or "rank"
   [Role.OWNER]: { label: "owner", access: 3 },

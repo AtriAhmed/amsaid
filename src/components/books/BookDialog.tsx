@@ -13,7 +13,7 @@ interface BookModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const BookModal = ({ book, isOpen, onOpenChange }: BookModalProps) => {
+const BookDialog = ({ book, isOpen, onOpenChange }: BookModalProps) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const downloadBook = () => {
@@ -113,4 +113,4 @@ const BookModal = ({ book, isOpen, onOpenChange }: BookModalProps) => {
   );
 };
 
-export default BookModal;
+export default BookDialog;

@@ -28,7 +28,7 @@ const LanguageSelect = ({
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger className="w-full" ref={ref}>
-        {selectedLabel || t("choose language")}
+        {selectedLabel ? t(selectedLabel) : t("choose language")}
       </SelectTrigger>
       <SelectContent>
         {LANGUAGES.map((lang) => (
