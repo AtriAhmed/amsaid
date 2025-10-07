@@ -307,13 +307,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate video file type
-    if (!videoFile.type.startsWith("video/")) {
-      return NextResponse.json(
-        { error: "Invalid video file type" },
-        { status: 400 }
-      );
-    }
+    // // Validate video file type
+    // if (!videoFile.type.startsWith("video/")) {
+    //   return NextResponse.json(
+    //     { error: "Invalid video file type" },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Check if category exists
     const category = await prisma.videoCategory.findUnique({

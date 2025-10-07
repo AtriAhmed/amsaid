@@ -521,7 +521,7 @@ const VideoForm = ({ initialVideo }: VideoFormProps) => {
                     accept={{
                       "video/*": [".mp4", ".avi", ".mov", ".mkv", ".webm"],
                     }}
-                    maxSize={500 * 1024 * 1024} // 500MB
+                    maxSize={1024 * 1024 * 1024} // 500MB
                     value={data.videoFile}
                     onRemove={handleRemoveVideoFile}
                     placeholder={t("video file placeholder")}

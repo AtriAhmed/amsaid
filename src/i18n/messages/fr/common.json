@@ -339,5 +339,6 @@
   "cannot delete place has videos": "Impossible de supprimer ce lieu car il a",
   "places": "Lieux",
   "oops": "Oups",
-  "oops something went wrong": "Oups! Quelque chose s'est mal passé."
+  "oops something went wrong": "Oups! Quelque chose s'est mal passé.",
+  "video information": "Informations de la Vidéo"
 }
