@@ -59,11 +59,21 @@ export default function CategorySelect({
         {selectedLabel}
       </SelectTrigger>
       <SelectContent>
-        {categories.map((category: BookCategory) => (
-          <SelectItem key={category.id} value={category.id.toString()}>
-            {category.name}
+        {categoriesLoading ? (
+          <SelectItem value="none" disabled>
+            {t("loading")}...
           </SelectItem>
-        ))}
+        ) : categories.length > 0 ? (
+          categories.map((category: BookCategory) => (
+            <SelectItem key={category.id} value={category.id.toString()}>
+              {category.name}
+            </SelectItem>
+          ))
+        ) : (
+          <SelectItem value="none" disabled>
+            {t("no categories available")}
+          </SelectItem>
+        )}
       </SelectContent>
     </Select>
   );
