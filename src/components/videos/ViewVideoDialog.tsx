@@ -20,6 +20,8 @@ import {
 import { getMediaUrl } from "@/lib/utils";
 import { Video } from "@/types";
 import { formatDuration } from "@/lib/date";
+import { LANGUAGES_OBJ } from "@/lib/constants";
+import { useTranslations } from "next-intl";
 
 interface ViewVideoDialogProps {
   open: boolean;
@@ -34,6 +36,8 @@ export default function ViewVideoDialog({
   video,
   onWatchVideo,
 }: ViewVideoDialogProps) {
+  const t = useTranslations("common");
+
   const formatDate = (date?: Date) => {
     if (!date) return "غير محدد";
     return new Date(date).toLocaleDateString("en-UK", {
@@ -83,7 +87,11 @@ export default function ViewVideoDialog({
             <div className="flex items-center gap-2">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">اللغة:</span>
-              <span>{video.language}</span>
+              <span>
+                {LANGUAGES_OBJ[video.language]?.label
+                  ? t(LANGUAGES_OBJ[video.language]?.label)
+                  : video.language}
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
