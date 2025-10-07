@@ -290,9 +290,9 @@ export default async function VideoPage({ params }: PageProps) {
                   <div className="flex-1">
                     <div className="font-medium">{t("language")}</div>
                     <div className="text-sm text-muted-foreground">
-                      {LANGUAGES_OBJ[
-                        video.language as keyof typeof LANGUAGES_OBJ
-                      ]?.label || video.language}
+                      {LANGUAGES_OBJ[video.language]?.label
+                        ? t(LANGUAGES_OBJ[video.language]?.label)
+                        : video.language}
                     </div>
                   </div>
                 </div>
