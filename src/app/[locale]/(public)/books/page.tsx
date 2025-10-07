@@ -211,39 +211,39 @@ const BooksPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Error State */}
-            {error && (
+            {isLoading ? (
               <div className="text-center py-12">
-                <div className="flex justify-center mb-6">
-                  <div className="p-4 bg-muted/20 rounded-full">
-                    <AlertTriangle className="h-12 w-12 text-destructive" />
-                  </div>
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-                <h3 className="text-2xl font-semibold text-foreground mb-3">
+                <p className="text-muted-foreground">{t("loading")}</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <div className="flex justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-destructive" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">
                   {t("oops something went wrong")}
                 </h3>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-sm text-muted-foreground mb-3">
                   {t("error loading books")}
                 </p>
                 <Button
-                  onClick={handleRetry}
-                  variant="default"
-                  size="lg"
-                  className="gap-2"
+                  onClick={() => revalidate()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-xs"
                 >
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw className="h-2 w-2" />
                   {t("retry")}
                 </Button>
               </div>
-            )}
-
-            {/* Books Grid - Show when not in error state */}
-            {!error && (
+            ) : (
               <>
                 <BooksGrid books={books} isLoading={isLoading} />
 
-                {/* Pagination - Only show when there are multiple pages and not loading */}
-                {!isLoading && pagination.totalPages > 1 && (
+                {pagination.totalPages > 1 && (
                   <div className="mt-8 flex justify-center">
                     <Pagination
                       currentPage={pagination.currentPage}

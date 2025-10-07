@@ -81,7 +81,6 @@ export async function GET(req: Request, ctx: RouteContext<"/api/users/[id]">) {
         email: true,
         name: true,
         role: true,
-        emailVerified: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -204,7 +203,6 @@ export async function PUT(req: Request, ctx: RouteContext<"/api/users/[id]">) {
         email: true,
         name: true,
         role: true,
-        emailVerified: true,
         updatedAt: true,
       },
     });

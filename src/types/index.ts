@@ -14,7 +14,6 @@ export interface User {
   name: string | null;
   image: string | null;
   passwordHash: string;
-  emailVerified: Date | null;
   role: Role;
   createdAt?: Date;
   updatedAt?: Date;

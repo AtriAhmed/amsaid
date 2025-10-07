@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import VideosSearch from "@/components/admin/videos/VideosSearch";
 import VideosTable from "@/components/admin/videos/VideosTable";
@@ -33,12 +33,7 @@ interface VideosResponse {
 }
 
 // axios-based fetcher for SWR when using an array key like ["videos", queryParams]
-const fetcher = async (
-  _key: string,
-  page: number,
-  limit: number,
-  search: string
-) => {
+const fetcher = async (page: number, limit: number, search: string) => {
   const res = await axios.get<VideosResponse>("/api/videos", {
     params: {
       page,
@@ -65,7 +60,7 @@ const VideosManagement = () => {
     mutate: revalidate,
   } = useSWR<VideosResponse>(
     ["videos", currentPage, limit, debouncedSearch],
-    () => fetcher("videos", currentPage, limit, debouncedSearch)
+    () => fetcher(currentPage, limit, debouncedSearch)
   );
 
   const setPage = useCallback((page: number) => {
@@ -127,24 +122,32 @@ const VideosManagement = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
                 <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
-                <p className="text-destructive">
-                  {t("error loading videos")}:{" "}
-                  {(error as any)?.message ?? t("unknown error occurred")}
-                </p>
-                {/* Optionally add a retry button */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => revalidate()}
-                    className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
-                  >
-                    {t("retry")}
-                  </button>
+                <div className="flex justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-destructive" />
                 </div>
+                <h3 className="font-semibold text-foreground mb-1">
+                  {t("oops something went wrong")}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {t("error loading videos")}
+                </p>
+                <Button
+                  onClick={() => revalidate()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-xs"
+                >
+                  <RefreshCw className="h-2 w-2" />
+                  {t("retry")}
+                </Button>
               </div>
             ) : (
               <>

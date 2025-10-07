@@ -36,7 +36,7 @@ interface TagsComboboxProps {
 }
 
 // SWR fetcher function
-const fetcher = async (_key: string, search: string, limit: number) => {
+const fetcher = async (search: string, limit: number) => {
   const res = await axios.get<Tag[]>("/api/tags", {
     params: {
       search,
@@ -70,7 +70,7 @@ export default function TagsCombobox({
     mutate: revalidate,
   } = useSWR<Tag[]>(
     ["tags", debouncedSearch, limit],
-    () => fetcher("tags", debouncedSearch, limit),
+    () => fetcher(debouncedSearch, limit),
     {
       fallbackData: config?.fallback?.tags,
     }

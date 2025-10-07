@@ -36,12 +36,7 @@ interface CategoriesResponse {
 }
 
 // axios-based fetcher for SWR when using an array key like ["books-categories", queryParams]
-const fetcher = async (
-  _key: string,
-  page: number,
-  limit: number,
-  search: string
-) => {
+const fetcher = async (page: number, limit: number, search: string) => {
   const res = await axios.get<CategoriesResponse>("/api/categories/books", {
     params: {
       page,
@@ -68,7 +63,7 @@ export default function CategoriesPage() {
     mutate: revalidate,
   } = useSWR<CategoriesResponse>(
     ["books-categories", currentPage, limit, debouncedSearch],
-    () => fetcher("books-categories", currentPage, limit, debouncedSearch)
+    () => fetcher(currentPage, limit, debouncedSearch)
   );
 
   const setPage = useCallback((page: number) => {

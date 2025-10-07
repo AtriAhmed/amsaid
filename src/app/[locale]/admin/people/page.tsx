@@ -6,7 +6,7 @@ import { useDebounce } from "use-debounce";
 import axios from "axios";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -40,12 +40,7 @@ interface PeopleResponse {
 }
 
 // axios-based fetcher for SWR when using an array key like ["people", queryParams]
-const fetcher = async (
-  _key: string,
-  page: number,
-  limit: number,
-  search: string
-) => {
+const fetcher = async (page: number, limit: number, search: string) => {
   const res = await axios.get<PeopleResponse>("/api/people", {
     params: {
       page,
@@ -73,7 +68,7 @@ export default function PeoplePage() {
     mutate: revalidate,
   } = useSWR<PeopleResponse>(
     ["people", currentPage, limit, debouncedSearch],
-    () => fetcher("people", currentPage, limit, debouncedSearch)
+    () => fetcher(currentPage, limit, debouncedSearch)
   );
 
   const setPage = useCallback((page: number) => {
@@ -137,24 +132,32 @@ export default function PeoplePage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
                 <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
-                <p className="text-destructive">
-                  {t("error loading people")}:{" "}
-                  {(error as any)?.message ?? t("unknown error occurred")}
-                </p>
-                {/* Optionally add a retry button */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => revalidate()}
-                    className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
-                  >
-                    {t("retry")}
-                  </button>
+                <div className="flex justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-destructive" />
                 </div>
+                <h3 className="font-semibold text-foreground mb-1">
+                  {t("oops something went wrong")}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {t("error loading people")}
+                </p>
+                <Button
+                  onClick={() => revalidate()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-xs"
+                >
+                  <RefreshCw className="h-2 w-2" />
+                  {t("retry")}
+                </Button>
               </div>
             ) : (
               <>

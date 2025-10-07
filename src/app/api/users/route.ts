@@ -60,7 +60,6 @@ export async function GET(req: Request) {
           email: true,
           name: true,
           role: true,
-          emailVerified: true,
           createdAt: true,
           updatedAt: true,
         },

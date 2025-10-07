@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import BooksSearch from "@/components/admin/books/BooksSearch";
 import BooksTable from "@/components/admin/books/BooksTable";
@@ -114,30 +114,43 @@ const BooksManagement = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              {t("available books")} ({pagination.total})
+              {t("available books")}
+              {!isLoading && !error && (
+                <span className="text-muted-foreground text-base font-normal ml-2">
+                  ({pagination.total})
+                </span>
+              )}
             </CardTitle>
             <CardDescription>{t("all books in system")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
                 <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
-                <p className="text-destructive">
-                  {t("error loading books")}:{" "}
-                  {(error as any)?.message ?? t("unknown error occurred")}
-                </p>
-                {/* Optionally add a retry button */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => revalidate()}
-                    className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
-                  >
-                    {t("retry")}
-                  </button>
+                <div className="flex justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-destructive" />
                 </div>
+                <h3 className="font-semibold text-foreground mb-1">
+                  {t("oops something went wrong")}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {t("error loading books")}
+                </p>
+                <Button
+                  onClick={() => revalidate()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-xs"
+                >
+                  <RefreshCw className="h-2 w-2" />
+                  {t("retry")}
+                </Button>
               </div>
             ) : (
               <>

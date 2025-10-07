@@ -6,7 +6,7 @@ import { useDebounce } from "use-debounce";
 import axios from "axios";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle, RefreshCw } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -28,8 +28,12 @@ interface Tag {
 }
 
 // axios-based fetcher for SWR
-const fetcher = async (url: string) => {
-  const res = await axios.get<Tag[]>(url);
+const fetcher = async (search: string) => {
+  const res = await axios.get<Tag[]>("/api/tags", {
+    params: {
+      search,
+    },
+  });
   return res.data;
 };
 
@@ -46,12 +50,7 @@ export default function TagsPage() {
     error,
     isLoading,
     mutate: revalidate,
-  } = useSWR<Tag[]>(
-    `/api/tags${
-      debouncedSearch ? `?search=${encodeURIComponent(debouncedSearch)}` : ""
-    }`,
-    fetcher
-  );
+  } = useSWR<Tag[]>(["tags", debouncedSearch], () => fetcher(debouncedSearch));
 
   const setSearch = useCallback((search: string) => {
     setSearchTerm(search);
@@ -101,24 +100,32 @@ export default function TagsPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8">
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
                 <p className="text-muted-foreground">{t("loading")}</p>
               </div>
             ) : error ? (
               <div className="text-center py-8">
-                <p className="text-destructive">
-                  {t("error loading tags")}:{" "}
-                  {(error as any)?.message ?? t("unknown error occurred")}
-                </p>
-                {/* Optionally add a retry button */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => revalidate()}
-                    className="inline-flex items-center px-3 py-1.5 text-sm rounded-md border"
-                  >
-                    {t("retry")}
-                  </button>
+                <div className="flex justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-destructive" />
                 </div>
+                <h3 className="font-semibold text-foreground mb-1">
+                  {t("oops something went wrong")}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {t("error loading tags")}
+                </p>
+                <Button
+                  onClick={() => revalidate()}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 text-xs"
+                >
+                  <RefreshCw className="h-2 w-2" />
+                  {t("retry")}
+                </Button>
               </div>
             ) : (
               <TagsTable
