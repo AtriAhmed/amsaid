@@ -5,8 +5,8 @@ import { BookOpen } from "lucide-react";
 import { getBookMediaUrl } from "@/lib/utils";
 import { Book } from "@/types";
 import { useState } from "react";
-import BookDialog from "./BookDialog";
-import BookCard from "./BookCard";
+import BookDialog from "@/components/books/BookDialog";
+import BookCard from "@/components/books/BookCard";
 import { useTranslations } from "next-intl";
 
 interface BooksGridProps {
