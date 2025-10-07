@@ -64,10 +64,20 @@ const Books = ({ books }: BooksProps) => {
         </div>
 
         {books.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              {t("no books available")}
-            </p>
+          <div className="text-center py-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="rounded-full bg-muted p-6">
+                <BookOpen className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {t("no books available")}
+                </h3>
+                <p className="text-muted-foreground">
+                  Check back later for new content
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

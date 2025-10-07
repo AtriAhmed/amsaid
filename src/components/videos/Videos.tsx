@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Clock } from "lucide-react";
+import { Play, Clock, Video as VideoIcon } from "lucide-react";
 import { getMediaUrl } from "@/lib/utils";
 import Image from "next/image";
 import VideoModal from "./VideoModal";
@@ -65,10 +65,20 @@ export default function Videos({ videos }: VideosProps) {
         </div>
 
         {videos.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              {t("no lectures available")}
-            </p>
+          <div className="text-center py-8">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="rounded-full bg-muted p-6">
+                <VideoIcon className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {t("no lectures available")}
+                </h3>
+                <p className="text-muted-foreground">
+                  Check back later for new content
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
