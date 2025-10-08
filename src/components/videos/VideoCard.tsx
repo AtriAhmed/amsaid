@@ -88,14 +88,14 @@ const VideoCard = ({ video, onVideoClick, onMoreInfo }: VideoCardProps) => {
               {t("watch now")}
             </Link>
           </Button>
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             className="flex-1 py-1.5"
             onClick={() => onMoreInfo(video)}
           >
             {t("more info")}
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>
