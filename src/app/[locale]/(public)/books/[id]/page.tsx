@@ -107,8 +107,7 @@ export default async function BookPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6">
+        {/* <nav className="mb-6">
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Link href="/books" className="hover:text-foreground">
               {t("books")}
@@ -118,9 +117,9 @@ export default async function BookPage({ params }: PageProps) {
               {book.title}
             </span>
           </div>
-        </nav>
+        </nav> */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
           {/* Main Content - PDF Reader */}
           <div className="lg:col-span-2">
             <Card className="mb-6">
@@ -155,7 +154,7 @@ export default async function BookPage({ params }: PageProps) {
           </div>
 
           {/* Sidebar - Book Information */}
-          <div className="space-y-6">
+          <div className="space-y-2">
             {/* Book Cover and Basic Info */}
             <Card>
               <CardContent className="p-6">

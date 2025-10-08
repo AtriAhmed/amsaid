@@ -1,4 +1,4 @@
-import VideosPage from "@/components/admin/videos/VideosPage";
+import VideosPage from "@/components/videos/VideosPage";
 import BooksPage from "@/components/books/BooksPage";
 import { prisma } from "@/lib/prisma";
 
