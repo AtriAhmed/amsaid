@@ -86,7 +86,7 @@ export default function Navbar() {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="block px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/25 transition-smooth"
+                        className="block px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/25 transition-smooth duration-200"
                       >
                         {t(link.labelKey)}
                       </Link>
@@ -94,7 +94,10 @@ export default function Navbar() {
                   </nav>
 
                   <div className="mt-4">
-                    <LocaleSwitcher />
+                    <LocaleSwitcher
+                      compact={false}
+                      buttonClassName="justify-start w-full hover:bg-primary/25 hover:text-foreground duration-200"
+                    />
                   </div>
                 </div>
               </SheetContent>
