@@ -20,11 +20,11 @@ const About = () => {
       number: "1,000+",
       label: t("lecture"),
     },
-    {
-      icon: Award,
-      number: "15+",
-      label: t("years experience"),
-    },
+    // {
+    //   icon: Award,
+    //   number: "15+",
+    //   label: t("years experience"),
+    // },
   ];
 
   return (
