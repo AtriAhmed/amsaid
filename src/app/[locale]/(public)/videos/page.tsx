@@ -1,64 +1,23 @@
 import VideosPage from "@/components/videos/VideosPage";
 import BooksPage from "@/components/books/BooksPage";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
+import { Locale } from "next-intl";
 
-async function getBooks() {
-  try {
-    const books = await prisma.book.findMany({
-      where: {
-        active: true,
-      },
-      take: 20,
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        tags: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+export async function generateMetadata(
+  props: Omit<LayoutProps<"/[locale]">, "children">
+) {
+  const { locale } = await props.params;
 
-    return {
-      books,
-      pagination: {
-        page: 0,
-        limit: 0,
-        totalCount: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching books:", error);
-    return {
-      books: [],
-      pagination: {
-        page: 0,
-        limit: 0,
-        totalCount: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-  }
+  const t = await getTranslations({
+    locale: locale as Locale,
+    namespace: "common",
+  });
+
+  return {
+    title: t("lectures") + " | " + t("islamic preacher"),
+    description: t("page description"),
+  };
 }
 
 async function getVideos() {

@@ -4,9 +4,10 @@ import "@/app/[locale]/globals.css";
 import Providers from "@/contexts/providers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { hasLocale, Locale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "الداعية الإسلامي",
-  description:
-    "منصة إسلامية تعليمية تحتوي على مجموعة من المحاضرات والكتب الإسلامية القيمة لنشر العلم والهداية",
-};
+export async function generateMetadata(
+  props: Omit<LayoutProps<"/[locale]">, "children">
+) {
+  const { locale } = await props.params;
+
+  const t = await getTranslations({
+    locale: locale as Locale,
+    namespace: "common",
+  });
+
+  return {
+    title: t("islamic preacher"),
+    description: t("page description"),
+  };
+}
 
 export default async function RootLayout({
   children,
