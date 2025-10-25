@@ -55,6 +55,31 @@ const QueryParamsSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
+async function updateTotalViews() {
+  try {
+    let statsObject = await prisma.stats.findFirst();
+    if (!statsObject) {
+      statsObject = await prisma.stats.create({
+        data: {},
+      });
+    }
+
+    // Increment unique visits count
+    await prisma.stats.update({
+      where: {
+        id: statsObject.id,
+      },
+      data: {
+        totalVideos: {
+          increment: 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error updating stats for book download:", error);
+  }
+}
+
 // GET - Fetch all books with pagination and filters
 export async function GET(req: Request) {
   try {
@@ -375,6 +400,8 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    await updateTotalViews();
 
     return NextResponse.json(book, { status: 201 });
   } catch (error: any) {

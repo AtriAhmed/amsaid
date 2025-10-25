@@ -13,6 +13,31 @@ function parseId(id: string): number | null {
   return isNaN(parsedId) || parsedId < 1 ? null : parsedId;
 }
 
+async function updateVideoViews() {
+  try {
+    let statsObject = await prisma.stats.findFirst();
+    if (!statsObject) {
+      statsObject = await prisma.stats.create({
+        data: {},
+      });
+    }
+
+    // Increment unique visits count
+    await prisma.stats.update({
+      where: {
+        id: statsObject.id,
+      },
+      data: {
+        videoViews: {
+          increment: 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error updating stats for book download:", error);
+  }
+}
+
 // Helper function to parse range header
 function parseRange(
   range: string,
@@ -106,6 +131,8 @@ export async function GET(
           },
         })
         .catch((err) => console.error("Error incrementing views:", err));
+
+      updateVideoViews();
     }
 
     // Handle range requests
