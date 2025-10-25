@@ -112,3 +112,19 @@ model Video {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
+
+model visitLog {
+  id          Int      @id @default(autoincrement())
+  ipAddress   String
+  fingerprint String
+  visitedAt   DateTime @default(now())
+}
+
+model stats {
+  id            Int @id @default(autoincrement())
+  visits        Int @default(0)
+  totalBooks    Int @default(0)
+  bookDownloads Int @default(0)
+  totalVideos   Int @default(0)
+  videoViews    Int @default(0)
+}

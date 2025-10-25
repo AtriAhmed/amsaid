@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { logVisit } from "@/actions/stats";
 
 interface AppContextProps {
   showMobileSidebar: boolean;
@@ -11,6 +18,17 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export default function AppProvider({ children }: { children: ReactNode }) {
   const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function sendVisit() {
+      const { ClientJS } = await import("clientjs");
+      const client = new ClientJS();
+      const fingerprint = client.getFingerprint().toString();
+
+      await logVisit(fingerprint);
+    }
+    sendVisit();
+  }, []);
 
   return (
     <AppContext.Provider
