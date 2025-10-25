@@ -8,6 +8,7 @@ import { hasLocale, Locale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
+import { title } from "process";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,10 @@ export async function generateMetadata(
   return {
     title: t("islamic preacher"),
     description: t("page description"),
+    openGraph: {
+      title: t("islamic preacher"),
+      description: t("page description"),
+    },
   };
 }
 

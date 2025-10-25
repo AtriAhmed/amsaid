@@ -16,6 +16,10 @@ export async function generateMetadata(
   return {
     title: t("books") + " | " + t("islamic preacher"),
     description: t("page description"),
+    openGraph: {
+      title: t("books") + " | " + t("islamic preacher"),
+      description: t("page description"),
+    },
   };
 }
 
