@@ -339,5 +339,6 @@
   "place will be deleted permanently": "This place will be deleted permanently",
   "cannot delete place has videos": "Cannot delete this place because it has",
   "places": "Places",
-  "oops something went wrong": "Oops! Something went wrong."
+  "oops something went wrong": "Oops! Something went wrong.",
+  "visitors": "Visitors"
 }

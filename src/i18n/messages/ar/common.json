@@ -339,5 +339,6 @@
   "place will be deleted permanently": "سيتم حذف هذا المكان نهائياً",
   "cannot delete place has videos": "لا يمكن حذف هذا المكان لأنه يحتوي على",
   "places": "الأماكن",
-  "oops something went wrong": "عذراً! حدث خطأ ما."
+  "oops something went wrong": "عذراً! حدث خطأ ما.",
+  "visitors": "الزوار"
 }

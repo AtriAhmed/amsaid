@@ -3,7 +3,7 @@ import Books from "@/components/books/Books";
 import Hero from "@/components/home/Hero";
 import Videos from "@/components/videos/Videos";
 import { prisma } from "@/lib/prisma";
-import { Book, Video } from "@/types";
+import { Book, StatsObject, Video } from "@/types";
 
 async function getVideos(): Promise<Video[]> {
   try {
@@ -90,16 +90,35 @@ async function getBooks(): Promise<Book[]> {
   }
 }
 
+async function getStats(): Promise<StatsObject> {
+  try {
+    let statsObject = await prisma.stats.findFirst();
+    if (!statsObject) {
+      statsObject = await prisma.stats.create({
+        data: {},
+      });
+    }
+
+    return statsObject;
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    return {} as StatsObject;
+  }
+}
+
 export default async function Home() {
-  const videos = await getVideos();
-  const books = await getBooks();
+  const [videos, books, stats] = await Promise.all([
+    getVideos(),
+    getBooks(),
+    getStats(),
+  ]);
 
   return (
-    <div className="min-h-screen bg-background -mt-[60px]">
+    <div className="min-h-screen -mt-[60px] bg-background">
       <Hero />
       <Videos videos={videos} />
       <Books books={books} />
-      <About />
+      <About stats={stats} />
     </div>
   );
 }

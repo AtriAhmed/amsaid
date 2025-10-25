@@ -1,23 +1,25 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Users, BookOpen, Award } from "lucide-react";
+import { formatCount } from "@/lib/formatCount";
+import { StatsObject } from "@/types";
+import { Heart, Users, BookOpen, Award, VideoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const About = () => {
+export default function About({ stats: statsObject }: { stats: StatsObject }) {
   const t = useTranslations("common");
   const stats = [
     {
       icon: Users,
-      number: "50,000+",
-      label: t("followers"),
+      number: formatCount(statsObject.visits || 0),
+      label: t("visitors"),
     },
     {
       icon: BookOpen,
-      number: "200+",
+      number: formatCount(statsObject.totalBooks || 0),
       label: t("islamic book"),
     },
     {
-      icon: Heart,
-      number: "1,000+",
+      icon: VideoIcon,
+      number: formatCount(statsObject.totalVideos || 0),
       label: t("lecture"),
     },
     // {
@@ -29,31 +31,31 @@ const About = () => {
 
   return (
     <section id="about" className="py-20 bg-gradient-subtle">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="mx-auto px-4 container">
+        <div className="items-center gap-16 grid grid-cols-1 lg:grid-cols-2">
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            <h2 className="mb-6 font-bold text-foreground text-4xl md:text-5xl">
               {t("about us")}
             </h2>
-            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+            <p className="mb-6 text-muted-foreground text-lg leading-relaxed">
               {t("about description 1")}
             </p>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+            <p className="mb-8 text-muted-foreground text-lg leading-relaxed">
               {t("about description 2")}
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="gap-4 grid grid-cols-2 md:grid-cols-4">
               {stats.map((stat, index) => (
                 <Card
                   key={index}
-                  className="text-center p-4 hover:shadow-elegant transition-smooth"
+                  className="p-4 hover:shadow-elegant text-center transition-smooth"
                 >
                   <CardContent className="p-0">
-                    <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-foreground mb-1">
+                    <stat.icon className="w-8 h-8 mx-auto mb-2 text-primary" />
+                    <div className="mb-1 font-bold text-foreground text-2xl">
                       {stat.number}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-muted-foreground text-sm">
                       {stat.label}
                     </div>
                   </CardContent>
@@ -63,15 +65,15 @@ const About = () => {
           </div>
 
           <div className="relative">
-            <div className="bg-gradient-hero rounded-2xl p-8 text-center shadow-elegant">
-              <h3 className="text-2xl font-bold text-primary-foreground mb-4">
+            <div className="p-8 rounded-2xl bg-gradient-hero shadow-elegant text-center">
+              <h3 className="mb-4 font-bold text-primary-foreground text-2xl">
                 {t("our mission")}
               </h3>
-              <p className="text-primary-foreground/90 leading-relaxed mb-6">
+              <p className="mb-6 text-primary-foreground/90 leading-relaxed">
                 {t("mission description")}
               </p>
 
-              <h3 className="text-2xl font-bold text-primary-foreground mb-4">
+              <h3 className="mb-4 font-bold text-primary-foreground text-2xl">
                 {t("our vision")}
               </h3>
               <p className="text-primary-foreground/90 leading-relaxed">
@@ -83,6 +85,4 @@ const About = () => {
       </div>
     </section>
   );
-};
-
-export default About;
+}

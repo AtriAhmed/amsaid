@@ -55,7 +55,7 @@ const QueryParamsSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-async function updateTotalViews() {
+async function updateTotalBooks() {
   try {
     let statsObject = await prisma.stats.findFirst();
     if (!statsObject) {
@@ -70,7 +70,7 @@ async function updateTotalViews() {
         id: statsObject.id,
       },
       data: {
-        totalVideos: {
+        totalBooks: {
           increment: 1,
         },
       },
@@ -401,7 +401,7 @@ export async function POST(req: Request) {
       },
     });
 
-    await updateTotalViews();
+    await updateTotalBooks();
 
     return NextResponse.json(book, { status: 201 });
   } catch (error: any) {

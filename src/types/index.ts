@@ -147,3 +147,19 @@ export type PrismaModels = {
   Book: Book;
   Video: Video;
 };
+
+export type VisitLog = {
+  id: number;
+  ipAddress: string;
+  fingerprint: string;
+  visitedAt?: Date;
+};
+
+export type StatsObject = {
+  id: number;
+  visits: number;
+  totalBooks: number;
+  bookDownloads: number;
+  totalVideos: number;
+  videoViews: number;
+};
