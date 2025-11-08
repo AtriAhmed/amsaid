@@ -64,7 +64,7 @@ export default function Books({ books }: BooksProps) {
                   {t("no books available")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Check back later for new content
+                  {t("check_back_later")}
                 </p>
               </div>
             </div>

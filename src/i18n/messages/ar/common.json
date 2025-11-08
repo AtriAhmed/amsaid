@@ -1,7 +1,7 @@
 {
   "welcome to our website": "مرحباً بكم في موقع",
   "islamic preacher": "الدكتور سعيد الشبلي",
-  "islamic educational platform description": "مفكر الإسلامي عضو الاتحاد العالمي لعلماء المسلمين",
+  "islamic educational platform description": "مفكر إسلامي عضو الاتحاد العالمي لعلماء المسلمين",
   "watch lectures": "شاهد المحاضرات",
   "browse books": "تصفح الكتب",
   "lectures and sermons": "المحاضرات والخطب",
@@ -341,5 +341,6 @@
   "places": "الأماكن",
   "oops something went wrong": "عذراً! حدث خطأ ما.",
   "visitors": "الزوار",
-  "page description": "منصة إسلامية تعليمية تقدم محتوى إسلامي أصيل من خلال محاضرات وكتب إسلامية قيمة. نهدف إلى نشر المعرفة الإسلامية لجميع المسلمين."
+  "page description": "منصة إسلامية تعليمية تقدم محتوى إسلامي أصيل من خلال محاضرات وكتب إسلامية قيمة. نهدف إلى نشر المعرفة الإسلامية لجميع المسلمين.",
+  "check_back_later": "تحقق لاحقًا للحصول على محتوى جديد"
 }

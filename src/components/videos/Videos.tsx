@@ -62,7 +62,7 @@ export default function Videos({ videos }: VideosProps) {
                   {t("no lectures available")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Check back later for new content
+                  {t("check_back_later")}
                 </p>
               </div>
             </div>
