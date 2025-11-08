@@ -99,19 +99,19 @@ const Footer = () => {
               <div className="flex items-center">
                 <Mail className="h-4 w-4 text-accent mr-3" />
                 <span className="text-primary-foreground/80">
-                  info@islamicda3ya.com
+                  contact@saidchebli.com
                 </span>
               </div>
               <div className="flex items-center">
                 <Phone className="h-4 w-4 text-accent mr-3" />
                 <span className="text-primary-foreground/80">
-                  +966 50 123 4567
+                  +90 530 747 15 92
                 </span>
               </div>
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 text-accent mr-3" />
                 <span className="text-primary-foreground/80">
-                  الرياض، المملكة العربية السعودية
+                  إسطنبول، تركيا
                 </span>
               </div>
             </div>
