@@ -40,9 +40,9 @@ export default function About({ stats: statsObject }: { stats: StatsObject }) {
             <p className="mb-6 text-muted-foreground text-lg leading-relaxed">
               {t("about description 1")}
             </p>
-            <p className="mb-8 text-muted-foreground text-lg leading-relaxed">
+            {/* <p className="mb-8 text-muted-foreground text-lg leading-relaxed">
               {t("about description 2")}
-            </p>
+            </p> */}
 
             <div className="gap-4 grid grid-cols-2 md:grid-cols-4">
               {stats.map((stat, index) => (
