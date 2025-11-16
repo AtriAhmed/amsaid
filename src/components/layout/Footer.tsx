@@ -96,19 +96,19 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">{t("contact us")}</h3>
             <div className="space-y-3">
-              <div className="flex items-center">
+              <div className="flex items-center gap-1">
                 <Mail className="h-4 w-4 text-accent mr-3" />
                 <span className="text-primary-foreground/80">
                   contact@saidchebli.com
                 </span>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1">
                 <Phone className="h-4 w-4 text-accent mr-3" />
-                <span className="text-primary-foreground/80">
+                <span className="text-primary-foreground/80" dir="ltr">
                   +90 530 747 15 92
                 </span>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4 text-accent mr-3" />
                 <span className="text-primary-foreground/80">
                   إسطنبول، تركيا
